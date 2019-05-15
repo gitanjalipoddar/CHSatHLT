@@ -1,0 +1,7 @@
+universe   = vanilla
+executable            = /afs/cern.ch/work/a/algomez/triggerStudies/CMSSW_10_1_11_patch1/src/condor_mc.sh
+initialdir            = /afs/cern.ch/work/a/algomez/triggerStudies/CMSSW_10_1_11_patch1/src/
+output                = /afs/cern.ch/work/a/algomez/triggerStudies/CMSSW_10_1_11_patch1/src/jobs_mc.$(ClusterId).$(ProcId).out
+error                 = /afs/cern.ch/work/a/algomez/triggerStudies/CMSSW_10_1_11_patch1/src/jobs_mc.$(ClusterId).$(ProcId).err
+log                   = /afs/cern.ch/work/a/algomez/triggerStudies/CMSSW_10_1_11_patch1/src/jobs_mc.$(ClusterId).log
+queue
