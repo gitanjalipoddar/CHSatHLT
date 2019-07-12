@@ -81,4 +81,9 @@ cmsRun step3_RAW2DIGI_RECO.py maxEvents=100 fullTracking=True
 
 ##### To run condor job
 
-In addition, the files `condor_runStep3.sub` and `condor_runStep3.sh` can be used to run condor jobs. Modified them with your information and then to submit a job use `condor_submit condor_runStep3.sub` and to check status `condor_q`. 
+In addition, the file `submitCondorJobs_runStep3.sh` can be used to run condor jobs. It needs a text file with the names of the root files to run and can be run as:
+```
+source submitCondorJobs_runStep3.sh QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8 0
+```
+where the first parameter corresponds to the name of the txt file (without .txt) and the second parameter defines if running full offline Tracking (0) or partial HLT-like tracking (1)
+Dont forget to modify your proxy with your information and to check status `condor_q`. 

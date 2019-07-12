@@ -7,6 +7,18 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing ('python')
+options.register('inputFile',
+		'/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/26371D77-1622-E811-8681-0242AC130002.root',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"Input file"
+)
+options.register('outputFile',
+		'output',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"Input file"
+)
 options.register('fullTracking',
 		False,
 		VarParsing.multiplicity.singleton,
@@ -38,12 +50,11 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring([
-        '/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/26371D77-1622-E811-8681-0242AC130002.root',
-        '/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/6AD2868A-1422-E811-A5FE-0242AC130002.root',
-        '/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/F8A58879-0D22-E811-B28D-0242AC130002.root',
-        '/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/2E603D06-2722-E811-A97C-0242AC130002.root',
-        '/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/C08C485E-2322-E811-BEA1-0242AC130002.root'
+    fileNames = cms.untracked.vstring([ options.inputFile
+        #'/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/6AD2868A-1422-E811-A5FE-0242AC130002.root',
+        #'/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/F8A58879-0D22-E811-B28D-0242AC130002.root',
+        #'/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/2E603D06-2722-E811-A97C-0242AC130002.root',
+        #'/store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/C08C485E-2322-E811-BEA1-0242AC130002.root'
         ]),
     secondaryFileNames = cms.untracked.vstring()
 )
@@ -60,8 +71,8 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
-if options.fullTracking: outputName = "step3_offlineTracking.root"
-else: outputName = "step3_fullTracking.root"
+if options.fullTracking: outputName = options.outputFile+"_offlineTracking.root"
+else: outputName = options.outputFile+"_fullTracking.root"
 process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-RECO'),
