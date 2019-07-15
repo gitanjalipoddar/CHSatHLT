@@ -13,7 +13,7 @@ options.register('inputFile',
 		VarParsing.varType.string,
 		"Input file"
 )
-options.register('outputFile',
+options.register('outputFileName',
 		'output',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
@@ -71,8 +71,8 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
-if options.fullTracking: outputName = options.outputFile+"_offlineTracking.root"
-else: outputName = options.outputFile+"_fullTracking.root"
+if options.fullTracking: outputName = options.outputFileName+"_offlineTracking.root"
+else: outputName = options.outputFileName+"_fullTracking.root"
 process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-RECO'),
