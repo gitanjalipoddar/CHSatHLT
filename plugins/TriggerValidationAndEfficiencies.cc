@@ -25,7 +25,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 
-#include "B2GTriggerStudies/TriggerEfficiencies/interface/CommonVariablesStructure.h"
+#include "PUHLT/CHSatHLT/interface/CommonVariablesStructure.h"
 
 using namespace edm;
 using namespace std;

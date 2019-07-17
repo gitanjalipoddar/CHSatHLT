@@ -87,3 +87,10 @@ source submitCondorJobs_runStep3.sh QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8 0
 ```
 where the first parameter corresponds to the name of the txt file (without .txt) and the second parameter defines if running full offline Tracking (0) or partial HLT-like tracking (1)
 Dont forget to modify your proxy with your information and to check status `condor_q`. 
+
+### Re-run HLT and analyze output
+
+For instance:
+~~~
+cmsDriver.py reRunHLT --filein /store/data/Run2018D/HLTPhysics/RAW/v1/000/320/571/00000/0ECA1B77-9894-E811-BFE4-FA163EED3BED.root --fileout reRunHLT --data --step HLT:User --era Run2_2018 --processName HLT2 -n 10 --conditions auto:run2_data_GRun
+~~~

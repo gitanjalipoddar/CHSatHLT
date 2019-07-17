@@ -3499,30 +3499,6 @@ GlobalParametersRcdSource = cms.ESSource( "EmptyESSource",
   recordName = cms.string( "L1TGlobalParametersRcd" ),
   firstValid = cms.vuint32( 1 )
 )
-GlobalTag = cms.ESSource( "PoolDBESSource",
-  globaltag = cms.string( "101X_dataRun2_HLT_v7" ),
-  RefreshEachRun = cms.untracked.bool( False ),
-  snapshotTime = cms.string( "" ),
-  toGet = cms.VPSet( 
-  ),
-  pfnPostfix = cms.untracked.string( "None" ),
-  DBParameters = cms.PSet( 
-    connectionRetrialTimeOut = cms.untracked.int32( 60 ),
-    idleConnectionCleanupPeriod = cms.untracked.int32( 10 ),
-    enableReadOnlySessionOnUpdateConnection = cms.untracked.bool( False ),
-    enablePoolAutomaticCleanUp = cms.untracked.bool( False ),
-    messageLevel = cms.untracked.int32( 0 ),
-    authenticationPath = cms.untracked.string( "." ),
-    connectionRetrialPeriod = cms.untracked.int32( 10 ),
-    connectionTimeOut = cms.untracked.int32( 0 ),
-    enableConnectionSharing = cms.untracked.bool( True )
-  ),
-  RefreshAlways = cms.untracked.bool( False ),
-  connect = cms.string( "frontier://FrontierProd/CMS_CONDITIONS" ),
-  ReconnectEachRun = cms.untracked.bool( False ),
-  RefreshOpenIOVs = cms.untracked.bool( False ),
-  DumpStat = cms.untracked.bool( False )
-)
 HcalTimeSlewEP = cms.ESSource( "HcalTimeSlewEP",
   timeSlewParametersM3 = cms.VPSet( 
     cms.PSet(  tspar2 = cms.double( 0.0 ),
@@ -3574,18 +3550,6 @@ HcalTimeSlewEP = cms.ESSource( "HcalTimeSlewEP",
   ),
   appendToDataLabel = cms.string( "HBHE" )
 )
-HepPDTESSource = cms.ESSource( "HepPDTESSource",
-  pdtFileName = cms.FileInPath( "SimGeneral/HepPDTESSource/data/pythiaparticle.tbl" )
-)
-eegeom = cms.ESSource( "EmptyESSource",
-  iovIsRunNotTime = cms.bool( True ),
-  recordName = cms.string( "EcalMappingRcd" ),
-  firstValid = cms.vuint32( 1 )
-)
-es_hardcode = cms.ESSource( "HcalHardcodeCalibrations",
-  fromDDD = cms.untracked.bool( False ),
-  toGet = cms.untracked.vstring( 'GainWidths' )
-)
 hltESSBTagRecord = cms.ESSource( "EmptyESSource",
   iovIsRunNotTime = cms.bool( True ),
   recordName = cms.string( "JetTagComputerRecord" ),
@@ -3616,30 +3580,11 @@ AnyDirectionAnalyticalPropagator = cms.ESProducer( "AnalyticalPropagatorESProduc
 CSCChannelMapperESProducer = cms.ESProducer( "CSCChannelMapperESProducer",
   AlgoName = cms.string( "CSCChannelMapperPostls1" )
 )
-CSCGeometryESModule = cms.ESProducer( "CSCGeometryESModule",
-  useRealWireGeometry = cms.bool( True ),
-  appendToDataLabel = cms.string( "" ),
-  alignmentsLabel = cms.string( "" ),
-  useGangedStripsInME1a = cms.bool( False ),
-  debugV = cms.untracked.bool( False ),
-  useOnlyWiresInME1a = cms.bool( False ),
-  useDDD = cms.bool( False ),
-  useCentreTIOffsets = cms.bool( False ),
-  applyAlignment = cms.bool( True )
-)
 CSCIndexerESProducer = cms.ESProducer( "CSCIndexerESProducer",
   AlgoName = cms.string( "CSCIndexerPostls1" )
 )
 CSCObjectMapESProducer = cms.ESProducer( "CSCObjectMapESProducer",
   appendToDataLabel = cms.string( "" )
-)
-CaloGeometryBuilder = cms.ESProducer( "CaloGeometryBuilder",
-  SelectedCalos = cms.vstring( 'HCAL',
-    'ZDC',
-    'EcalBarrel',
-    'EcalEndcap',
-    'EcalPreshower',
-    'TOWER' )
 )
 CaloTopologyBuilder = cms.ESProducer( "CaloTopologyBuilder" )
 CaloTowerConstituentsMapBuilder = cms.ESProducer( "CaloTowerConstituentsMapBuilder",
@@ -3647,9 +3592,6 @@ CaloTowerConstituentsMapBuilder = cms.ESProducer( "CaloTowerConstituentsMapBuild
   MapAuto = cms.untracked.bool( False ),
   SkipHE = cms.untracked.bool( False ),
   MapFile = cms.untracked.string( "Geometry/CaloTopology/data/CaloTowerEEGeometric.map.gz" )
-)
-CaloTowerGeometryFromDBEP = cms.ESProducer( "CaloTowerGeometryFromDBEP",
-  applyAlignment = cms.bool( False )
 )
 CaloTowerTopologyEP = cms.ESProducer( "CaloTowerTopologyEP",
   appendToDataLabel = cms.string( "" )
@@ -3663,25 +3605,8 @@ ClusterShapeHitFilterESProducer = cms.ESProducer( "ClusterShapeHitFilterESProduc
   clusterChargeCut = cms.PSet(  refToPSet_ = cms.string( "HLTSiStripClusterChargeCutNone" ) ),
   PixelShapeFile = cms.string( "RecoPixelVertexing/PixelLowPtUtilities/data/pixelShapePhase1_noL1.par" )
 )
-DTGeometryESModule = cms.ESProducer( "DTGeometryESModule",
-  appendToDataLabel = cms.string( "" ),
-  fromDDD = cms.bool( False ),
-  applyAlignment = cms.bool( True ),
-  alignmentsLabel = cms.string( "" )
-)
 DTObjectMapESProducer = cms.ESProducer( "DTObjectMapESProducer",
   appendToDataLabel = cms.string( "" )
-)
-EcalBarrelGeometryFromDBEP = cms.ESProducer( "EcalBarrelGeometryFromDBEP",
-  applyAlignment = cms.bool( True )
-)
-EcalElectronicsMappingBuilder = cms.ESProducer( "EcalElectronicsMappingBuilder" )
-EcalEndcapGeometryFromDBEP = cms.ESProducer( "EcalEndcapGeometryFromDBEP",
-  applyAlignment = cms.bool( True )
-)
-EcalLaserCorrectionService = cms.ESProducer( "EcalLaserCorrectionService" )
-EcalPreshowerGeometryFromDBEP = cms.ESProducer( "EcalPreshowerGeometryFromDBEP",
-  applyAlignment = cms.bool( True )
 )
 GlobalParameters = cms.ESProducer( "StableParametersTrivialProducer",
   NumberL1JetCounts = cms.uint32( 12 ),
@@ -3711,14 +3636,6 @@ GlobalParameters = cms.ESProducer( "StableParametersTrivialProducer",
   NumberPsbBoards = cms.int32( 7 ),
   NumberChips = cms.uint32( 1 ),
   NumberPhysTriggersExtended = cms.uint32( 64 )
-)
-HcalGeometryFromDBEP = cms.ESProducer( "HcalGeometryFromDBEP",
-  applyAlignment = cms.bool( False )
-)
-HcalTopologyIdealEP = cms.ESProducer( "HcalTopologyIdealEP",
-  MergePosition = cms.untracked.bool( True ),
-  Exclude = cms.untracked.string( "" ),
-  appendToDataLabel = cms.string( "" )
 )
 MaterialPropagator = cms.ESProducer( "PropagatorWithMaterialESProducer",
   SimpleMagneticField = cms.string( "" ),
@@ -3783,11 +3700,6 @@ OppositePropagatorWithMaterialForMixedStep = cms.ESProducer( "PropagatorWithMate
   MaxDPhi = cms.double( 1.6 ),
   useRungeKutta = cms.bool( False )
 )
-ParametrizedMagneticFieldProducer = cms.ESProducer( "AutoParametrizedMagneticFieldProducer",
-  version = cms.string( "Parabolic" ),
-  valueOverride = cms.int32( -1 ),
-  label = cms.untracked.string( "ParabolicMf" )
-)
 PropagatorWithMaterialForLoopers = cms.ESProducer( "PropagatorWithMaterialESProducer",
   SimpleMagneticField = cms.string( "ParabolicMf" ),
   PropagationDirection = cms.string( "alongMomentum" ),
@@ -3805,54 +3717,6 @@ PropagatorWithMaterialForMixedStep = cms.ESProducer( "PropagatorWithMaterialESPr
   ptMin = cms.double( 0.1 ),
   MaxDPhi = cms.double( 1.6 ),
   useRungeKutta = cms.bool( False )
-)
-RPCGeometryESModule = cms.ESProducer( "RPCGeometryESModule",
-  useDDD = cms.untracked.bool( False ),
-  compatibiltyWith11 = cms.untracked.bool( True )
-)
-SiStripGainESProducer = cms.ESProducer( "SiStripGainESProducer",
-  printDebug = cms.untracked.bool( False ),
-  appendToDataLabel = cms.string( "" ),
-  APVGain = cms.VPSet( 
-    cms.PSet(  NormalizationFactor = cms.untracked.double( 1.0 ),
-      Label = cms.untracked.string( "" ),
-      Record = cms.string( "SiStripApvGainRcd" )
-    ),
-    cms.PSet(  NormalizationFactor = cms.untracked.double( 1.0 ),
-      Label = cms.untracked.string( "" ),
-      Record = cms.string( "SiStripApvGain2Rcd" )
-    )
-  ),
-  AutomaticNormalization = cms.bool( False )
-)
-SiStripQualityESProducer = cms.ESProducer( "SiStripQualityESProducer",
-  appendToDataLabel = cms.string( "" ),
-  PrintDebugOutput = cms.bool( False ),
-  ThresholdForReducedGranularity = cms.double( 0.3 ),
-  UseEmptyRunInfo = cms.bool( False ),
-  ReduceGranularity = cms.bool( False ),
-  ListOfRecordToMerge = cms.VPSet( 
-    cms.PSet(  record = cms.string( "SiStripDetVOffRcd" ),
-      tag = cms.string( "" )
-    ),
-    cms.PSet(  record = cms.string( "SiStripDetCablingRcd" ),
-      tag = cms.string( "" )
-    ),
-    cms.PSet(  record = cms.string( "SiStripBadChannelRcd" ),
-      tag = cms.string( "" )
-    ),
-    cms.PSet(  record = cms.string( "SiStripBadFiberRcd" ),
-      tag = cms.string( "" )
-    ),
-    cms.PSet(  record = cms.string( "SiStripBadModuleRcd" ),
-      tag = cms.string( "" )
-    )
-  )
-)
-SiStripRecHitMatcherESProducer = cms.ESProducer( "SiStripRecHitMatcherESProducer",
-  PreFilter = cms.bool( False ),
-  ComponentName = cms.string( "StandardMatcher" ),
-  NSigmaInside = cms.double( 3.0 )
 )
 SiStripRegionConnectivity = cms.ESProducer( "SiStripRegionConnectivity",
   EtaDivisions = cms.untracked.uint32( 20 ),
@@ -3886,26 +3750,8 @@ SteppingHelixPropagatorAny = cms.ESProducer( "SteppingHelixPropagatorESProducer"
   useMagVolumes = cms.bool( True ),
   ComponentName = cms.string( "SteppingHelixPropagatorAny" )
 )
-TrackerDigiGeometryESModule = cms.ESProducer( "TrackerDigiGeometryESModule",
-  appendToDataLabel = cms.string( "" ),
-  fromDDD = cms.bool( False ),
-  applyAlignment = cms.bool( True ),
-  alignmentsLabel = cms.string( "" )
-)
-TrackerGeometricDetESModule = cms.ESProducer( "TrackerGeometricDetESModule",
-  appendToDataLabel = cms.string( "" ),
-  fromDDD = cms.bool( False )
-)
 TransientTrackBuilderESProducer = cms.ESProducer( "TransientTrackBuilderESProducer",
   ComponentName = cms.string( "TransientTrackBuilder" )
-)
-VolumeBasedMagneticFieldESProducer = cms.ESProducer( "VolumeBasedMagneticFieldESProducerFromDB",
-  debugBuilder = cms.untracked.bool( False ),
-  valueOverride = cms.int32( -1 ),
-  label = cms.untracked.string( "" )
-)
-ZdcGeometryFromDBEP = cms.ESProducer( "ZdcGeometryFromDBEP",
-  applyAlignment = cms.bool( False )
 )
 caloDetIdAssociator = cms.ESProducer( "DetIdAssociatorESProducer",
   ComponentName = cms.string( "CaloDetIdAssociator" ),
@@ -4034,7 +3880,6 @@ hcalRecAlgos = cms.ESProducer( "HcalRecAlgoESProducer",
     'HcalCellOff',
     'HcalCellDead' )
 )
-hcal_db_producer = cms.ESProducer( "HcalDbProducer" )
 hltCombinedSecondaryVertex = cms.ESProducer( "CombinedSecondaryVertexESProducer",
   recordLabel = cms.string( "HLT" ),
   categoryVariableName = cms.string( "vertexCategory" ),
@@ -4465,9 +4310,6 @@ hltESPDisplacedDijethltTrackCounting2D2ndLong = cms.ESProducer( "TrackCountingES
 hltESPDummyDetLayerGeometry = cms.ESProducer( "DetLayerGeometryESProducer",
   ComponentName = cms.string( "hltESPDummyDetLayerGeometry" )
 )
-hltESPEcalTrigTowerConstituentsMapBuilder = cms.ESProducer( "EcalTrigTowerConstituentsMapBuilder",
-  MapFile = cms.untracked.string( "Geometry/EcalMapping/data/EndCap_TTMap.txt" )
-)
 hltESPElectronMaterialEffects = cms.ESProducer( "GsfMaterialEffectsESProducer",
   BetheHeitlerParametrization = cms.string( "BetheHeitler_cdfmom_nC6_O5.par" ),
   EnergyLossUpdator = cms.string( "GsfBetheHeitlerUpdator" ),
@@ -4566,7 +4408,6 @@ hltESPFwdElectronPropagator = cms.ESProducer( "PropagatorWithMaterialESProducer"
 hltESPGlobalDetLayerGeometry = cms.ESProducer( "GlobalDetLayerGeometryESProducer",
   ComponentName = cms.string( "hltESPGlobalDetLayerGeometry" )
 )
-hltESPGlobalTrackingGeometryESProducer = cms.ESProducer( "GlobalTrackingGeometryESProducer" )
 hltESPGsfElectronFittingSmoother = cms.ESProducer( "KFFittingSmootherESProducer",
   EstimateCut = cms.double( -1.0 ),
   appendToDataLabel = cms.string( "" ),
@@ -4897,7 +4738,6 @@ hltESPMixedTripletStepTrajectoryCleanerBySharedHits = cms.ESProducer( "Trajector
   MissingHitPenalty = cms.double( 20.0 ),
   allowSharedFirstHit = cms.bool( True )
 )
-hltESPMuonDetLayerGeometryESProducer = cms.ESProducer( "MuonDetLayerGeometryESProducer" )
 hltESPMuonTransientTrackingRecHitBuilder = cms.ESProducer( "MuonTransientTrackingRecHitBuilderESProducer",
   ComponentName = cms.string( "hltESPMuonTransientTrackingRecHitBuilder" )
 )
@@ -5237,10 +5077,6 @@ hltESPTrackAlgoPriorityOrder = cms.ESProducer( "TrackAlgoPriorityOrderESProducer
   appendToDataLabel = cms.string( "" ),
   algoOrder = cms.vstring(  )
 )
-hltESPTrackerRecoGeometryESProducer = cms.ESProducer( "TrackerRecoGeometryESProducer",
-  appendToDataLabel = cms.string( "" ),
-  trackerGeometryLabel = cms.untracked.string( "" )
-)
 hltESPTrajectoryCleanerBySharedHits = cms.ESProducer( "TrajectoryCleanerESProducer",
   ComponentName = cms.string( "hltESPTrajectoryCleanerBySharedHits" ),
   fractionShared = cms.double( 0.5 ),
@@ -5358,143 +5194,7 @@ siStripLorentzAngleDepESProducer = cms.ESProducer( "SiStripLorentzAngleDepESProd
     record = cms.string( "SiStripLorentzAngleRcd" )
   )
 )
-sistripconn = cms.ESProducer( "SiStripConnectivity" )
-trackerTopology = cms.ESProducer( "TrackerTopologyEP",
-  appendToDataLabel = cms.string( "" )
-)
 
-FastTimerService = cms.Service( "FastTimerService",
-  dqmPath = cms.untracked.string( "HLT/TimerService" ),
-  dqmModuleTimeRange = cms.untracked.double( 40.0 ),
-  enableDQMbyPath = cms.untracked.bool( False ),
-  dqmModuleTimeResolution = cms.untracked.double( 0.2 ),
-  dqmPathMemoryResolution = cms.untracked.double( 5000.0 ),
-  enableDQM = cms.untracked.bool( True ),
-  enableDQMbyModule = cms.untracked.bool( False ),
-  dqmModuleMemoryRange = cms.untracked.double( 100000.0 ),
-  dqmMemoryResolution = cms.untracked.double( 5000.0 ),
-  enableDQMbyLumiSection = cms.untracked.bool( True ),
-  dqmPathTimeResolution = cms.untracked.double( 0.5 ),
-  printEventSummary = cms.untracked.bool( False ),
-  dqmPathTimeRange = cms.untracked.double( 100.0 ),
-  dqmTimeRange = cms.untracked.double( 2000.0 ),
-  enableDQMTransitions = cms.untracked.bool( False ),
-  dqmLumiSectionsRange = cms.untracked.uint32( 2500 ),
-  dqmPathMemoryRange = cms.untracked.double( 1000000.0 ),
-  dqmMemoryRange = cms.untracked.double( 1000000.0 ),
-  dqmTimeResolution = cms.untracked.double( 5.0 ),
-  printRunSummary = cms.untracked.bool( True ),
-  dqmModuleMemoryResolution = cms.untracked.double( 500.0 ),
-  printJobSummary = cms.untracked.bool( True ),
-  enableDQMbyProcesses = cms.untracked.bool( True )
-)
-MessageLogger = cms.Service( "MessageLogger",
-  suppressInfo = cms.untracked.vstring(  ),
-  debugs = cms.untracked.PSet( 
-    threshold = cms.untracked.string( "INFO" ),
-    placeholder = cms.untracked.bool( True ),
-    suppressInfo = cms.untracked.vstring(  ),
-    suppressWarning = cms.untracked.vstring(  ),
-    suppressDebug = cms.untracked.vstring(  ),
-    suppressError = cms.untracked.vstring(  )
-  ),
-  suppressDebug = cms.untracked.vstring(  ),
-  cout = cms.untracked.PSet(  placeholder = cms.untracked.bool( True ) ),
-  cerr_stats = cms.untracked.PSet( 
-    threshold = cms.untracked.string( "WARNING" ),
-    output = cms.untracked.string( "cerr" ),
-    optionalPSet = cms.untracked.bool( True )
-  ),
-  warnings = cms.untracked.PSet( 
-    threshold = cms.untracked.string( "INFO" ),
-    placeholder = cms.untracked.bool( True ),
-    suppressInfo = cms.untracked.vstring(  ),
-    suppressWarning = cms.untracked.vstring(  ),
-    suppressDebug = cms.untracked.vstring(  ),
-    suppressError = cms.untracked.vstring(  )
-  ),
-  statistics = cms.untracked.vstring( 'cerr' ),
-  cerr = cms.untracked.PSet( 
-    INFO = cms.untracked.PSet(  limit = cms.untracked.int32( 0 ) ),
-    noTimeStamps = cms.untracked.bool( False ),
-    FwkReport = cms.untracked.PSet( 
-      reportEvery = cms.untracked.int32( 1 ),
-      limit = cms.untracked.int32( 0 )
-    ),
-    default = cms.untracked.PSet(  limit = cms.untracked.int32( 10000000 ) ),
-    Root_NoDictionary = cms.untracked.PSet(  limit = cms.untracked.int32( 0 ) ),
-    FwkJob = cms.untracked.PSet(  limit = cms.untracked.int32( 0 ) ),
-    FwkSummary = cms.untracked.PSet( 
-      reportEvery = cms.untracked.int32( 1 ),
-      limit = cms.untracked.int32( 10000000 )
-    ),
-    threshold = cms.untracked.string( "INFO" ),
-    suppressInfo = cms.untracked.vstring(  ),
-    suppressWarning = cms.untracked.vstring(  ),
-    suppressDebug = cms.untracked.vstring(  ),
-    suppressError = cms.untracked.vstring(  )
-  ),
-  FrameworkJobReport = cms.untracked.PSet( 
-    default = cms.untracked.PSet(  limit = cms.untracked.int32( 0 ) ),
-    FwkJob = cms.untracked.PSet(  limit = cms.untracked.int32( 10000000 ) )
-  ),
-  suppressWarning = cms.untracked.vstring( 'hltOnlineBeamSpot',
-    'hltCtf3HitL1SeededWithMaterialTracks',
-    'hltL3MuonsOIState',
-    'hltPixelTracksForHighMult',
-    'hltHITPixelTracksHE',
-    'hltHITPixelTracksHB',
-    'hltCtfL1SeededWithMaterialTracks',
-    'hltRegionalTracksForL3MuonIsolation',
-    'hltSiPixelClusters',
-    'hltActivityStartUpElectronPixelSeeds',
-    'hltLightPFTracks',
-    'hltPixelVertices3DbbPhi',
-    'hltL3MuonsIOHit',
-    'hltPixelTracks',
-    'hltSiPixelDigis',
-    'hltL3MuonsOIHit',
-    'hltL1SeededElectronGsfTracks',
-    'hltL1SeededStartUpElectronPixelSeeds',
-    'hltBLifetimeRegionalCtfWithMaterialTracksbbPhiL1FastJetFastPV',
-    'hltCtfActivityWithMaterialTracks' ),
-  errors = cms.untracked.PSet( 
-    threshold = cms.untracked.string( "INFO" ),
-    placeholder = cms.untracked.bool( True ),
-    suppressInfo = cms.untracked.vstring(  ),
-    suppressWarning = cms.untracked.vstring(  ),
-    suppressDebug = cms.untracked.vstring(  ),
-    suppressError = cms.untracked.vstring(  )
-  ),
-  fwkJobReports = cms.untracked.vstring( 'FrameworkJobReport' ),
-  debugModules = cms.untracked.vstring(  ),
-  infos = cms.untracked.PSet( 
-    threshold = cms.untracked.string( "INFO" ),
-    Root_NoDictionary = cms.untracked.PSet(  limit = cms.untracked.int32( 0 ) ),
-    placeholder = cms.untracked.bool( True ),
-    suppressInfo = cms.untracked.vstring(  ),
-    suppressWarning = cms.untracked.vstring(  ),
-    suppressDebug = cms.untracked.vstring(  ),
-    suppressError = cms.untracked.vstring(  )
-  ),
-  categories = cms.untracked.vstring( 'FwkJob',
-    'FwkReport',
-    'FwkSummary',
-    'Root_NoDictionary' ),
-  destinations = cms.untracked.vstring( 'warnings',
-    'errors',
-    'infos',
-    'debugs',
-    'cout',
-    'cerr' ),
-  threshold = cms.untracked.string( "INFO" ),
-  suppressError = cms.untracked.vstring( 'hltOnlineBeamSpot',
-    'hltL3MuonCandidates',
-    'hltL3TkTracksFromL2OIState',
-    'hltPFJetCtfWithMaterialTracks',
-    'hltL3TkTracksFromL2IOHit',
-    'hltL3TkTracksFromL2OIHit' )
-)
 ThroughputService = cms.Service( "ThroughputService",
   dqmPath = cms.untracked.string( "HLT/Throughput" ),
   timeRange = cms.untracked.double( 60000.0 ),
