@@ -5,8 +5,8 @@
 This is different in every branch. Please check that the name of the branch corresponds to the CMSSW release.
 
 ```
-cmsrel CMSSW_10_1_11_patch1
-cd CMSSW_10_1_11_patch1/src
+cmsrel CMSSW_10_2_15
+cd CMSSW_10_2_15/src
 cmsenv
 git cms-addpkg HLTrigger/Configuration          ### From HLT recommendations, not used yet
 git cms-addpkg RecoTracker/IterativeTracking    ### For tracking sequence
@@ -69,15 +69,23 @@ runTheMatrix.py -l 10824.1 --dryRun
 the first one is to check the number of the process created by the runTheMatrix command. The second takes that number (10824.1) and runs only that sequence. The important part is step3. A modified cmsDriver command for running RAW datasets is:
 
 ```
-cmsDriver.py step3 --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM --runUnscheduled -s RAW2DIGI,RECO:reconstruction_trackingOnly --datatier GEN-SIM-RECO --geometry DB:Extended --filein file:step2.root --fileout file:step3.root
+cmsDriver.py step3_withDQM  --conditions auto:phase1_2018_realistic -n 10 --era Run2_2018 --eventcontent RECOSIM,DQM --runUnscheduled  -s DIGI:pdigi_valid,L1,L1TrackTrigger,DIGI2RAW,HLT:@fake2,RAW2DIGI,RECO:reconstruction_trackingOnly,VALIDATION:@trackingOnlyValidation,DQM:@trackingOnlyDQM --datatier GEN-SIM-RECO,DQMIO --geometry DB:Extended --filein  /store/mc/RunIISpring18DR/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/GEN-SIM-RAW/NZSPU0to70_100X_upgrade2018_realistic_v10-v1/30000/26371D77-1622-E811-8681-0242AC130002.root  --fileout file:output_offlineTracking.root  --process HLT2
 ```
 
-Which creates the file `PUHLT/CHSatHLT/test/step3_RAW2DIGI_RECO.py`. You can use this file directly. This file is modified to include the full tracking reconstructions or just the first three steps (as described in intro).  To run it:
+Which creates the file `PUHLT/CHSatHLT/test/step3_DIGI_L1_L1TrackTrigger_DIGI2RAW_HLT_RAW2DIGI_RECO_VALIDATION_DQM.py`. You can use this file directly. This file is modified to include the full tracking reconstructions or just the first three steps (as described in intro).  To run it:
 
 ```
 cd $CMSSW_BASE/src/PUHLT/CHSatHLT/test/
-cmsRun step3_RAW2DIGI_RECO.py maxEvents=100 fullTracking=True
+cmsRun step3_DIGI_L1_L1TrackTrigger_DIGI2RAW_HLT_RAW2DIGI_RECO_VALIDATION_DQM.py maxEvents=100 fullTracking=True
 ```
+
+This step creates two root files, for instance `output_onlineTracking.root` and `output_onlineTracking_inDQM.root`. The second file (the one which ends in `inDQM`) is needed for the step4, which creates DQM plots from this output. To get the file to run this step:
+
+```
+cmsDriver.py step4  --conditions auto:phase1_2018_realistic -s HARVESTING:@trackingOnlyValidation+@trackingOnlyDQM --scenario pp --filetype DQM --geometry DB:Extended --era Run2_2018 --mc  -n 100  --filein file:output_offlineTracking_inDQM.root --fileout file:step4.root
+```
+
+which creates the file called `step4_HARVESTING.py`. These file can be run directly with cmsRun, it only needs to change the input file.
 
 ##### To run condor job
 
