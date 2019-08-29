@@ -17,7 +17,8 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('HLTrigger.Configuration.HLT_User_cff')
+##process.load('HLTrigger.Configuration.HLT_User_cff')
+process.load('PUHLT.CHSatHLT.HLT_User_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -76,23 +77,30 @@ process.HLTPFHT = cms.EDAnalyzer('TriggerValidationAndEfficiencies',
         recoJets = cms.InputTag("ak4PFJetsCHS"),
         recojetPt = cms.double( 10 ),
         AK8jets = cms.bool( False ),
-        DEBUG = cms.bool(False)
+        DEBUG = cms.bool(True)
 )
 process.HLTPFHT_step = cms.EndPath( process.HLTPFHT )
 
 process.HLTPFCHSHT = process.HLTPFHT.clone(
-        objects = cms.InputTag("hltAK4PFJetsCorrectedForCHS::HLT2"),
+        objects = cms.InputTag("hltAK4PFJetsForCHS::HLT2"),
         baseTrigger = cms.string("HLT_PFCHSHTNoThreshold"),
         triggerPass = cms.vstring([ "HLT_PFCHSHTNoThreshold" ] ),
         )
 process.HLTPFCHSHT_step = cms.EndPath( process.HLTPFCHSHT )
 
 process.HLTPFSKHT = process.HLTPFHT.clone(
-        objects = cms.InputTag("hltAK4PFSKJetsCorrected::HLT2"),
+        objects = cms.InputTag("hltAK4PFJetsForSK::HLT2"),
         baseTrigger = cms.string("HLT_PFSKHTNoThreshold"),
         triggerPass = cms.vstring([ "HLT_PFSKHTNoThreshold" ] ),
         )
 process.HLTPFSKHT_step = cms.EndPath( process.HLTPFSKHT )
+
+process.HLTPFPuppiHT = process.HLTPFHT.clone(
+        objects = cms.InputTag("hltAK4PFJetsForPuppi::HLT2"),
+        baseTrigger = cms.string("HLT_PFPuppiHTNoThreshold"),
+        triggerPass = cms.vstring([ "HLT_PFPuppiHTNoThreshold" ] ),
+        )
+process.HLTPFPuppiHT_step = cms.EndPath( process.HLTPFPuppiHT )
 
 
 # Other statements
@@ -111,7 +119,7 @@ process.schedule = cms.Schedule()
 process.schedule.extend(process.HLTSchedule)
 #process.schedule.extend([process.endjob_step,process.RECOSIMoutput_step])
 process.schedule.extend([process.endjob_step])
-process.schedule.extend([process.HLTPFHT_step,process.HLTPFCHSHT_step,process.HLTPFSKHT_step])
+process.schedule.extend([process.HLTPFHT_step,process.HLTPFCHSHT_step,process.HLTPFSKHT_step,process.HLTPFPuppiHT_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
