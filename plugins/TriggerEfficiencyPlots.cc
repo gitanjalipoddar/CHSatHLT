@@ -18,7 +18,7 @@
 #include <memory>
 
 // user include files
-#include "PUHLT/CHSatHLT/interface/CommonVariablesStructure.h"
+#include "PUHLT/PUmitigationatHLT/interface/CommonVariablesStructure.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 

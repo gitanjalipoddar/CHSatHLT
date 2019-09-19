@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    PUHLT/CHSatHLT
-// Class:      CHSatHLT
+// Package:    PUHLT/PUmitigationatHLT
+// Class:      PUmitigationatHLT
 //
-/**\class CHSatHLT CHSatHLT.cc PUHLT/CHSatHLT/plugins/CHSatHLT.cc
+/**\class PUmitigationatHLT PUmitigationatHLT.cc PUHLT/PUmitigationatHLT/plugins/PUmitigationatHLT.cc
 
  Description: [one line class summary]
 
@@ -43,10 +43,10 @@
 
 using reco::TrackCollection;
 
-class CHSatHLT : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class PUmitigationatHLT : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
-      explicit CHSatHLT(const edm::ParameterSet&);
-      ~CHSatHLT();
+      explicit PUmitigationatHLT(const edm::ParameterSet&);
+      ~PUmitigationatHLT();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -71,7 +71,7 @@ class CHSatHLT : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constructors and destructor
 //
-CHSatHLT::CHSatHLT(const edm::ParameterSet& iConfig)
+PUmitigationatHLT::PUmitigationatHLT(const edm::ParameterSet& iConfig)
  :
   tracksToken_(consumes<TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("tracks")))
 
@@ -81,7 +81,7 @@ CHSatHLT::CHSatHLT(const edm::ParameterSet& iConfig)
 }
 
 
-CHSatHLT::~CHSatHLT()
+PUmitigationatHLT::~PUmitigationatHLT()
 {
 
    // do anything here that needs to be done at desctruction time
@@ -96,7 +96,7 @@ CHSatHLT::~CHSatHLT()
 
 // ------------ method called for each event  ------------
 void
-CHSatHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+PUmitigationatHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
@@ -123,19 +123,19 @@ CHSatHLT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-CHSatHLT::beginJob()
+PUmitigationatHLT::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-CHSatHLT::endJob()
+PUmitigationatHLT::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-CHSatHLT::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+PUmitigationatHLT::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -150,4 +150,4 @@ CHSatHLT::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(CHSatHLT);
+DEFINE_FWK_MODULE(PUmitigationatHLT);

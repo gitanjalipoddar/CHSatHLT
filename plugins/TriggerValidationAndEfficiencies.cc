@@ -24,7 +24,7 @@
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 
-#include "PUHLT/CHSatHLT/interface/CommonVariablesStructure.h"
+#include "PUHLT/PUmitigationatHLT/interface/CommonVariablesStructure.h"
 
 using namespace edm;
 using namespace std;
