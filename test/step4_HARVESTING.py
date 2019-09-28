@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step4 --conditions auto:phase1_2018_realistic -s HARVESTING:@trackingOnlyValidation+@trackingOnlyDQM --scenario pp --filetype DQM --geometry DB:Extended --era Run2_2018 --mc -n 100 --filein file:output_offlineTracking_inDQM.root --fileout file:step4.root
+# with command line options: step4 --conditions auto:phase1_2018_realistic -s HARVESTING:@trackingOnlyValidation+@trackingOnlyDQM --scenario pp --filetype DQM --geometry DB:Extended --era Run2_2018 --mc -n 100 --filein file:output_onlineTracking_inDQM.root --fileout file:step4.root
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
@@ -27,7 +27,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("DQMRootSource",
-    fileNames = cms.untracked.vstring('file:output_offlineTracking_inDQM.root')
+    fileNames = cms.untracked.vstring('file:output_onlineTracking_inDQM.root')
 )
 
 process.options = cms.untracked.PSet(

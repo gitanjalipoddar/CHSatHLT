@@ -66,10 +66,13 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0)
 )
 
+from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+jetToolbox( process, 'ak4', 'jetSequence', 'noOutput', dataTier='AOD', PUMethod='Puppi' )
+
 # Additional output definition
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'reRunHLTwithAnalyzer_MC.root' ) )
 
-process.HLTPFHT = cms.EDAnalyzer('TriggerValidationAndEfficiencies',
+process.HLTPFHT = cms.EDAnalyzer('TriggerEfficienciesCHSJets',
         bits = cms.InputTag("TriggerResults::HLT2"),
         objects = cms.InputTag("hltAK4PFJetsCorrected::HLT2"),
         baseTrigger = cms.string("HLT_PFHTNoThreshold"),
@@ -102,6 +105,19 @@ process.HLTPFPuppiHT = process.HLTPFHT.clone(
         )
 process.HLTPFPuppiHT_step = cms.EndPath( process.HLTPFPuppiHT )
 
+### With PUPPI offline jets
+process.HLTPFPuppiHTRecoPuppi = cms.EDAnalyzer('TriggerEfficienciesPUPPIJets',
+        bits = cms.InputTag("TriggerResults::HLT2"),
+        objects = cms.InputTag("hltAK4PFJetsForPuppi::HLT2"),
+        baseTrigger = cms.string("HLT_PFPuppiHTNoThreshold"),
+        triggerPass = cms.vstring([ "HLT_PFPuppiHTNoThreshold" ] ),
+        recoJets = cms.InputTag("selectedPatJetsAK4PFPuppi"),
+        recojetPt = cms.double( 10 ),
+        AK8jets = cms.bool( False ),
+        DEBUG = cms.bool(True)
+        )
+process.HLTPFPuppiHTRecoPuppi_step = cms.EndPath( process.HLTPFPuppiHTRecoPuppi )
+
 
 # Other statements
 from HLTrigger.Configuration.CustomConfigs import ProcessName
@@ -119,7 +135,7 @@ process.schedule = cms.Schedule()
 process.schedule.extend(process.HLTSchedule)
 #process.schedule.extend([process.endjob_step,process.RECOSIMoutput_step])
 process.schedule.extend([process.endjob_step])
-process.schedule.extend([process.HLTPFHT_step,process.HLTPFCHSHT_step,process.HLTPFSKHT_step,process.HLTPFPuppiHT_step])
+process.schedule.extend([process.HLTPFHT_step,process.HLTPFCHSHT_step,process.HLTPFSKHT_step,process.HLTPFPuppiHT_step,process.HLTPFPuppiHTRecoPuppi_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 

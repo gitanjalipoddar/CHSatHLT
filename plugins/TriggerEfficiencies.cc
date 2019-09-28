@@ -22,6 +22,7 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 
 #include "PUHLT/CHSatHLT/interface/CommonVariablesStructure.h"
@@ -29,22 +30,23 @@
 using namespace edm;
 using namespace std;
 using namespace reco;
+using namespace pat;
 
-class TriggerValidationAndEfficiencies : public EDAnalyzer {
+class TriggerEfficiencies : public EDAnalyzer {
 
 	public:
-		explicit TriggerValidationAndEfficiencies(const ParameterSet&);
-      		static void fillDescriptions(ConfigurationDescriptions & descriptions);
-		~TriggerValidationAndEfficiencies() {}
+		explicit TriggerEfficiencies(const ParameterSet&);
+      	static void fillDescriptions(ConfigurationDescriptions & descriptions);
+		~TriggerEfficiencies() {}
 
 	private:
 		virtual void analyze(const Event&, const EventSetup&) override;
-      		virtual void beginJob() override;
+      	virtual void beginJob() override;
 
 	EDGetTokenT<TriggerResults> triggerBits_;
 	//EDGetTokenT<trigger::TriggerFilterObjectWithRefs> triggerObjects_;
 	EDGetTokenT<PFJetCollection> triggerObjects_;
-	EDGetTokenT<PFJetCollection> jetToken_;
+	EDGetTokenT<T> jetToken_;
 	string baseTrigger_;
     vector<string> triggerPass_;
     vector<int> triggerOverlap_;
@@ -52,18 +54,17 @@ class TriggerValidationAndEfficiencies : public EDAnalyzer {
 	double recojetPt_;
 	bool AK8jets_;
 	bool DEBUG_;
-    std::vector<reco::PFJetRef> jetRefVec;
 
 	Service<TFileService> fs_;
 	map< string, TH1D* > histos1D_;
 	map< string, TH2D* > histos2D_;
 };
 
-TriggerValidationAndEfficiencies::TriggerValidationAndEfficiencies(const ParameterSet& iConfig):
+TriggerEfficiencies<T>::TriggerEfficiencies(const ParameterSet& iConfig):
 	triggerBits_(consumes<TriggerResults>(iConfig.getParameter<InputTag>("bits"))),
 	//triggerObjects_(consumes<trigger::TriggerFilterObjectWithRef>(iConfig.getParameter<InputTag>("objects"))),
 	triggerObjects_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("objects"))),
-	jetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("recoJets")))
+	jetToken_(consumes<T>(iConfig.getParameter<InputTag>("recoJets")))
 {
 	baseTrigger_ = iConfig.getParameter<string>("baseTrigger");
 	triggerPass_ = iConfig.getParameter<vector<string>>("triggerPass");
@@ -74,12 +75,12 @@ TriggerValidationAndEfficiencies::TriggerValidationAndEfficiencies(const Paramet
 	DEBUG_ = iConfig.getParameter<bool>("DEBUG");
 }
 
-void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup) {
+void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	Handle<TriggerResults> triggerBits;
 	//Handle<trigger::TriggerFilterObjectWithRefs> triggerObjects;
 	Handle<PFJetCollection> triggerObjects;
-	Handle<PFJetCollection> jets;
+	Handle<T> jets;
 
 	iEvent.getByToken(triggerBits_, triggerBits);
 	iEvent.getByToken(triggerObjects_, triggerObjects);
@@ -92,7 +93,7 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
 	bool ORTriggers = 0;
 	vector<bool> triggersFired;
 	for (unsigned int i = 0, n = triggerBits->size(); i < n; ++i) {
-		if (DEBUG_) LogWarning("all triggers") << names.triggerName(i) << " " <<  triggerBits->accept(i);
+		//if (DEBUG_) LogWarning("all triggers") << names.triggerName(i) << " " <<  triggerBits->accept(i);
 		if (TString(names.triggerName(i)).Contains(baseTrigger_) && (triggerBits->accept(i)))  baseTrigger = true;
 		for (size_t t = 0; t < triggerPass_.size(); t++) {
 			if (TString(names.triggerName(i)).Contains(triggerPass_[t]) && (triggerBits->accept(i))) triggersFired.push_back( true );
@@ -101,7 +102,7 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
 	}
 	ORTriggers = any_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
 	triggersFired.clear();
-	if (DEBUG_) LogWarning("trigger fired") << "Based " << baseTrigger << " OR " << ORTriggers;
+	//if (DEBUG_) LogWarning("trigger fired") << "Based " << baseTrigger << " OR " << ORTriggers;
 	if ( TString(baseTrigger_).Contains("empty") ) baseTrigger = true;
 
 
@@ -150,11 +151,12 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
             /// This is for recoJets
             double HT = 0;
             int k = 0;
-            for (const reco::Jet &jet : *jets) {
+            //for (const reco::Jet &jet : *jets) {
+            for (const auto &jet : *jets) {
 
                 if( jet.pt() < recojetPt_ ) continue;
                 if( TMath::Abs(jet.eta()) > 2.5 ) continue;
-                if (DEBUG_) LogWarning("reco jets") << jet.pt();
+                //if (DEBUG_) LogWarning("reco jets") << jet.pt();
                 HT += jet.pt();
 
                 if (++k==1){
@@ -231,7 +233,7 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
     }*/
 }
 
-void TriggerValidationAndEfficiencies::beginJob() {
+void TriggerEfficiencies<T>::beginJob() {
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
 	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
@@ -276,7 +278,7 @@ void TriggerValidationAndEfficiencies::beginJob() {
 	for( auto const& histo : histos2D_ ) histos2D_[ histo.first ]->Sumw2();
 }
 
-void TriggerValidationAndEfficiencies::fillDescriptions(ConfigurationDescriptions & descriptions) {
+void TriggerEfficiencies::fillDescriptions(ConfigurationDescriptions & descriptions) {
 
 	ParameterSetDescription desc;
 	desc.add<InputTag>("bits", 	InputTag("TriggerResults", "", "HLT2"));
@@ -299,4 +301,8 @@ void TriggerValidationAndEfficiencies::fillDescriptions(ConfigurationDescription
 }
       
 //define this as a plug-in
-DEFINE_FWK_MODULE(TriggerValidationAndEfficiencies);
+typedef TriggerEfficiencies<PFJetCollection> TriggerEfficienciesCHSJets;
+typedef TriggerEfficiencies<JetCollection> TriggerEfficienciesPUPPIJets;
+
+DEFINE_FWK_MODULE(TriggerEfficienciesPUPPIJets);
+DEFINE_FWK_MODULE(TriggerEfficienciesCHSJets);

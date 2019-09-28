@@ -82,7 +82,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'reRunHLTwithAnalyzer.root' ) )
 
-process.PFHTTriggerEfficiency = cms.EDAnalyzer('TriggerValidationAndEfficiencies',
+process.PFHTTriggerEfficiency = cms.EDAnalyzer('TriggerEfficiencies',
         bits = cms.InputTag("TriggerResults::HLT2"),
         objects = cms.InputTag("hltAK4PFJets::HLT2"),
         baseTrigger = cms.string("HLT_SingleMu24"),
