@@ -1,4 +1,4 @@
-# CHSatHLT
+# PileUp Mitigation at HLT
 
 ### To set initial environment
 
@@ -9,6 +9,7 @@ cmsrel CMSSW_10_2_15
 cd CMSSW_10_2_15/src
 cmsenv
 git cms-addpkg HLTrigger/Configuration          ### From HLT recommendations, not used yet
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_102X_v2
 git clone git@github.com:alefisico/CHSatHLT.git -b 102X PUHLT/PUmitigationatHLT
 scram b -j 8 
 ```
