@@ -67,7 +67,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 )
 
 from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-jetToolbox( process, 'ak4', 'jetSequence', 'noOutput', dataTier='AOD', PUMethod='Puppi')
+jetToolbox( process, 'ak4', 'jetSequence', 'noOutput', dataTier='AOD', PUMethod='Puppi' ) #, verbosity=8)
 
 # Additional output definition
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'reRunHLTwithAnalyzer_MC.root' ) )
@@ -75,7 +75,7 @@ process.TFileService=cms.Service("TFileService",fileName=cms.string( 'reRunHLTwi
 ##### Analyzing vertex
 process.vertexComparison = cms.EDAnalyzer('vertexAnalyzer',
         hltVertex = cms.InputTag("hltPixelVertices"),
-        offlineVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
+        offlineVertex = cms.InputTag("offlinePrimaryVertices"),
         )
 process.vertexComparison_step = cms.EndPath( process.vertexComparison )
 
@@ -87,8 +87,8 @@ process.HLTPFHT = cms.EDAnalyzer('TriggerEfficiencies',
         baseTrigger = cms.string("HLT_PFHTNoThreshold"),
         triggerPass = cms.vstring([ "HLT_PFHTNoThreshold" ] ),
         recoJets = cms.InputTag("ak4PFJetsCHS"),
-        #patJets = cms.InputTag("selectedPatJetsAK4PFPuppi"),
         patJets = cms.InputTag("ak4PFJetsPuppi"),
+        #patJets = cms.InputTag("patJetsAK4PFCHSPATJetswithUserData::HLT2"),
         recojetPt = cms.double( 10 ),
         AK8jets = cms.bool( False ),
         DEBUG = cms.bool(False)
@@ -133,7 +133,8 @@ process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 process.schedule = cms.Schedule()
 process.schedule.extend(process.HLTSchedule)
 process.schedule.extend([process.vertexComparison_step])
-#process.schedule.extend([process.HLTPFHT_step,process.HLTPFCHSHT_step,process.HLTPFSKHT_step,process.HLTPFPuppiHT_step])
+#process.schedule.extend([process.RECOSIMoutput_step])
+process.schedule.extend([process.HLTPFHT_step,process.HLTPFCHSHT_step,process.HLTPFSKHT_step,process.HLTPFPuppiHT_step])
 process.schedule.extend([process.endjob_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)

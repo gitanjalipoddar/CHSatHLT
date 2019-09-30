@@ -47,7 +47,7 @@ class TriggerEfficiencies : public EDAnalyzer {
 	//EDGetTokenT<trigger::TriggerFilterObjectWithRefs> triggerObjects_;
 	EDGetTokenT<PFJetCollection> triggerObjects_;
 	EDGetTokenT<PFJetCollection> recoJetToken_;
-	EDGetTokenT<JetCollection> patJetToken_;
+	EDGetTokenT<PFJetCollection> patJetToken_;
 	string baseTrigger_;
     vector<string> triggerPass_;
     vector<int> triggerOverlap_;
@@ -66,7 +66,7 @@ TriggerEfficiencies::TriggerEfficiencies(const ParameterSet& iConfig):
 	//triggerObjects_(consumes<trigger::TriggerFilterObjectWithRef>(iConfig.getParameter<InputTag>("objects"))),
 	triggerObjects_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("objects"))),
 	recoJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("recoJets"))),
-	patJetToken_(consumes<JetCollection>(iConfig.getParameter<InputTag>("patJets")))
+	patJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("patJets")))
 {
 	baseTrigger_ = iConfig.getParameter<string>("baseTrigger");
 	triggerPass_ = iConfig.getParameter<vector<string>>("triggerPass");
@@ -83,7 +83,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	//Handle<trigger::TriggerFilterObjectWithRefs> triggerObjects;
 	Handle<PFJetCollection> triggerObjects;
 	Handle<PFJetCollection> recojets;
-	Handle<JetCollection> patjets;
+	Handle<PFJetCollection> patjets;
 
 	iEvent.getByToken(triggerBits_, triggerBits);
 	iEvent.getByToken(triggerObjects_, triggerObjects);
@@ -202,7 +202,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             /// This is for patJets
             double puppiHT = 0;
             int kk = 0;
-            for (const pat::Jet &patjet : *patjets) {
+            for (const reco::Jet &patjet : *patjets) {
 
                 if( patjet.pt() < recojetPt_ ) continue;
                 if( TMath::Abs(patjet.eta()) > 2.5 ) continue;
