@@ -19,6 +19,12 @@
 
 // system include files
 #include <memory>
+#include <cmath>
+#include<math.h>
+#include <TH1.h>
+#include <TH2.h>
+#include <TLorentzVector.h>
+
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -28,6 +34,13 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+#include "DataFormats/Math/interface/LorentzVector.h"
+#include "TLorentzVector.h"
+
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -62,6 +75,10 @@ class vertexAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     // ----------member data ---------------------------
 	EDGetTokenT<vector<reco::Vertex>> hltVertexToken_;
 	EDGetTokenT<vector<reco::Vertex>> offlineVertexToken_;
+
+    Service<TFileService> fs_;
+    map< string, TH1D* > histos1D_;
+    map< string, TH2D* > histos2D_;
 };
 
 //
@@ -113,12 +130,55 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if( foundOfflineVertexColl ) OfflineVertexCollection = *offlineVertexHandle;
 
     for ( auto const& hltVertex : HLTVertexCollection ) {
-    LogWarning("hltvertex") << hltVertex.ndof();
+       histos1D_[ "hltvertex_ndof" ]->Fill(hltVertex.ndof());
+       histos1D_[ "hltvertex_z" ]->Fill(hltVertex.z());
     }
 
     for ( auto const& offlineVertex : OfflineVertexCollection ) {
-    LogWarning("offlinevertex") << offlineVertex.ndof();
+       histos1D_[ "offlinevertex_ndof" ]->Fill(offlineVertex.ndof());
+       histos1D_[ "offlinevertex_z" ]->Fill(offlineVertex.z()); 
+
     }
+
+    //deltaR
+    double mindel;
+    double del;
+    double hlt_eta;
+    double hlt_phi;
+    double offline_eta;
+    double offline_phi;
+    double deta;
+    double dphi;
+    math::XYZTLorentzVectorD hlt_p4;
+    math::XYZTLorentzVectorD offline_p4;
+
+    for (auto const& hltVertex : HLTVertexCollection ){
+
+      mindel=1000000; //arbitrary min deltaR
+
+      hlt_p4=hltVertex.p4(); 
+      hlt_eta=hlt_p4.Eta();
+      hlt_phi=hlt_p4.Phi();
+
+      for (auto const& offlineVertex : OfflineVertexCollection ){
+
+	offline_p4=offlineVertex.p4();
+	offline_eta=offline_p4.Eta();
+	offline_phi=offline_p4.Phi();
+    
+	deta=hlt_eta-offline_eta;
+	dphi=hlt_phi-offline_phi;
+
+    	del=sqrt(deta*deta+dphi*dphi);
+
+    	if (del<mindel){
+    	  mindel=del;
+    	}
+    }
+    histos1D_[ "mindeltar" ]->Fill(mindel);
+    }
+  
+
 }
 
 
@@ -126,6 +186,17 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void
 vertexAnalyzer::beginJob()
 {
+  histos1D_[ "hltvertex_ndof" ] = fs_->make< TH1D >( "hltvertex_ndof", "hltvertex_ndof", 20, 0.0, 10.0 );
+  histos1D_[ "hltvertex_z" ] = fs_->make< TH1D >( "hltvertex_z", "hltvertex_z", 200, -50.0, 50.0 );
+
+  histos1D_[ "offlinevertex_ndof" ] = fs_->make< TH1D >( "offlinevertex_ndof", "offlinevertex_ndof", 20, 0.0, 10.0 );
+  histos1D_[ "offlinevertex_z" ] = fs_->make< TH1D >( "offlinevertex_z", "offlinevertex_z", 200, -50.0, 50.0 );
+
+  histos1D_[ "mindeltar" ] = fs_->make< TH1D >( "mindeltar", "mindeltar", 200, 0.0, 50.0 );
+
+  ///// Sumw2 all the histos
+  for( auto const& histo : histos1D_ ) histos1D_[ histo.first ]->Sumw2();
+  for( auto const& histo : histos2D_ ) histos2D_[ histo.first ]->Sumw2();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

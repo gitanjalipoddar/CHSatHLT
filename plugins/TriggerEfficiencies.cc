@@ -454,6 +454,40 @@ void TriggerEfficiencies::beginJob() {
 	histos1D_[ "HTPassingHT1050pt10" ] = fs_->make< TH1D >( "HTPassingHT1050pt10", "HTPassingHT1050pt10", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT1100pt10" ] = fs_->make< TH1D >( "HTPassingHT1100pt10", "HTPassingHT1100pt10", 2000, 0., 2000. );
 
+	histos1D_[ "HTPassingHT800pt20" ] = fs_->make< TH1D >( "HTPassingHT800pt20", "HTPassingHT800pt20", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT850pt20" ] = fs_->make< TH1D >( "HTPassingHT850pt20", "HTPassingHT850pt20", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT900pt20" ] = fs_->make< TH1D >( "HTPassingHT900pt20", "HTPassingHT900pt20", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT950pt20" ] = fs_->make< TH1D >( "HTPassingHT950pt20", "HTPassingHT950pt20", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1000pt20" ] = fs_->make< TH1D >( "HTPassingHT1000pt20", "HTPassingHT1000pt20", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1050pt20" ] = fs_->make< TH1D >( "HTPassingHT1050pt20", "HTPassingHT1050pt20", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1100pt20" ] = fs_->make< TH1D >( "HTPassingHT1100pt20", "HTPassingHT1100pt20", 2000, 0., 2000. );
+
+	histos1D_[ "HTPassingHT800pt30" ] = fs_->make< TH1D >( "HTPassingHT800pt30", "HTPassingHT800pt30", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT850pt30" ] = fs_->make< TH1D >( "HTPassingHT850pt30", "HTPassingHT850pt30", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT900pt30" ] = fs_->make< TH1D >( "HTPassingHT900pt30", "HTPassingHT900pt30", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT950pt30" ] = fs_->make< TH1D >( "HTPassingHT950pt30", "HTPassingHT950pt30", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1000pt30" ] = fs_->make< TH1D >( "HTPassingHT1000pt30", "HTPassingHT1000pt30", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1050pt30" ] = fs_->make< TH1D >( "HTPassingHT1050pt30", "HTPassingHT1050pt30", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1100pt30" ] = fs_->make< TH1D >( "HTPassingHT1100pt30", "HTPassingHT1100pt30", 2000, 0., 2000. );
+
+	histos1D_[ "HTPassingHT800pt40" ] = fs_->make< TH1D >( "HTPassingHT800pt40", "HTPassingHT800pt40", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT850pt40" ] = fs_->make< TH1D >( "HTPassingHT850pt40", "HTPassingHT850pt40", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT900pt40" ] = fs_->make< TH1D >( "HTPassingHT900pt40", "HTPassingHT900pt40", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT950pt40" ] = fs_->make< TH1D >( "HTPassingHT950pt40", "HTPassingHT950pt40", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1000pt40" ] = fs_->make< TH1D >( "HTPassingHT1000pt40", "HTPassingHT1000pt40", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1050pt40" ] = fs_->make< TH1D >( "HTPassingHT1050pt40", "HTPassingHT1050pt40", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1100pt40" ] = fs_->make< TH1D >( "HTPassingHT1100pt40", "HTPassingHT1100pt40", 2000, 0., 2000. );
+
+	histos1D_[ "HTPassingHT800pt50" ] = fs_->make< TH1D >( "HTPassingHT800pt50", "HTPassingHT800pt50", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT850pt50" ] = fs_->make< TH1D >( "HTPassingHT850pt50", "HTPassingHT850pt50", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT900pt50" ] = fs_->make< TH1D >( "HTPassingHT900pt50", "HTPassingHT900pt50", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT950pt50" ] = fs_->make< TH1D >( "HTPassingHT950pt50", "HTPassingHT950pt50", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1000pt50" ] = fs_->make< TH1D >( "HTPassingHT1000pt50", "HTPassingHT1000pt50", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1050pt50" ] = fs_->make< TH1D >( "HTPassingHT1050pt50", "HTPassingHT1050pt50", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1100pt50" ] = fs_->make< TH1D >( "HTPassingHT1100pt50", "HTPassingHT1100pt50", 2000, 0., 2000. );
+
+
+
     /////////////////////////////////////////////////////////////
 	histos1D_[ "puppijet1Pt" ] = fs_->make< TH1D >( "puppijet1Pt", "puppijet1Pt", 1000, 0., 1000. );
 	histos1D_[ "puppiHT" ] = fs_->make< TH1D >( "puppiHT", "puppiHT", 100, 0., 2000. );
