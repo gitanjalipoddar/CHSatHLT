@@ -118,7 +118,7 @@ vertexAnalyzer::~vertexAnalyzer()
 
 // ------------ method called for each event  ------------
 void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
-
+  
     VertexCollection HLTVertexCollection;
     Handle<vector<reco::Vertex>> hltVertexHandle;
     bool foundHLTVertexColl = iEvent.getByToken(hltVertexToken_, hltVertexHandle);
@@ -152,9 +152,23 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     math::XYZTLorentzVectorD hlt_p4;
     math::XYZTLorentzVectorD offline_p4;
 
+    double mindelevent=100000000;
+    double hltndofevent;
+    double offlinendofevent;
+    double hltzevent;
+    double offlinezevent;
+
+    double offline_z;
+    double hlt_z;
+    double offline_ndof;
+    double hlt_ndof;
+
     for (auto const& hltVertex : HLTVertexCollection ){
 
       mindel=1000000; //arbitrary min deltaR
+
+      hlt_ndof=hltVertex.ndof();
+      hlt_z=hltVertex.z();
 
       hlt_p4=hltVertex.p4(); 
       hlt_eta=hlt_p4.Eta();
@@ -165,6 +179,9 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	offline_p4=offlineVertex.p4();
 	offline_eta=offline_p4.Eta();
 	offline_phi=offline_p4.Phi();
+
+	offline_ndof=offlineVertex.ndof();
+	offline_z=offlineVertex.z();
     
 	deta=hlt_eta-offline_eta;
 	dphi=hlt_phi-offline_phi;
@@ -172,13 +189,28 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     	del=sqrt(deta*deta+dphi*dphi);
 
     	if (del<mindel){
-    	  mindel=del;
-    	}
-    }
+    	  mindel=del;} //mindel for each hlt vertex
+    	
+      }
     histos1D_[ "mindeltar" ]->Fill(mindel);
-    }
-  
 
+    //per event
+    if (mindel<mindelevent){
+      mindelevent=mindel;
+      hltndofevent=hlt_ndof;
+      offlinendofevent=offline_ndof;
+      hltzevent=hlt_z;
+      offlinezevent=offline_z;
+      }
+    
+    }
+    if(mindelevent!=100000000){
+      histos1D_[ "mindeltar_event" ]->Fill(mindelevent);
+      histos1D_[ "hlt_ndof_event" ]->Fill(hltndofevent);
+      histos1D_[ "offline_ndof_event" ]->Fill(offlinendofevent);
+      histos1D_[ "hlt_z_event" ]->Fill(hltzevent);
+      histos1D_[ "offline_z_event" ]->Fill(offlinezevent);
+    }
 }
 
 
@@ -187,12 +219,17 @@ void
 vertexAnalyzer::beginJob()
 {
   histos1D_[ "hltvertex_ndof" ] = fs_->make< TH1D >( "hltvertex_ndof", "hltvertex_ndof", 20, 0.0, 10.0 );
-  histos1D_[ "hltvertex_z" ] = fs_->make< TH1D >( "hltvertex_z", "hltvertex_z", 200, -50.0, 50.0 );
+  histos1D_[ "hltvertex_z" ] = fs_->make< TH1D >( "hltvertex_z", "hltvertex_z", 100, -20.0, 20.0 );
+  histos1D_[ "hlt_ndof_event" ] = fs_->make< TH1D >( "hlt_ndof_event", "hlt_ndof_event", 20, 0.0, 10.0 );
+  histos1D_[ "hlt_z_event" ] = fs_->make< TH1D >( "hlt_z_event", "hlt_z_event", 100, -20.0, 20.0 );
 
   histos1D_[ "offlinevertex_ndof" ] = fs_->make< TH1D >( "offlinevertex_ndof", "offlinevertex_ndof", 20, 0.0, 10.0 );
-  histos1D_[ "offlinevertex_z" ] = fs_->make< TH1D >( "offlinevertex_z", "offlinevertex_z", 200, -50.0, 50.0 );
+  histos1D_[ "offlinevertex_z" ] = fs_->make< TH1D >( "offlinevertex_z", "offlinevertex_z", 100, -20.0, 20.0 );
+  histos1D_[ "offline_ndof_event" ] = fs_->make< TH1D >( "offline_ndof_event", "offline_ndof_event", 20, 0.0, 10.0 );
+  histos1D_[ "offline_z_event" ] = fs_->make< TH1D >( "offline_z_event", "offline_z_event", 100, -20.0, 20.0 );
 
-  histos1D_[ "mindeltar" ] = fs_->make< TH1D >( "mindeltar", "mindeltar", 200, 0.0, 50.0 );
+  histos1D_[ "mindeltar" ] = fs_->make< TH1D >( "mindeltar", "mindeltar", 50, 0.0, 5.0 );
+  histos1D_[ "mindeltar_event" ] = fs_->make< TH1D >( "mindeltarevent", "mindeltarevent", 50, 0.0, 3.0 );
 
   ///// Sumw2 all the histos
   for( auto const& histo : histos1D_ ) histos1D_[ histo.first ]->Sumw2();
