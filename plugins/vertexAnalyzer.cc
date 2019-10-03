@@ -169,6 +169,9 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     double offline_ndof;
     double hlt_ndof;
 
+    double sum_mindel=0;
+    double total_hlt=0;
+
     for (auto const& hltVertex : HLTVertexCollection ){
 
       mindel=1000000; //arbitrary min deltaR
@@ -179,6 +182,8 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       hlt_p4=hltVertex.p4(); 
       hlt_eta=hlt_p4.Eta();
       hlt_phi=hlt_p4.Phi();
+
+      total_hlt++;
 
       for (auto const& offlineVertex : OfflineVertexCollection ){
 
@@ -199,6 +204,7 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     	
       }
     histos1D_[ "mindeltar" ]->Fill(mindel);
+    sum_mindel+=mindel;
 
     //per event
     if (mindel<mindelevent){
@@ -216,6 +222,7 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       histos1D_[ "offline_ndof_event" ]->Fill(offlinendofevent);
       histos1D_[ "hlt_z_event" ]->Fill(hltzevent);
       histos1D_[ "offline_z_event" ]->Fill(offlinezevent);
+      histos1D_["average_mindeltar_event"]->Fill(sum_mindel/total_hlt);
     }
 }
 
@@ -236,6 +243,7 @@ vertexAnalyzer::beginJob()
 
   histos1D_[ "mindeltar" ] = fs_->make< TH1D >( "mindeltar", "mindeltar", 50, 0.0, 5.0 );
   histos1D_[ "mindeltar_event" ] = fs_->make< TH1D >( "mindeltarevent", "mindeltarevent", 50, 0.0, 3.0 );
+  histos1D_[ "average_mindeltar_event" ] = fs_->make< TH1D >( "avgmindeltarevent", "avgmindeltarevent", 50, 0.0, 3.0 );
 
   histos1D_["dummy_hlt"]=fs_->make< TH1D >( "dummy_hlt", "dummy_hlt", 500, 0.0, 500.0 );
 
