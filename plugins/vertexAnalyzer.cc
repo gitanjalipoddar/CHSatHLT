@@ -79,6 +79,9 @@ class vertexAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     Service<TFileService> fs_;
     map< string, TH1D* > histos1D_;
     map< string, TH2D* > histos2D_;
+
+  int count_hlt=0;
+   
 };
 
 //
@@ -122,7 +125,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     VertexCollection HLTVertexCollection;
     Handle<vector<reco::Vertex>> hltVertexHandle;
     bool foundHLTVertexColl = iEvent.getByToken(hltVertexToken_, hltVertexHandle);
-    if( foundHLTVertexColl ) HLTVertexCollection = *hltVertexHandle;
+    if( foundHLTVertexColl ) {
+      HLTVertexCollection = *hltVertexHandle;
+      count_hlt++;
+    }
 
     VertexCollection OfflineVertexCollection;
     Handle<vector<reco::Vertex>> offlineVertexHandle;
@@ -218,18 +224,20 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 void
 vertexAnalyzer::beginJob()
 {
-  histos1D_[ "hltvertex_ndof" ] = fs_->make< TH1D >( "hltvertex_ndof", "hltvertex_ndof", 20, 0.0, 10.0 );
+  histos1D_[ "hltvertex_ndof" ] = fs_->make< TH1D >( "hltvertex_ndof", "hltvertex_ndof", 10, 0.0, 10.0 );
   histos1D_[ "hltvertex_z" ] = fs_->make< TH1D >( "hltvertex_z", "hltvertex_z", 100, -20.0, 20.0 );
-  histos1D_[ "hlt_ndof_event" ] = fs_->make< TH1D >( "hlt_ndof_event", "hlt_ndof_event", 20, 0.0, 10.0 );
+  histos1D_[ "hlt_ndof_event" ] = fs_->make< TH1D >( "hlt_ndof_event", "hlt_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "hlt_z_event" ] = fs_->make< TH1D >( "hlt_z_event", "hlt_z_event", 100, -20.0, 20.0 );
 
-  histos1D_[ "offlinevertex_ndof" ] = fs_->make< TH1D >( "offlinevertex_ndof", "offlinevertex_ndof", 20, 0.0, 10.0 );
+  histos1D_[ "offlinevertex_ndof" ] = fs_->make< TH1D >( "offlinevertex_ndof", "offlinevertex_ndof", 10, 0.0, 10.0 );
   histos1D_[ "offlinevertex_z" ] = fs_->make< TH1D >( "offlinevertex_z", "offlinevertex_z", 100, -20.0, 20.0 );
-  histos1D_[ "offline_ndof_event" ] = fs_->make< TH1D >( "offline_ndof_event", "offline_ndof_event", 20, 0.0, 10.0 );
+  histos1D_[ "offline_ndof_event" ] = fs_->make< TH1D >( "offline_ndof_event", "offline_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "offline_z_event" ] = fs_->make< TH1D >( "offline_z_event", "offline_z_event", 100, -20.0, 20.0 );
 
   histos1D_[ "mindeltar" ] = fs_->make< TH1D >( "mindeltar", "mindeltar", 50, 0.0, 5.0 );
   histos1D_[ "mindeltar_event" ] = fs_->make< TH1D >( "mindeltarevent", "mindeltarevent", 50, 0.0, 3.0 );
+
+  histos1D_["dummy_hlt"]=fs_->make< TH1D >( "dummy_hlt", "dummy_hlt", 500, 0.0, 500.0 );
 
   ///// Sumw2 all the histos
   for( auto const& histo : histos1D_ ) histos1D_[ histo.first ]->Sumw2();
@@ -240,6 +248,7 @@ vertexAnalyzer::beginJob()
 void
 vertexAnalyzer::endJob()
 {
+   histos1D_[ "dummy_hlt" ]->Fill(count_hlt);
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
