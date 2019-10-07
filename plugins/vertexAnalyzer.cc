@@ -80,7 +80,7 @@ class vertexAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     map< string, TH1D* > histos1D_;
     map< string, TH2D* > histos2D_;
 
-  int count_hlt=0;
+  int count_hlt_events=0; //counter for events with hlt vertices
    
 };
 
@@ -125,9 +125,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     VertexCollection HLTVertexCollection;
     Handle<vector<reco::Vertex>> hltVertexHandle;
     bool foundHLTVertexColl = iEvent.getByToken(hltVertexToken_, hltVertexHandle);
-    if( foundHLTVertexColl ) {
+    if( foundHLTVertexColl ) 
+    {
       HLTVertexCollection = *hltVertexHandle;
-      count_hlt++;
+      count_hlt_events++; //updating number of events with hlt vertices
     }
 
     VertexCollection OfflineVertexCollection;
@@ -135,117 +136,107 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     bool foundOfflineVertexColl = iEvent.getByToken(offlineVertexToken_, offlineVertexHandle);
     if( foundOfflineVertexColl ) OfflineVertexCollection = *offlineVertexHandle;
 
-    for ( auto const& hltVertex : HLTVertexCollection ) {
-       histos1D_[ "hltvertex_ndof" ]->Fill(hltVertex.ndof());
-       histos1D_[ "hltvertex_z" ]->Fill(hltVertex.z());
-    }
-
-    for ( auto const& offlineVertex : OfflineVertexCollection ) {
-       histos1D_[ "offlinevertex_ndof" ]->Fill(offlineVertex.ndof());
-       histos1D_[ "offlinevertex_z" ]->Fill(offlineVertex.z()); 
-
-    }
-
-    //deltaR
-    double mindel;
-    double del;
+    //minimum delta R, ndof, z for entire collection of vertices
+    double min_delta_r=10000000;//arbitrary minimum delta R 
+    
+    double hlt_ndof;
+    double hlt_z;
+    math::XYZTLorentzVectorD hlt_p4;
     double hlt_eta;
     double hlt_phi;
+    double offline_ndof;
+    double offline_z;
+    math::XYZTLorentzVectorD offline_p4;
     double offline_eta;
     double offline_phi;
     double deta;
     double dphi;
-    math::XYZTLorentzVectorD hlt_p4;
-    math::XYZTLorentzVectorD offline_p4;
+    double delta_r;
 
-    double mindelevent=100000000;
-    double hltndofevent;
-    double offlinendofevent;
-    double hltzevent;
-    double offlinezevent;
+    double min_delta_r_event=100000000;//arbitrary minimum delta R per event
+    double hlt_ndof_event;
+    double hlt_z_event;
+    double offline_ndof_event;
+    double offline_z_event;
 
-    double offline_z;
-    double hlt_z;
-    double offline_ndof;
-    double hlt_ndof;
+    double sum_min_delta_r_vertices=0;//to compute average min delta r per event
+    double count_hlt_vertices=0;
 
-    double sum_mindel=0;
-    double total_hlt=0;
-
-    for (auto const& hltVertex : HLTVertexCollection ){
-
-      mindel=1000000; //arbitrary min deltaR
-
+    if (foundHLTVertexColl)
+    {
+    for (auto const& hltVertex : HLTVertexCollection)
+    {
       hlt_ndof=hltVertex.ndof();
       hlt_z=hltVertex.z();
-
-      hlt_p4=hltVertex.p4(); 
+      hlt_p4=hltVertex.p4();
       hlt_eta=hlt_p4.Eta();
       hlt_phi=hlt_p4.Phi();
 
-      total_hlt++;
-
-      for (auto const& offlineVertex : OfflineVertexCollection ){
-
+      histos1D_["hlt_ndof"]->Fill(hlt_ndof);
+      histos1D_["hlt_z"]->Fill(hlt_z);
+      
+      count_hlt_vertices++;
+      
+      for (auto const& offlineVertex : OfflineVertexCollection )
+      {
+	offline_ndof=offlineVertex.ndof();
+	offline_z=offlineVertex.z();
 	offline_p4=offlineVertex.p4();
 	offline_eta=offline_p4.Eta();
 	offline_phi=offline_p4.Phi();
 
-	offline_ndof=offlineVertex.ndof();
-	offline_z=offlineVertex.z();
-    
-	deta=hlt_eta-offline_eta;
-	dphi=hlt_phi-offline_phi;
+	histos1D_["offline_ndof"]->Fill(offline_ndof);
+	histos1D_["offline_z"]->Fill(offline_z);
+	
+	deta=hlt_eta-offline_eta; //difference in eta
+	dphi=hlt_phi=offline_phi; //difference in phi
+	delta_r=sqrt(deta*deta+dphi*dphi);
 
-    	del=sqrt(deta*deta+dphi*dphi);
-
-    	if (del<mindel){
-    	  mindel=del;} //mindel for each hlt vertex
-    	
+	if(delta_r<min_delta_r)
+	{
+	  min_delta_r=delta_r;
+	}
       }
-    histos1D_[ "mindeltar" ]->Fill(mindel);
-    sum_mindel+=mindel;
+      histos1D_["min_delta_r"]->Fill(min_delta_r);
+      sum_min_delta_r_vertices+=min_delta_r;
 
-    //per event
-    if (mindel<mindelevent){
-      mindelevent=mindel;
-      hltndofevent=hlt_ndof;
-      offlinendofevent=offline_ndof;
-      hltzevent=hlt_z;
-      offlinezevent=offline_z;
+      if(min_delta_r<min_delta_r_event)
+      {
+	min_delta_r_event=min_delta_r;
+	hlt_ndof_event=hlt_ndof;
+	hlt_z_event=hlt_z;
+	offline_ndof_event=offline_ndof;
+	offline_z_event=offline_z;
       }
-    
     }
-    if(mindelevent!=100000000){
-      histos1D_[ "mindeltar_event" ]->Fill(mindelevent);
-      histos1D_[ "hlt_ndof_event" ]->Fill(hltndofevent);
-      histos1D_[ "offline_ndof_event" ]->Fill(offlinendofevent);
-      histos1D_[ "hlt_z_event" ]->Fill(hltzevent);
-      histos1D_[ "offline_z_event" ]->Fill(offlinezevent);
-      histos1D_["average_mindeltar_event"]->Fill(sum_mindel/total_hlt);
+    histos1D_["offline_ndof_event"]->Fill(offline_ndof_event);
+    histos1D_["offline_z_event"]->Fill(offline_z_event);
+    histos1D_["hlt_ndof_event"]->Fill(hlt_ndof_event);
+    histos1D_["hlt_z_event"]->Fill(hlt_z_event);
+    histos1D_["min_delta_r_event"]->Fill(min_delta_r_event);
+    histos1D_["average_min_delta_r_event"]->Fill(sum_min_delta_r_vertices/count_hlt_vertices);
     }
 }
-
 
 // ------------ method called once each job just before starting event loop  ------------
 void
 vertexAnalyzer::beginJob()
 {
-  histos1D_[ "hltvertex_ndof" ] = fs_->make< TH1D >( "hltvertex_ndof", "hltvertex_ndof", 10, 0.0, 10.0 );
-  histos1D_[ "hltvertex_z" ] = fs_->make< TH1D >( "hltvertex_z", "hltvertex_z", 100, -20.0, 20.0 );
+  histos1D_[ "hlt_ndof" ] = fs_->make< TH1D >( "hlt_ndof", "hlt_ndof", 10, 0.0, 10.0 );
+  histos1D_[ "hlt_z" ] = fs_->make< TH1D >( "hlt_z", "hlt_z", 100, -20.0, 20.0 );
   histos1D_[ "hlt_ndof_event" ] = fs_->make< TH1D >( "hlt_ndof_event", "hlt_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "hlt_z_event" ] = fs_->make< TH1D >( "hlt_z_event", "hlt_z_event", 100, -20.0, 20.0 );
 
-  histos1D_[ "offlinevertex_ndof" ] = fs_->make< TH1D >( "offlinevertex_ndof", "offlinevertex_ndof", 10, 0.0, 10.0 );
-  histos1D_[ "offlinevertex_z" ] = fs_->make< TH1D >( "offlinevertex_z", "offlinevertex_z", 100, -20.0, 20.0 );
+  histos1D_[ "offline_ndof" ] = fs_->make< TH1D >( "offline_ndof", "offline_ndof", 10, 0.0, 10.0 );
+  histos1D_[ "offline_z" ] = fs_->make< TH1D >( "offline_z", "offline_z", 100, -20.0, 20.0 );
   histos1D_[ "offline_ndof_event" ] = fs_->make< TH1D >( "offline_ndof_event", "offline_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "offline_z_event" ] = fs_->make< TH1D >( "offline_z_event", "offline_z_event", 100, -20.0, 20.0 );
 
-  histos1D_[ "mindeltar" ] = fs_->make< TH1D >( "mindeltar", "mindeltar", 50, 0.0, 5.0 );
-  histos1D_[ "mindeltar_event" ] = fs_->make< TH1D >( "mindeltarevent", "mindeltarevent", 50, 0.0, 3.0 );
-  histos1D_[ "average_mindeltar_event" ] = fs_->make< TH1D >( "avgmindeltarevent", "avgmindeltarevent", 50, 0.0, 3.0 );
+  histos1D_[ "min_delta_r" ] = fs_->make< TH1D >( "min_delta_r", "min_delta_r", 50, 0.0, 5.0 );
+  histos1D_[ "min_delta_r_event" ] = fs_->make< TH1D >( "min_delta_r_event", "min_delta_r_event", 50, 0.0, 5.0 );
+  histos1D_[ "average_min_delta_r_event" ] = fs_->make< TH1D >( "average_min_delta_r_event", "average_min_delta_r_event", 50, 0.0, 5.0 );
 
-  histos1D_["dummy_hlt"]=fs_->make< TH1D >( "dummy_hlt", "dummy_hlt", 500, 0.0, 500.0 );
+  histos1D_["count_hlt_events"]=fs_->make< TH1D >( "count_hlt_events", "count_hlt_events", 500, 0.0, 500.0 );
 
   ///// Sumw2 all the histos
   for( auto const& histo : histos1D_ ) histos1D_[ histo.first ]->Sumw2();
@@ -256,7 +247,7 @@ vertexAnalyzer::beginJob()
 void
 vertexAnalyzer::endJob()
 {
-   histos1D_[ "dummy_hlt" ]->Fill(count_hlt);
+   histos1D_[ "count_hlt_events" ]->Fill(count_hlt_events);
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
