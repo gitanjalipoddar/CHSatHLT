@@ -138,6 +138,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             numHLTJets+=1;
             histos1D_[ "hltJetPt" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta" ]->Fill( triggerJet.eta() );
+	    histos1D_["hltJetCHM"]->Fill(triggerJet.chargedHadronMultiplicity());
+	    histos1D_["hltJetNHM"]->Fill(triggerJet.neutralHadronMultiplicity());
 
             /* dont remove it since it can help for later	
                 if (DEBUG_) LogWarning("trigger mass") << "\tTrigger object Mass:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass(); 
@@ -149,30 +151,40 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             numHLTJetspt10+=1;
             histos1D_[ "hltJetPt_pt10" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt10" ]->Fill( triggerJet.eta() );
+	    histos1D_["hltJetCHM_pt10"]->Fill(triggerJet.chargedHadronMultiplicity());
+	    histos1D_["hltJetNHM_pt10"]->Fill(triggerJet.neutralHadronMultiplicity());
 
 	            if( triggerJet.pt() < 20 ) continue;
             hltHTpt20 += triggerJet.pt();
             numHLTJetspt20+=1;
             histos1D_[ "hltJetPt_pt20" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt20" ]->Fill( triggerJet.eta() );
+	    histos1D_["hltJetCHM_pt20"]->Fill(triggerJet.chargedHadronMultiplicity());
+	    histos1D_["hltJetNHM_pt20"]->Fill(triggerJet.neutralHadronMultiplicity());
 
 	           if( triggerJet.pt() < 30 ) continue;
             hltHTpt30 += triggerJet.pt();
             numHLTJetspt30+=1;
             histos1D_[ "hltJetPt_pt30" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt30" ]->Fill( triggerJet.eta() );
+	    histos1D_["hltJetCHM_pt30"]->Fill(triggerJet.chargedHadronMultiplicity());
+	    histos1D_["hltJetNHM_pt30"]->Fill(triggerJet.neutralHadronMultiplicity());
 
 	          if( triggerJet.pt() < 40 ) continue;
             hltHTpt40 += triggerJet.pt();
             numHLTJetspt40+=1;
             histos1D_[ "hltJetPt_pt40" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt40" ]->Fill( triggerJet.eta() );
+	    histos1D_["hltJetCHM_pt40"]->Fill(triggerJet.chargedHadronMultiplicity());
+	    histos1D_["hltJetNHM_pt40"]->Fill(triggerJet.neutralHadronMultiplicity());
 
 	           if( triggerJet.pt() < 50 ) continue;
             hltHTpt50 += triggerJet.pt();
             numHLTJetspt50+=1;
             histos1D_[ "hltJetPt_pt50" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt50" ]->Fill( triggerJet.eta() );
+	    histos1D_["hltJetCHM_pt50"]->Fill(triggerJet.chargedHadronMultiplicity());
+	    histos1D_["hltJetNHM_pt50"]->Fill(triggerJet.neutralHadronMultiplicity());
 
         }
 
@@ -203,13 +215,20 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 if (DEBUG_) LogWarning("recojets") << recojet.pt();
                 HT += recojet.pt();
 
-                if (++k==1){
+                if (++k==1)
+		  {
                     histos1D_[ "jet1Pt" ]->Fill( recojet.pt() );
-
+	      
                     // this will help later, but good check for now.
-                    if ( baseTrigger ) {
+                    if ( baseTrigger )
+		      {
                         histos1D_[ "jet1PtDenom" ]->Fill( recojet.pt() );
-                        if ( ORTriggers ) histos1D_[ "jet1PtPassing" ]->Fill( recojet.pt() );
+	       
+                        if ( ORTriggers ) 
+			  {
+			    histos1D_[ "jet1PtPassing" ]->Fill( recojet.pt() );
+		       
+			  }
                     }
                 }
 
@@ -402,37 +421,48 @@ void TriggerEfficiencies::beginJob() {
 	histos1D_[ "hltJetEta" ] = fs_->make< TH1D >( "hltJetEta", "hltJetEta", 100, -5, 5 );
 	histos1D_[ "hltJetHT" ] = fs_->make< TH1D >( "hltJetHT", "hltJetHT", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets" ] = fs_->make< TH1D >( "hltnumJets", "hltnumJets", 20, 0., 20. );
+	histos1D_[ "hltJetCHM" ] = fs_->make< TH1D >( "hltJetCHM", "hltJetCHM", 50, 0., 10. );
+	histos1D_[ "hltJetNHM" ] = fs_->make< TH1D >( "hltJetNHM", "hltJetNHM", 50, 0., 10. );
 
 	histos1D_[ "hltJetPt_pt10" ] = fs_->make< TH1D >( "hltJetPt_pt10", "hltJetPt_pt10", 2000, 0., 2000. );
 	histos1D_[ "hltJetEta_pt10" ] = fs_->make< TH1D >( "hltJetEta_pt10", "hltJetEta_pt10", 100, -5, 5 );
 	histos1D_[ "hltJetHT_pt10" ] = fs_->make< TH1D >( "hltJetHT_pt10", "hltJetHT_pt10", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets_pt10" ] = fs_->make< TH1D >( "hltnumJets_pt10", "hltnumJets_pt10", 20, 0., 20. );
+	histos1D_[ "hltJetCHM_pt10" ] = fs_->make< TH1D >( "hltJetCHM_pt10", "hltJetCHM_pt10", 50, 0., 10. );
+	histos1D_[ "hltJetNHM_pt10" ] = fs_->make< TH1D >( "hltJetNHM_pt10", "hltJetNHM_pt10", 50, 0., 10. );
 
 	histos1D_[ "hltJetPt_pt20" ] = fs_->make< TH1D >( "hltJetPt_pt20", "hltJetPt_pt20", 2000, 0., 2000. );
 	histos1D_[ "hltJetEta_pt20" ] = fs_->make< TH1D >( "hltJetEta_pt20", "hltJetEta_pt20", 100, -5, 5 );
 	histos1D_[ "hltJetHT_pt20" ] = fs_->make< TH1D >( "hltJetHT_pt20", "hltJetHT_pt20", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets_pt20" ] = fs_->make< TH1D >( "hltnumJets_pt20", "hltnumJets_pt20", 20, 0., 20. );
+	histos1D_[ "hltJetCHM_pt20" ] = fs_->make< TH1D >( "hltJetCHM_pt20", "hltJetCHM_pt20", 50, 0., 10. );
+	histos1D_[ "hltJetNHM_pt20" ] = fs_->make< TH1D >( "hltJetNHM_pt20", "hltJetNHM_pt20", 50, 0., 10. );
 
 	histos1D_[ "hltJetPt_pt30" ] = fs_->make< TH1D >( "hltJetPt_pt30", "hltJetPt_pt30", 2000, 0., 2000. );
 	histos1D_[ "hltJetEta_pt30" ] = fs_->make< TH1D >( "hltJetEta_pt30", "hltJetEta_pt30", 100, -5, 5 );
 	histos1D_[ "hltJetHT_pt30" ] = fs_->make< TH1D >( "hltJetHT_pt30", "hltJetHT_pt30", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets_pt30" ] = fs_->make< TH1D >( "hltnumJets_pt30", "hltnumJets_pt30", 20, 0., 20. );
+	histos1D_[ "hltJetCHM_pt30" ] = fs_->make< TH1D >( "hltJetCHM_pt30", "hltJetCHM_pt30", 50, 0., 10. );
+	histos1D_[ "hltJetNHM_pt30" ] = fs_->make< TH1D >( "hltJetNHM_pt30", "hltJetNHM_pt30", 50, 0., 10. );
 
 	histos1D_[ "hltJetPt_pt40" ] = fs_->make< TH1D >( "hltJetPt_pt40", "hltJetPt_pt40", 2000, 0., 2000. );
 	histos1D_[ "hltJetEta_pt40" ] = fs_->make< TH1D >( "hltJetEta_pt40", "hltJetEta_pt40", 100, -5, 5 );
 	histos1D_[ "hltJetHT_pt40" ] = fs_->make< TH1D >( "hltJetHT_pt40", "hltJetHT_pt40", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets_pt40" ] = fs_->make< TH1D >( "hltnumJets_pt40", "hltnumJets_pt40", 20, 0., 20. );
+	histos1D_[ "hltJetCHM_pt40" ] = fs_->make< TH1D >( "hltJetCHM_pt40", "hltJetCHM_pt40", 50, 0., 10. );
+	histos1D_[ "hltJetNHM_pt40" ] = fs_->make< TH1D >( "hltJetNHM_pt40", "hltJetNHM_pt40", 50, 0., 10. );
 
 	histos1D_[ "hltJetPt_pt50" ] = fs_->make< TH1D >( "hltJetPt_pt50", "hltJetPt_pt50", 2000, 0., 2000. );
 	histos1D_[ "hltJetEta_pt50" ] = fs_->make< TH1D >( "hltJetEta_pt50", "hltJetEta_pt50", 100, -5, 5 );
 	histos1D_[ "hltJetHT_pt50" ] = fs_->make< TH1D >( "hltJetHT_pt50", "hltJetHT_pt50", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets_pt50" ] = fs_->make< TH1D >( "hltnumJets_pt50", "hltnumJets_pt50", 20, 0., 20. );
+	histos1D_[ "hltJetCHM_pt50" ] = fs_->make< TH1D >( "hltJetCHM_pt50", "hltJetCHM_pt50", 50, 0., 10. );
+	histos1D_[ "hltJetNHM_pt50" ] = fs_->make< TH1D >( "hltJetNHM_pt50", "hltJetNHM_pt50", 50, 0., 10. );
 
 	//histos2D_[ "hltJetPtvsMass" ] = fs_->make< TH2D >( "hltJetPtvsMass", "hltJetPtvsMass", 2000, 0., 2000., 2000, 0., 2000. );
 
 	histos1D_[ "jet1Pt" ] = fs_->make< TH1D >( "jet1Pt", "jet1Pt", 1000, 0., 1000. );
 	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 100, 0., 2000. );
-
 
 	histos1D_[ "jet1PtDenom" ] = fs_->make< TH1D >( "jet1PtDenom", "jet1PtDenom", 1000, 0., 1000. );
 	histos1D_[ "jet1PtPassing" ] = fs_->make< TH1D >( "jet1PtPassing", "jet1PtPassing", 1000, 0., 1000. );

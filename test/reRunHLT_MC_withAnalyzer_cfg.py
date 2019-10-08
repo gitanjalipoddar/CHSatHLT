@@ -23,7 +23,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(430)
+    input = cms.untracked.int32(2000)
 )
 
 # Input source
@@ -75,7 +75,10 @@ process.TFileService=cms.Service("TFileService",fileName=cms.string( 'reRunHLTwi
 ##### Analyzing vertex
 process.vertexComparison = cms.EDAnalyzer('vertexAnalyzer',
         hltVertex = cms.InputTag("hltPixelVertices"),
-        offlineVertex = cms.InputTag("offlinePrimaryVertices"),
+        offlineVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
+        bits = cms.InputTag("TriggerResults::HLT2"),
+        baseTrigger = cms.string("HLT_PFCHSHTNoThreshold"),
+        triggerPass = cms.vstring([ "HLT_PFCHSHTNoThreshold" ] ),
         )
 process.vertexComparison_step = cms.EndPath( process.vertexComparison )
 
