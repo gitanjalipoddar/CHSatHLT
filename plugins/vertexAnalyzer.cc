@@ -176,12 +176,12 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     {
       hlt_ndof=hltVertex.ndof();
       hlt_z=hltVertex.z();
-      hlt_rho=fabs(hltVertex.position().Rho());
+      hlt_rho=hltVertex.position().Rho();
       hlt_p4=hltVertex.p4();
       hlt_eta=hlt_p4.Eta();
       hlt_phi=hlt_p4.Phi();
 
-      if((hlt_ndof)>4 && (fabs(hlt_z)<=24) && (hlt_rho<=2.0))
+      if((hlt_ndof>4) && (fabs(hlt_z)<=24) && (fabs(hlt_rho)<=2.0))
       {
 	count_hlt_pv++;
       }
@@ -196,12 +196,12 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       {
 	offline_ndof=offlineVertex.ndof();
 	offline_z=offlineVertex.z();
-	offline_rho=fabs(offlineVertex.position().Rho());
+	offline_rho=offlineVertex.position().Rho();
 	offline_p4=offlineVertex.p4();
 	offline_eta=offline_p4.Eta();
 	offline_phi=offline_p4.Phi();
 
-	if((offline_ndof)>4 && (fabs(offline_z)<=24) && (offline_rho<=2.0))
+	if((offline_ndof>4) && (fabs(offline_z)<=24) && (fabs(offline_rho)<=2.0))
 	{
 	  count_offline_pv++;
 	}
@@ -252,17 +252,17 @@ vertexAnalyzer::beginJob()
 {
   histos1D_[ "hlt_ndof" ] = fs_->make< TH1D >( "hlt_ndof", "hlt_ndof", 10, 0.0, 10.0 );
   histos1D_[ "hlt_z" ] = fs_->make< TH1D >( "hlt_z", "hlt_z", 100, -20.0, 20.0 );
-  histos1D_[ "hlt_rho" ] = fs_->make< TH1D >( "hlt_rho", "hlt_rho", 100, 0.0, 0.5 );
+  histos1D_[ "hlt_rho" ] = fs_->make< TH1D >( "hlt_rho", "hlt_rho", 100, -0.5, 0.5 );
   histos1D_[ "hlt_ndof_event" ] = fs_->make< TH1D >( "hlt_ndof_event", "hlt_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "hlt_z_event" ] = fs_->make< TH1D >( "hlt_z_event", "hlt_z_event", 100, -20.0, 20.0 );
-  histos1D_[ "hlt_rho_event" ] = fs_->make< TH1D >( "hlt_rho_event", "hlt_rho_event", 100, 0.0, 0.5 );
+  histos1D_[ "hlt_rho_event" ] = fs_->make< TH1D >( "hlt_rho_event", "hlt_rho_event", 100, -0.5, 0.5 );
 
   histos1D_[ "offline_ndof" ] = fs_->make< TH1D >( "offline_ndof", "offline_ndof", 10, 0.0, 10.0 );
   histos1D_[ "offline_z" ] = fs_->make< TH1D >( "offline_z", "offline_z", 100, -20.0, 20.0 );
-  histos1D_[ "offline_rho" ] = fs_->make< TH1D >( "offline_rho", "offline_rho", 100, 0.0, 0.5 );
+  histos1D_[ "offline_rho" ] = fs_->make< TH1D >( "offline_rho", "offline_rho", 100, -0.5, 0.5 );
   histos1D_[ "offline_ndof_event" ] = fs_->make< TH1D >( "offline_ndof_event", "offline_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "offline_z_event" ] = fs_->make< TH1D >( "offline_z_event", "offline_z_event", 100, -20.0, 20.0 );
-  histos1D_[ "offline_rho_event" ] = fs_->make< TH1D >( "offline_rho_event", "offline_rho_event", 100, 0.0, 0.5 );
+  histos1D_[ "offline_rho_event" ] = fs_->make< TH1D >( "offline_rho_event", "offline_rho_event", 100, -0.5, 0.5 );
 
   histos1D_[ "min_delta_r" ] = fs_->make< TH1D >( "min_delta_r", "min_delta_r", 50, 0.0, 5.0 );
   histos1D_[ "min_delta_r_event" ] = fs_->make< TH1D >( "min_delta_r_event", "min_delta_r_event", 50, 0.0, 5.0 );
