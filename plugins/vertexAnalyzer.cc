@@ -162,6 +162,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     double hlt_eta;
     double hlt_phi;
     double hlt_rho;
+    double hlt_chi2;
+    double hlt_normalizedchi2;
+    int hlt_ntracks;
+    size_t hlt_trackssize;
     double count_hlt_pv=0;
 
     double offline_ndof;
@@ -170,6 +174,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     double offline_eta;
     double offline_phi;
     double offline_rho;
+    double offline_chi2;
+    double offline_normalizedchi2;
+    int offline_ntracks;
+    size_t offline_trackssize;
     double count_offline_pv=0;
 
     double deta;
@@ -194,6 +202,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       hlt_ndof=hltVertex.ndof();
       hlt_z=hltVertex.z();
       hlt_rho=hltVertex.position().Rho();
+      hlt_chi2=hltVertex.chi2();
+      hlt_normalizedchi2=hltVertex.normalizedChi2();
+      hlt_ntracks=hltVertex.nTracks();
+      hlt_trackssize=hltVertex.tracksSize();
       hlt_p4=hltVertex.p4();
       hlt_eta=hlt_p4.Eta();
       hlt_phi=hlt_p4.Phi();
@@ -206,7 +218,11 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       histos1D_["hlt_ndof"]->Fill(hlt_ndof);
       histos1D_["hlt_z"]->Fill(hlt_z);
       histos1D_["hlt_rho"]->Fill(hlt_rho);
-      
+      histos1D_["hlt_ntracks"]->Fill(hlt_ntracks);
+      histos1D_["hlt_chi2"]->Fill(hlt_chi2);
+      histos1D_["hlt_normalizedchi2"]->Fill(hlt_normalizedchi2);
+      histos1D_["hlt_trackssize"]->Fill(hlt_trackssize);
+  
       count_hlt_vertices++;
       
       for (auto const& offlineVertex : OfflineVertexCollection )
@@ -214,6 +230,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	offline_ndof=offlineVertex.ndof();
 	offline_z=offlineVertex.z();
 	offline_rho=offlineVertex.position().Rho();
+	offline_chi2=offlineVertex.chi2();
+	offline_normalizedchi2=offlineVertex.normalizedChi2();
+	offline_ntracks=offlineVertex.nTracks();
+	offline_trackssize=offlineVertex.tracksSize();
 	offline_p4=offlineVertex.p4();
 	offline_eta=offline_p4.Eta();
 	offline_phi=offline_p4.Phi();
@@ -226,6 +246,10 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	histos1D_["offline_ndof"]->Fill(offline_ndof);
 	histos1D_["offline_z"]->Fill(offline_z);
 	histos1D_["offline_rho"]->Fill(offline_rho);
+	histos1D_["offline_ntracks"]->Fill(offline_ntracks);
+	histos1D_["offline_chi2"]->Fill(offline_chi2);
+	histos1D_["offline_normalizedchi2"]->Fill(offline_normalizedchi2);
+	histos1D_["offline_trackssize"]->Fill(offline_trackssize);
 	
 	deta=hlt_eta-offline_eta; //difference in eta
 	dphi=hlt_phi=offline_phi; //difference in phi
@@ -403,6 +427,10 @@ vertexAnalyzer::beginJob()
   histos1D_[ "hlt_ndof" ] = fs_->make< TH1D >( "hlt_ndof", "hlt_ndof", 10, 0.0, 10.0 );
   histos1D_[ "hlt_z" ] = fs_->make< TH1D >( "hlt_z", "hlt_z", 100, -20.0, 20.0 );
   histos1D_[ "hlt_rho" ] = fs_->make< TH1D >( "hlt_rho", "hlt_rho", 100, -0.5, 0.5 );
+  histos1D_[ "hlt_ntracks" ] = fs_->make< TH1D >( "hlt_ntracks", "hlt_ntracks", 200, 0.0, 100.0 );
+  histos1D_[ "hlt_chi2" ] = fs_->make< TH1D >( "hlt_chi2", "hlt_chi2", 100, 0.0, 10.0 );
+  histos1D_[ "hlt_normalizedchi2" ] = fs_->make< TH1D >( "hlt_normalizedchi2", "hlt_normalizedchi2", 100, 0.0, 10.0 );
+  histos1D_[ "hlt_trackssize" ] = fs_->make< TH1D >( "hlt_trackssize", "hlt_trackssize", 200, 0.0, 100.0 );
   histos1D_[ "hlt_ndof_event" ] = fs_->make< TH1D >( "hlt_ndof_event", "hlt_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "hlt_z_event" ] = fs_->make< TH1D >( "hlt_z_event", "hlt_z_event", 100, -20.0, 20.0 );
   histos1D_[ "hlt_rho_event" ] = fs_->make< TH1D >( "hlt_rho_event", "hlt_rho_event", 100, -0.5, 0.5 );
@@ -410,6 +438,10 @@ vertexAnalyzer::beginJob()
   histos1D_[ "offline_ndof" ] = fs_->make< TH1D >( "offline_ndof", "offline_ndof", 10, 0.0, 10.0 );
   histos1D_[ "offline_z" ] = fs_->make< TH1D >( "offline_z", "offline_z", 100, -20.0, 20.0 );
   histos1D_[ "offline_rho" ] = fs_->make< TH1D >( "offline_rho", "offline_rho", 100, -0.5, 0.5 );
+  histos1D_[ "offline_ntracks" ] = fs_->make< TH1D >( "offline_ntracks", "offline_ntracks", 200, 0.0, 100.0 );
+  histos1D_[ "offline_chi2" ] = fs_->make< TH1D >( "offline_chi2", "offline_chi2", 100, 0.0, 10.0 );
+  histos1D_[ "offline_normalizedchi2" ] = fs_->make< TH1D >( "offline_normalizedchi2", "offline_normalizedchi2", 100, 0.0, 10.0 );
+  histos1D_[ "offline_trackssize" ] = fs_->make< TH1D >( "offline_trackssize", "offline_trackssize", 200, 0.0, 100.0 );
   histos1D_[ "offline_ndof_event" ] = fs_->make< TH1D >( "offline_ndof_event", "offline_ndof_event", 10, 0.0, 10.0 );
   histos1D_[ "offline_z_event" ] = fs_->make< TH1D >( "offline_z_event", "offline_z_event", 100, -20.0, 20.0 );
   histos1D_[ "offline_rho_event" ] = fs_->make< TH1D >( "offline_rho_event", "offline_rho_event", 100, -0.5, 0.5 );

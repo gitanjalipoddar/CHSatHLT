@@ -28,7 +28,7 @@ config.Data.inputDataset = ''
 config.Data.publication = False
 #config.Data.ignoreLocality = True
 
-config.Site.storageSite = 'T3_CH_PSI'
+config.Site.storageSite = 'T2_CH_CSCS'
 config.Data.outLFNDirBase = '/store/user/'+os.environ['USER']+'/PUatHLT/'
 
 def submit(config):
