@@ -1,6 +1,6 @@
-# hltGetConfiguration --cff --offline /users/algomez/PUatHLT/V13 --setup /dev/CMSSW_10_1_0/GRun
+# hltGetConfiguration --cff --offline /users/algomez/PUatHLT/V16 --setup /dev/CMSSW_10_1_0/GRun
 
-# /users/algomez/PUatHLT/V13 (CMSSW_10_1_10)
+# /users/algomez/PUatHLT/V16 (CMSSW_10_1_10)
 
 import FWCore.ParameterSet.Config as cms
 
@@ -8,7 +8,7 @@ fragment = cms.ProcessFragment( "HLT" )
 fragment.load("setup_dev_CMSSW_10_1_0_GRun_cff")
 
 fragment.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/users/algomez/PUatHLT/V13')
+  tableName = cms.string('/users/algomez/PUatHLT/V16')
 )
 
 fragment.hltGetConditions = cms.EDAnalyzer( "EventSetupRecordDataGetter",
@@ -6596,6 +6596,190 @@ fragment.hltPFCHSHT0JetNoThreshold = cms.EDFilter( "HLTHtMhtFilter",
     htLabels = cms.VInputTag( 'hltPFCHSHTJetNoThreshold' ),
     minHt = cms.vdouble( 0.0 )
 )
+fragment.hltPrePFCHSHTNoThresholdVerticesPF = cms.EDFilter( "HLTPrescaler",
+    L1GtReadoutRecordTag = cms.InputTag( "hltGtStage2Digis" ),
+    offset = cms.uint32( 0 )
+)
+fragment.hltVerticesPF = cms.EDProducer( "PrimaryVertexProducer",
+    vertexCollections = cms.VPSet(
+      cms.PSet(  chi2cutoff = cms.double( 3.0 ),
+        label = cms.string( "" ),
+        useBeamConstraint = cms.bool( False ),
+        minNdof = cms.double( 0.0 ),
+        maxDistanceToBeam = cms.double( 1.0 ),
+        algorithm = cms.string( "AdaptiveVertexFitter" )
+      ),
+      cms.PSet(  chi2cutoff = cms.double( 3.0 ),
+        label = cms.string( "WithBS" ),
+        useBeamConstraint = cms.bool( True ),
+        minNdof = cms.double( 0.0 ),
+        maxDistanceToBeam = cms.double( 1.0 ),
+        algorithm = cms.string( "AdaptiveVertexFitter" )
+      )
+    ),
+    verbose = cms.untracked.bool( False ),
+    TkFilterParameters = cms.PSet(
+      maxEta = cms.double( 100.0 ),
+      minPt = cms.double( 0.0 ),
+      minSiliconLayersWithHits = cms.int32( 5 ),
+      minPixelLayersWithHits = cms.int32( 2 ),
+      maxNormalizedChi2 = cms.double( 20.0 ),
+      trackQuality = cms.string( "any" ),
+      algorithm = cms.string( "filter" ),
+      maxD0Significance = cms.double( 999.0 )
+    ),
+    beamSpotLabel = cms.InputTag( "hltOnlineBeamSpot" ),
+    TrackLabel = cms.InputTag( "hltPFMuonMerging" ),
+    TkClusParameters = cms.PSet(
+      TkDAClusParameters = cms.PSet(
+        zmerge = cms.double( 0.01 ),
+        Tstop = cms.double( 0.5 ),
+        d0CutOff = cms.double( 999.0 ),
+        dzCutOff = cms.double( 4.0 ),
+        vertexSize = cms.double( 0.15 ),
+        coolingFactor = cms.double( 0.6 ),
+        Tpurge = cms.double( 2.0 ),
+        Tmin = cms.double( 2.4 ),
+        uniquetrkweight = cms.double( 0.9 ),
+        use_vdt = cms.untracked.bool( True )
+      ),
+      algorithm = cms.string( "DA_vect" )
+    )
+)
+fragment.hltVerticesPFSelector = cms.EDFilter( "PrimaryVertexObjectFilter",
+    src = cms.InputTag( "hltVerticesPF" ),
+    filterParams = cms.PSet(
+      maxZ = cms.double( 24.0 ),
+      minNdof = cms.double( 4.0 ),
+      maxRho = cms.double( 2.0 ),
+      pvSrc = cms.InputTag( "hltVerticesPF" )
+    )
+)
+fragment.hltVerticesPFFilter = cms.EDFilter( "VertexSelector",
+    filter = cms.bool( True ),
+    src = cms.InputTag( "hltVerticesPFSelector" ),
+    cut = cms.string( "!isFake" )
+)
+fragment.hltpfPileUpVerticesPF = cms.EDProducer( "PFPileUp",
+    checkClosestZVertex = cms.bool( False ),
+    Enable = cms.bool( True ),
+    PFCandidates = cms.InputTag( "hltparticleFlowTmpPtrs" ),
+    verbose = cms.untracked.bool( False ),
+    Vertices = cms.InputTag( "hltVerticesPFFilter" )
+)
+fragment.hltpfNoPileUpVerticesPF = cms.EDProducer( "TPPFCandidatesOnPFCandidates",
+    bottomCollection = cms.InputTag( "hltparticleFlowTmpPtrs" ),
+    enable = cms.bool( True ),
+    topCollection = cms.InputTag( "hltpfPileUpVerticesPF" ),
+    name = cms.untracked.string( "pileUpOnPFCandidates" ),
+    verbose = cms.untracked.bool( False )
+)
+fragment.hltAK4PFJetsForCHSVerticesPF = cms.EDProducer( "FastjetJetProducer",
+    Active_Area_Repeats = cms.int32( 5 ),
+    useMassDropTagger = cms.bool( False ),
+    doAreaFastjet = cms.bool( False ),
+    muMin = cms.double( -1.0 ),
+    Ghost_EtaMax = cms.double( 6.0 ),
+    maxBadHcalCells = cms.uint32( 9999999 ),
+    doAreaDiskApprox = cms.bool( True ),
+    subtractorName = cms.string( "" ),
+    dRMax = cms.double( -1.0 ),
+    useExplicitGhosts = cms.bool( False ),
+    puWidth = cms.double( 0.0 ),
+    maxRecoveredEcalCells = cms.uint32( 9999999 ),
+    R0 = cms.double( -1.0 ),
+    jetType = cms.string( "PFJet" ),
+    muCut = cms.double( -1.0 ),
+    subjetPtMin = cms.double( -1.0 ),
+    csRParam = cms.double( -1.0 ),
+    MinVtxNdof = cms.int32( 0 ),
+    minSeed = cms.uint32( 0 ),
+    voronoiRfact = cms.double( -9.0 ),
+    doRhoFastjet = cms.bool( False ),
+    jetAlgorithm = cms.string( "AntiKt" ),
+    writeCompound = cms.bool( False ),
+    muMax = cms.double( -1.0 ),
+    nSigmaPU = cms.double( 1.0 ),
+    GhostArea = cms.double( 0.01 ),
+    Rho_EtaMax = cms.double( 4.4 ),
+    restrictInputs = cms.bool( False ),
+    useDynamicFiltering = cms.bool( False ),
+    nExclude = cms.uint32( 0 ),
+    maxRecoveredHcalCells = cms.uint32( 9999999 ),
+    maxBadEcalCells = cms.uint32( 9999999 ),
+    yMin = cms.double( -1.0 ),
+    jetCollInstanceName = cms.string( "" ),
+    useFiltering = cms.bool( False ),
+    maxInputs = cms.uint32( 1 ),
+    rFiltFactor = cms.double( -1.0 ),
+    useDeterministicSeed = cms.bool( True ),
+    doPVCorrection = cms.bool( False ),
+    rFilt = cms.double( -1.0 ),
+    yMax = cms.double( -1.0 ),
+    zcut = cms.double( -1.0 ),
+    useTrimming = cms.bool( False ),
+    puCenters = cms.vdouble(  ),
+    MaxVtxZ = cms.double( 15.0 ),
+    rParam = cms.double( 0.4 ),
+    csRho_EtaMax = cms.double( -1.0 ),
+    UseOnlyVertexTracks = cms.bool( False ),
+    dRMin = cms.double( -1.0 ),
+    gridSpacing = cms.double( -1.0 ),
+    doFastJetNonUniform = cms.bool( False ),
+    usePruning = cms.bool( False ),
+    maxDepth = cms.int32( -1 ),
+    yCut = cms.double( -1.0 ),
+    useSoftDrop = cms.bool( False ),
+    DzTrVtxMax = cms.double( 0.0 ),
+    UseOnlyOnePV = cms.bool( False ),
+    maxProblematicHcalCells = cms.uint32( 9999999 ),
+    correctShape = cms.bool( False ),
+    rcut_factor = cms.double( -1.0 ),
+    src = cms.InputTag( "hltpfNoPileUp" ),
+    gridMaxRapidity = cms.double( -1.0 ),
+    sumRecHits = cms.bool( False ),
+    jetPtMin = cms.double( 0.0 ),
+    puPtMin = cms.double( 10.0 ),
+    srcPVs = cms.InputTag( "hltVerticesPFFilter" ),
+    verbosity = cms.int32( 0 ),
+    inputEtMin = cms.double( 0.0 ),
+    useConstituentSubtraction = cms.bool( False ),
+    beta = cms.double( -1.0 ),
+    trimPtFracMin = cms.double( -1.0 ),
+    radiusPU = cms.double( 0.4 ),
+    nFilt = cms.int32( -1 ),
+    useKtPruning = cms.bool( False ),
+    DxyTrVtxMax = cms.double( 0.0 ),
+    maxProblematicEcalCells = cms.uint32( 9999999 ),
+    useCMSBoostedTauSeedingAlgorithm = cms.bool( False ),
+    doPUOffsetCorr = cms.bool( False ),
+    writeJetsWithConst = cms.bool( False ),
+    inputEMin = cms.double( 0.0 )
+)
+fragment.hltAK4PFJetsLooseIDForCHSVerticesPF = cms.EDProducer( "HLTPFJetIDProducer",
+    CEF = cms.double( 0.99 ),
+    NHF = cms.double( 0.99 ),
+    minPt = cms.double( 20.0 ),
+    CHF = cms.double( 0.0 ),
+    jetsInput = cms.InputTag( "hltAK4PFJetsForCHSVerticesPF" ),
+    NEF = cms.double( 0.99 ),
+    NTOT = cms.int32( 1 ),
+    NCH = cms.int32( 0 ),
+    maxEta = cms.double( 1.0E99 ),
+    maxCF = cms.double( 99.0 )
+)
+fragment.hltAK4PFJetsTightIDForCHSVerticesPF = cms.EDProducer( "HLTPFJetIDProducer",
+    CEF = cms.double( 0.99 ),
+    NHF = cms.double( 0.9 ),
+    minPt = cms.double( 20.0 ),
+    CHF = cms.double( 0.0 ),
+    jetsInput = cms.InputTag( "hltAK4PFJetsForCHSVerticesPF" ),
+    NEF = cms.double( 0.99 ),
+    NTOT = cms.int32( 1 ),
+    NCH = cms.int32( 0 ),
+    maxEta = cms.double( 1.0E99 ),
+    maxCF = cms.double( 99.0 )
+)
 fragment.hltPrePFSKHTNoThreshold = cms.EDFilter( "HLTPrescaler",
     L1GtReadoutRecordTag = cms.InputTag( "hltGtStage2Digis" ),
     offset = cms.uint32( 0 )
@@ -6756,69 +6940,10 @@ fragment.hltPrePFPuppiHTNoThreshold = cms.EDFilter( "HLTPrescaler",
     L1GtReadoutRecordTag = cms.InputTag( "hltGtStage2Digis" ),
     offset = cms.uint32( 0 )
 )
-fragment.hltPFPuppiProducer = cms.EDProducer( "PuppiProducer",
-       puppiDiagnostics = cms.bool(False),
-       puppiForLeptons = cms.bool(False),
-       UseDeltaZCut   = cms.bool(True),
-       DeltaZCut      = cms.double(0.3),
-       PtMaxNeutrals  = cms.double(200.),
-       #PFCandidates = cms.InputTag( "hltParticleFlow" )
-       #vertexName = cms.InputTag( 'goodOnlinePrimaryVertices' ),
-       candName = cms.InputTag( "hltParticleFlow" ),
-       vertexName = cms.InputTag( 'hltPixelVertices' ),
-       applyCHS       = cms.bool  (True),
-       invertPuppi    = cms.bool  (False),
-       useExp         = cms.bool  (False),
-       MinPuppiWeight = cms.double(0.01),
-       useExistingWeights = cms.bool(False),
-       useWeightsNoLep    = cms.bool(False),
-       clonePackedCands   = cms.bool(False), # should only be set to True for MiniAOD
-       vtxNdofCut     = cms.int32(4),
-       vtxZCut        = cms.double(24),
-       algos          = cms.VPSet(
-        cms.PSet(
-         etaMin = cms.vdouble(0.),
-         etaMax = cms.vdouble(2.5),
-         ptMin  = cms.vdouble(0.),
-         MinNeutralPt   = cms.vdouble(0.2),
-         MinNeutralPtSlope   = cms.vdouble(0.015),
-         RMSEtaSF = cms.vdouble(1.0),
-         MedEtaSF = cms.vdouble(1.0),
-         EtaMaxExtrap = cms.double(2.0),
-         puppiAlgos = cms.VPSet(
-                 cms.PSet(
-                  algoId           = cms.int32(5),  #0 is default Puppi
-                  useCharged       = cms.bool(True),
-                  applyLowPUCorr   = cms.bool(True),
-                  combOpt          = cms.int32(0),
-                  cone             = cms.double(0.4),
-                  rmsPtMin         = cms.double(0.1),
-                  rmsScaleFactor   = cms.double(1.0)
-                 )
-                ),
-        ),
-        cms.PSet(
-         etaMin              = cms.vdouble( 2.5,  3.0),
-         etaMax              = cms.vdouble( 3.0, 10.0),
-         ptMin               = cms.vdouble( 0.0,  0.0),
-         MinNeutralPt        = cms.vdouble( 1.7,  2.0),
-         MinNeutralPtSlope   = cms.vdouble(0.08, 0.08),
-         RMSEtaSF            = cms.vdouble(1.20, 0.95),
-         MedEtaSF            = cms.vdouble(0.90, 0.75),
-         EtaMaxExtrap        = cms.double( 2.0),
-         puppiAlgos = cms.VPSet(
-                cms.PSet(
-                 algoId         = cms.int32(5),  #0 is default Puppi
-                 useCharged     = cms.bool(False),
-                 applyLowPUCorr = cms.bool(True),
-                 combOpt        = cms.int32(0),
-                 cone           = cms.double(0.4),
-                 rmsPtMin       = cms.double(0.5),
-                 rmsScaleFactor = cms.double(1.0)
-                 )
-                ),
-        ),
-      )
+fragment.hltPFPuppiProducer = cms.EDProducer( "SoftKillerProducer",
+    Rho_EtaMax = cms.double( 5.0 ),
+    rParam = cms.double( 0.4 ),
+    PFCandidates = cms.InputTag( "hltParticleFlow" )
 )
 fragment.hltAK4PFJetsForPuppi = cms.EDProducer( "FastjetJetProducer",
     Active_Area_Repeats = cms.int32( 5 ),
@@ -7208,6 +7333,10 @@ fragment.HLTAK4PFJetsReconstructionSequenceForCHS = cms.Sequence( fragment.HLTL2
 fragment.HLTAK4PFCorrectorProducersSequenceForCHS = cms.Sequence( fragment.hltAK4PFFastJetCorrectorForCHS + fragment.hltAK4PFRelativeCorrector + fragment.hltAK4PFAbsoluteCorrector + fragment.hltAK4PFResidualCorrector + fragment.hltAK4PFCorrectorForCHS )
 fragment.HLTAK4PFJetsCorrectionSequenceForCHS = cms.Sequence( fragment.hltFixedGridRhoFastjetAllForCHS + fragment.HLTAK4PFCorrectorProducersSequenceForCHS + fragment.hltAK4PFJetsCorrectedForCHS + fragment.hltAK4PFJetsLooseIDCorrectedForCHS + fragment.hltAK4PFJetsTightIDCorrectedForCHS )
 fragment.HLTAK4PFJetsSequenceForCHS = cms.Sequence( fragment.HLTPreAK4PFJetsRecoSequence + fragment.HLTAK4PFJetsReconstructionSequenceForCHS + fragment.HLTAK4PFJetsCorrectionSequenceForCHS )
+fragment.HLTTrackingForBeamSpot = cms.Sequence( fragment.HLTPreAK4PFJetsRecoSequence + fragment.HLTL2muonrecoSequence + fragment.HLTL3muonrecoSequence + fragment.HLTDoLocalPixelSequence + fragment.HLTRecopixelvertexingSequence + fragment.HLTDoLocalStripSequence + fragment.HLTIterativeTrackingIter02 + fragment.hltPFMuonMerging )
+fragment.HLTAK4PFJetsReconstructionSequenceForCHSVerticesPF = cms.Sequence( fragment.HLTL2muonrecoSequence + fragment.HLTTrackReconstructionForPF + fragment.HLTParticleFlowSequence + fragment.hltVerticesPF + fragment.hltVerticesPFSelector + fragment.hltVerticesPFFilter + fragment.hltparticleFlowTmpPtrs + fragment.hltpfPileUpVerticesPF + fragment.hltpfNoPileUpVerticesPF + fragment.hltAK4PFJetsForCHSVerticesPF + fragment.hltAK4PFJetsLooseIDForCHSVerticesPF + fragment.hltAK4PFJetsTightIDForCHSVerticesPF )
+###fragment.HLTAK4PFJetsReconstructionSequenceForCHSVerticesPF = cms.Sequence( fragment.HLTL2muonrecoSequence + fragment.HLTTrackReconstructionForPF + fragment.HLTParticleFlowSequence + fragment.HLTTrackingForBeamSpot + fragment.hltVerticesPF + fragment.hltVerticesPFSelector + fragment.hltVerticesPFFilter + fragment.hltparticleFlowTmpPtrs + fragment.hltpfPileUpVerticesPF + fragment.hltpfNoPileUpVerticesPF + fragment.hltAK4PFJetsForCHSVerticesPF + fragment.hltAK4PFJetsLooseIDForCHSVerticesPF + fragment.hltAK4PFJetsTightIDForCHSVerticesPF )
+fragment.HLTAK4PFJetsSequenceForCHSVerticesPF = cms.Sequence( fragment.HLTPreAK4PFJetsRecoSequence + fragment.HLTAK4PFJetsReconstructionSequenceForCHSVerticesPF + fragment.HLTAK4PFJetsCorrectionSequenceForCHS )
 fragment.HLTAK4PFJetsReconstructionSequenceForSK = cms.Sequence( fragment.HLTL2muonrecoSequence + fragment.HLTTrackReconstructionForPF + fragment.HLTParticleFlowSequence + fragment.hltPFSoftKillerProducer + fragment.hltAK4PFJetsForSK + fragment.hltAK4PFJetsLooseIDForSK + fragment.hltAK4PFJetsTightIDForSK )
 fragment.HLTAK4PFCorrectorProducersSequence = cms.Sequence( fragment.hltAK4PFFastJetCorrector + fragment.hltAK4PFRelativeCorrector + fragment.hltAK4PFAbsoluteCorrector + fragment.hltAK4PFResidualCorrector + fragment.hltAK4PFCorrector )
 fragment.HLTAK4PFJetsCorrectionSequenceForSK = cms.Sequence( fragment.hltFixedGridRhoFastjetAll + fragment.HLTAK4PFCorrectorProducersSequence + fragment.hltAK4PFSKJetsCorrected + fragment.hltAK4PFSKJetsLooseIDCorrected + fragment.hltAK4PFSKJetsTightIDCorrected )
@@ -7226,6 +7355,7 @@ fragment.HLT_AK8PFJet360_TrimMass30_v18 = cms.Path( fragment.HLTBeginSequence + 
 fragment.HLT_AK8PFCHSJet380_TrimMass30_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sSingleJet180 + fragment.hltPreAK8PFCHSJet380TrimMass30 + fragment.HLTAK8CaloJetsSequence + fragment.hltAK8SingleCaloJet280 + fragment.HLTAK8PFJetsSequenceForCHS + fragment.hltAK8PFCHSJetsCorrectedMatchedToCaloJets280 + fragment.hltAK8SinglePFJet380ForCHS + fragment.hltAK8TrimModJetsForCHS + fragment.hltAK8SinglePFJetTrimModMass30ForCHS + fragment.HLTEndSequence )
 fragment.HLT_PFCHSHT1050_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sAllHTTSeeds + fragment.hltPrePFCHSHT1050 + fragment.HLTAK4CaloJetsSequence + fragment.hltHtMhtJet30 + fragment.hltHT900Jet30 + fragment.HLTAK4PFJetsSequenceForCHS + fragment.hltPFCHSHTJet30 + fragment.hltPFCHSHT1050Jet30 + fragment.HLTEndSequence )
 fragment.HLT_PFCHSHTNoThreshold_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sAllHTTSeeds + fragment.hltPrePFCHSHTNoThreshold + fragment.HLTAK4CaloJetsSequence + fragment.hltHtMhtJetNoThreshold + fragment.hltHT0JetNoThreshold + fragment.HLTAK4PFJetsSequenceForCHS + fragment.hltPFCHSHTJetNoThreshold + fragment.hltPFCHSHT0JetNoThreshold + fragment.HLTEndSequence )
+fragment.HLT_PFCHSHTNoThresholdVerticesPF_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sAllHTTSeeds + fragment.hltPrePFCHSHTNoThresholdVerticesPF + fragment.HLTAK4CaloJetsSequence + fragment.hltHtMhtJetNoThreshold + fragment.hltHT0JetNoThreshold + fragment.HLTTrackingForBeamSpot + fragment.HLTAK4PFJetsSequenceForCHSVerticesPF + fragment.hltPFCHSHTJetNoThreshold + fragment.hltPFCHSHT0JetNoThreshold + fragment.HLTEndSequence )
 fragment.HLT_PFSKHTNoThreshold_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sAllHTTSeeds + fragment.hltPrePFSKHTNoThreshold + fragment.HLTAK4CaloJetsSequence + fragment.hltHtMhtJetNoThreshold + fragment.hltHT0JetNoThreshold + fragment.HLTAK4PFJetsSequenceForSK + fragment.hltPFSKHTJetNoThreshold + fragment.hltPFSKHT0JetNoThreshold + fragment.HLTEndSequence )
 fragment.HLT_PFPuppiHTNoThreshold_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sAllHTTSeeds + fragment.hltPrePFPuppiHTNoThreshold + fragment.HLTAK4CaloJetsSequence + fragment.hltHtMhtJetNoThreshold + fragment.hltHT0JetNoThreshold + fragment.HLTAK4PFJetsSequenceForPuppi + fragment.hltPFPuppiHTJetNoThreshold + fragment.hltPFPuppiHT0JetNoThreshold + fragment.HLTEndSequence )
 fragment.HLT_PFHT1050_v18 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sAllHTTSeeds + fragment.hltPrePFHT1050 + fragment.HLTAK4CaloJetsSequence + fragment.hltHtMhtJet30 + fragment.hltHT900Jet30 + fragment.HLTAK4PFJetsSequence + fragment.hltPFHTJet30 + fragment.hltPFHT1050Jet30 + fragment.HLTEndSequence )
@@ -7233,7 +7363,7 @@ fragment.HLT_PFHTNoThreshold_v1 = cms.Path( fragment.HLTBeginSequence + fragment
 fragment.HLTriggerFinalPath = cms.Path( fragment.hltGtStage2Digis + fragment.hltScalersRawToDigi + fragment.hltFEDSelector + fragment.hltTriggerSummaryAOD + fragment.hltTriggerSummaryRAW + fragment.hltBoolFalse )
 
 
-fragment.HLTSchedule = cms.Schedule( *(fragment.HLTriggerFirstPath, fragment.HLT_AK8PFCHSHT750_TrimMass50_v1, fragment.HLT_AK8PFHT800_TrimMass50_v12, fragment.HLT_AK8PFJet360_TrimMass30_v18, fragment.HLT_AK8PFCHSJet380_TrimMass30_v1, fragment.HLT_PFCHSHT1050_v1, fragment.HLT_PFCHSHTNoThreshold_v1, fragment.HLT_PFSKHTNoThreshold_v1, fragment.HLT_PFPuppiHTNoThreshold_v1, fragment.HLT_PFHT1050_v18, fragment.HLT_PFHTNoThreshold_v1, fragment.HLTriggerFinalPath ))
+fragment.HLTSchedule = cms.Schedule( *(fragment.HLTriggerFirstPath, fragment.HLT_AK8PFCHSHT750_TrimMass50_v1, fragment.HLT_AK8PFHT800_TrimMass50_v12, fragment.HLT_AK8PFJet360_TrimMass30_v18, fragment.HLT_AK8PFCHSJet380_TrimMass30_v1, fragment.HLT_PFCHSHT1050_v1, fragment.HLT_PFCHSHTNoThreshold_v1, fragment.HLT_PFCHSHTNoThresholdVerticesPF_v1, fragment.HLT_PFSKHTNoThreshold_v1, fragment.HLT_PFPuppiHTNoThreshold_v1, fragment.HLT_PFHT1050_v18, fragment.HLT_PFHTNoThreshold_v1, fragment.HLTriggerFinalPath ))
 
 
 # dummyfy hltGetConditions in cff's
