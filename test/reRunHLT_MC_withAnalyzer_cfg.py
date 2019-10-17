@@ -74,11 +74,11 @@ process.TFileService=cms.Service("TFileService",fileName=cms.string( 'reRunHLTwi
 
 ##### Analyzing vertex
 process.vertexComparison = cms.EDAnalyzer('vertexAnalyzer',
-        hltVertex = cms.InputTag("hltPixelVertices"),
+        hltVertex = cms.InputTag("hltVerticesPF"),
         offlineVertex = cms.InputTag("offlinePrimaryVerticesWithBS"),
-        bits = cms.InputTag("TriggerResults::HLT2"),
-        baseTrigger = cms.string("HLT_PFCHSHTNoThreshold"),
-        triggerPass = cms.vstring([ "HLT_PFCHSHTNoThreshold" ] ),
+        ##bits = cms.InputTag("TriggerResults::HLT2"),
+        #baseTrigger = cms.string("HLT_PFCHSHTNoThreshold"),
+        #triggerPass = cms.vstring([ "HLT_PFCHSHTNoThreshold" ] ),
         )
 process.vertexComparison_step = cms.EndPath( process.vertexComparison )
 
