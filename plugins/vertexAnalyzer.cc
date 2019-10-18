@@ -154,13 +154,13 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     //const TriggerNames &names = iEvent.triggerNames(*triggerBits);
 
     //minimum delta R, ndof, z, rho for entire collection of vertices
-    double min_delta_r=10000000;//arbitrary minimum delta R 
+    //double min_delta_r=10000000;//arbitrary minimum delta R 
     
     double hlt_ndof;
     double hlt_z;
-    math::XYZTLorentzVectorD hlt_p4;
-    double hlt_eta;
-    double hlt_phi;
+    //math::XYZTLorentzVectorD hlt_p4;
+    //double hlt_eta;
+    //double hlt_phi;
     double hlt_rho;
     double hlt_chi2;
     double hlt_normalizedchi2;
@@ -170,9 +170,9 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
     double offline_ndof;
     double offline_z;
-    math::XYZTLorentzVectorD offline_p4;
-    double offline_eta;
-    double offline_phi;
+    //math::XYZTLorentzVectorD offline_p4;
+    //double offline_eta;
+    //double offline_phi;
     double offline_rho;
     double offline_chi2;
     double offline_normalizedchi2;
@@ -180,9 +180,9 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     size_t offline_trackssize;
     //double count_offline_pv=0;
 
-    double deta;
-    double dphi;
-    double delta_r;
+    //double deta;
+    //double dphi;
+    //double delta_r;
 
     //double min_delta_r_event=100000000;//arbitrary minimum delta R per event
     //double hlt_ndof_event;
@@ -195,8 +195,6 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     //double sum_min_delta_r_vertices=0;//to compute average min delta r per event
     //double count_hlt_vertices=0;
 
-    if (foundHLTVertexColl)
-    {
     for (auto const& hltVertex : HLTVertexCollection)
     {
       hlt_ndof=hltVertex.ndof();
@@ -207,15 +205,6 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       hlt_ntracks=hltVertex.nTracks();
       hlt_trackssize=hltVertex.tracksSize();
 
-      hlt_p4=hltVertex.p4();
-      hlt_eta=hlt_p4.Eta();
-      hlt_phi=hlt_p4.Phi();
-
-      //if((hlt_ndof>4) && (fabs(hlt_z)<=24) && (fabs(hlt_rho)<=2.0))
-      //{
-      //count_hlt_pv++;
-      //}
-
       histos1D_["hlt_ndof"]->Fill(hlt_ndof);
       histos1D_["hlt_z"]->Fill(hlt_z);
       histos1D_["hlt_rho"]->Fill(hlt_rho);
@@ -223,10 +212,9 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       histos1D_["hlt_chi2"]->Fill(hlt_chi2);
       histos1D_["hlt_normalizedchi2"]->Fill(hlt_normalizedchi2);
       histos1D_["hlt_trackssize"]->Fill(hlt_trackssize);
-  
-      //count_hlt_vertices++;
-      
-      for (auto const& offlineVertex : OfflineVertexCollection )
+    }
+
+     for (auto const& offlineVertex : OfflineVertexCollection )
       {
 	offline_ndof=offlineVertex.ndof();
 	offline_z=offlineVertex.z();
@@ -236,15 +224,6 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	offline_ntracks=offlineVertex.nTracks();
 	offline_trackssize=offlineVertex.tracksSize();
 
-	offline_p4=offlineVertex.p4();
-	offline_eta=offline_p4.Eta();
-	offline_phi=offline_p4.Phi();
-
-	//if((offline_ndof>4) && (fabs(offline_z)<=24) && (fabs(offline_rho)<=2.0))
-	//{
-	//count_offline_pv++;
-	//}
-
 	histos1D_["offline_ndof"]->Fill(offline_ndof);
 	histos1D_["offline_z"]->Fill(offline_z);
 	histos1D_["offline_rho"]->Fill(offline_rho);
@@ -252,17 +231,76 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	histos1D_["offline_chi2"]->Fill(offline_chi2);
 	histos1D_["offline_normalizedchi2"]->Fill(offline_normalizedchi2);
 	histos1D_["offline_trackssize"]->Fill(offline_trackssize);
-	
-	deta=hlt_eta-offline_eta; //difference in eta
-	dphi=hlt_phi=offline_phi; //difference in phi
-	delta_r=sqrt(deta*deta+dphi*dphi);
+      }
 
-	if(delta_r<min_delta_r)
-	{
-	  min_delta_r=delta_r;
-	}
-      }//end of offlineVertexCollection loop
-      histos1D_["min_delta_r"]->Fill(min_delta_r);
+    //if (foundHLTVertexColl)
+    //{
+    //for (auto const& hltVertex : HLTVertexCollection)
+    //{
+    // hlt_ndof=hltVertex.ndof();
+    //hlt_z=hltVertex.z();
+    //hlt_rho=hltVertex.position().Rho();
+    //hlt_chi2=hltVertex.chi2();
+    //hlt_normalizedchi2=hltVertex.normalizedChi2();
+    //hlt_ntracks=hltVertex.nTracks();
+    //hlt_trackssize=hltVertex.tracksSize();
+
+    //hlt_p4=hltVertex.p4();
+    //hlt_eta=hlt_p4.Eta();
+    //hlt_phi=hlt_p4.Phi();
+
+      //if((hlt_ndof>4) && (fabs(hlt_z)<=24) && (fabs(hlt_rho)<=2.0))
+      //{
+      //count_hlt_pv++;
+      //}
+
+      //histos1D_["hlt_ndof"]->Fill(hlt_ndof);
+      //histos1D_["hlt_z"]->Fill(hlt_z);
+      //histos1D_["hlt_rho"]->Fill(hlt_rho);
+      //histos1D_["hlt_ntracks"]->Fill(hlt_ntracks);
+      //histos1D_["hlt_chi2"]->Fill(hlt_chi2);
+      //histos1D_["hlt_normalizedchi2"]->Fill(hlt_normalizedchi2);
+      //histos1D_["hlt_trackssize"]->Fill(hlt_trackssize);
+  
+      //count_hlt_vertices++;
+      
+      //for (auto const& offlineVertex : OfflineVertexCollection )
+      //{
+     //offline_ndof=offlineVertex.ndof();
+     //offline_z=offlineVertex.z();
+     //offline_rho=offlineVertex.position().Rho();
+     //offline_chi2=offlineVertex.chi2();
+     //offline_normalizedchi2=offlineVertex.normalizedChi2();
+     //offline_ntracks=offlineVertex.nTracks();
+     //	offline_trackssize=offlineVertex.tracksSize();
+     //
+     //	offline_p4=offlineVertex.p4();
+     //	offline_eta=offline_p4.Eta();
+     //	offline_phi=offline_p4.Phi();
+
+	//if((offline_ndof>4) && (fabs(offline_z)<=24) && (fabs(offline_rho)<=2.0))
+	//{
+	//count_offline_pv++;
+	//}
+
+	//histos1D_["offline_ndof"]->Fill(offline_ndof);
+	//histos1D_["offline_z"]->Fill(offline_z);
+	//histos1D_["offline_rho"]->Fill(offline_rho);
+	//histos1D_["offline_ntracks"]->Fill(offline_ntracks);
+	//histos1D_["offline_chi2"]->Fill(offline_chi2);
+	//histos1D_["offline_normalizedchi2"]->Fill(offline_normalizedchi2);
+	//histos1D_["offline_trackssize"]->Fill(offline_trackssize);
+	
+	//deta=hlt_eta-offline_eta; //difference in eta
+	//dphi=hlt_phi=offline_phi; //difference in phi
+	//delta_r=sqrt(deta*deta+dphi*dphi);
+
+	//if(delta_r<min_delta_r)
+	//{
+     //min_delta_r=delta_r;
+     //}
+     //}//end of offlineVertexCollection loop
+  //histos1D_["min_delta_r"]->Fill(min_delta_r);
       //sum_min_delta_r_vertices+=min_delta_r;
 
       //if(min_delta_r<min_delta_r_event)
@@ -275,7 +313,7 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       //offline_z_event=offline_z;
       //offline_rho_event=offline_rho;
       //}
-    }// end of hltVertexCollection loop
+     //}// end of hltVertexCollection loop
     //histos1D_["offline_ndof_event"]->Fill(offline_ndof_event);
     //histos1D_["offline_z_event"]->Fill(offline_z_event);
     //histos1D_["offline_rho_event"]->Fill(offline_rho_event);
@@ -286,7 +324,7 @@ void vertexAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     //histos1D_["average_min_delta_r_event"]->Fill(sum_min_delta_r_vertices/count_hlt_vertices);
     //histos1D_["count_hlt_pv_event"]->Fill(count_hlt_pv);
     //histos1D_["count_offline_pv_event"]->Fill(count_offline_pv);
-    }//end of if (foundHLTVertexColl) loop
+    //}//end of if (foundHLTVertexColl) loop
 
     // Checking if the triggers were fired
     //bool baseTrigger = 0;
@@ -448,7 +486,7 @@ vertexAnalyzer::beginJob()
   //histos1D_[ "offline_z_event" ] = fs_->make< TH1D >( "offline_z_event", "offline_z_event", 100, -20.0, 20.0 );
   //histos1D_[ "offline_rho_event" ] = fs_->make< TH1D >( "offline_rho_event", "offline_rho_event", 100, -0.5, 0.5 );
 
-  histos1D_[ "min_delta_r" ] = fs_->make< TH1D >( "min_delta_r", "min_delta_r", 50, 0.0, 5.0 );
+  //histos1D_[ "min_delta_r" ] = fs_->make< TH1D >( "min_delta_r", "min_delta_r", 50, 0.0, 5.0 );
   //histos1D_[ "min_delta_r_event" ] = fs_->make< TH1D >( "min_delta_r_event", "min_delta_r_event", 50, 0.0, 5.0 );
   //histos1D_[ "average_min_delta_r_event" ] = fs_->make< TH1D >( "average_min_delta_r_event", "average_min_delta_r_event", 50, 0.0, 5.0 );
 
