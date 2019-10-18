@@ -401,14 +401,14 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 if ( hltHTpt40 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt40" ]->Fill( puppiHTpt40 );
                 if ( hltHTpt40 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt40" ]->Fill( puppiHTpt40 );
 
-		/// for puppiHT with pt >10
-                if ( hltHTpt50 > 800 ) histos1D_[ "puppiHTPassingHT800pt50" ]->Fill( puppiHTpt10 );
-                if ( hltHTpt50 > 850 ) histos1D_[ "puppiHTPassingHT850pt50" ]->Fill( puppiHTpt10 );
-                if ( hltHTpt50 > 900 ) histos1D_[ "puppiHTPassingHT900pt50" ]->Fill( puppiHTpt10 );
-                if ( hltHTpt50 > 950 ) histos1D_[ "puppiHTPassingHT950pt50" ]->Fill( puppiHTpt10 );
-                if ( hltHTpt50 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt50" ]->Fill( puppiHTpt10 );
-                if ( hltHTpt50 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt50" ]->Fill( puppiHTpt10 );
-                if ( hltHTpt50 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt50" ]->Fill( puppiHTpt10 );
+		/// for puppiHT with pt >50
+                if ( hltHTpt50 > 800 ) histos1D_[ "puppiHTPassingHT800pt50" ]->Fill( puppiHTpt50 );
+                if ( hltHTpt50 > 850 ) histos1D_[ "puppiHTPassingHT850pt50" ]->Fill( puppiHTpt50 );
+                if ( hltHTpt50 > 900 ) histos1D_[ "puppiHTPassingHT900pt50" ]->Fill( puppiHTpt50 );
+                if ( hltHTpt50 > 950 ) histos1D_[ "puppiHTPassingHT950pt50" ]->Fill( puppiHTpt50 );
+                if ( hltHTpt50 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt50" ]->Fill( puppiHTpt50 );
+                if ( hltHTpt50 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt50" ]->Fill( puppiHTpt50 );
+                if ( hltHTpt50 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt50" ]->Fill( puppiHTpt50 );
             }
         }
     }
