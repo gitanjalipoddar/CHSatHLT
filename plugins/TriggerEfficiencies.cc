@@ -508,6 +508,12 @@ void TriggerEfficiencies::beginJob() {
 	//histos1D_[ "HTPassingHT1000" ] = fs_->make< TH1D >( "HTPassingHT1000", "HTPassingHT1000", 2000, 0., 2000. );
 	//histos1D_[ "HTPassingHT1050" ] = fs_->make< TH1D >( "HTPassingHT1050", "HTPassingHT1050", 2000, 0., 2000. );
 
+	histos1D_[ "HTDenom_pt10" ] = fs_->make< TH1D >( "HTDenom_pt10", "HTDenom_pt10", 2000, 0., 2000. );
+	histos1D_[ "HTDenom_pt20" ] = fs_->make< TH1D >( "HTDenom_pt20", "HTDenom_pt20", 2000, 0., 2000. );
+	histos1D_[ "HTDenom_pt30" ] = fs_->make< TH1D >( "HTDenom_pt30", "HTDenom_pt30", 2000, 0., 2000. );
+	histos1D_[ "HTDenom_pt40" ] = fs_->make< TH1D >( "HTDenom_pt40", "HTDenom_pt40", 2000, 0., 2000. );
+	histos1D_[ "HTDenom_pt50" ] = fs_->make< TH1D >( "HTDenom_pt50", "HTDenom_pt50", 2000, 0., 2000. );
+
 	histos1D_[ "HTPassingHT800pt10" ] = fs_->make< TH1D >( "HTPassingHT800pt10", "HTPassingHT800pt10", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT850pt10" ] = fs_->make< TH1D >( "HTPassingHT850pt10", "HTPassingHT850pt10", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT900pt10" ] = fs_->make< TH1D >( "HTPassingHT900pt10", "HTPassingHT900pt10", 2000, 0., 2000. );
@@ -568,6 +574,13 @@ void TriggerEfficiencies::beginJob() {
 	//histos1D_[ "puppiHTPassingHT950" ] = fs_->make< TH1D >( "puppiHTPassingHT950", "puppiHTPassingHT950", 2000, 0., 2000. );
 	//histos1D_[ "puppiHTPassingHT1000" ] = fs_->make< TH1D >( "puppiHTPassingHT1000", "puppiHTPassingHT1000", 2000, 0., 2000. );
 	//histos1D_[ "puppiHTPassingHT1050" ] = fs_->make< TH1D >( "puppiHTPassingHT1050", "puppiHTPassingHT1050", 2000, 0., 2000. );
+
+	histos1D_[ "puppiHTDenom_pt10" ] = fs_->make< TH1D >( "puppiHTDenom_pt10", "puppiHTDenom_pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTDenom_pt20" ] = fs_->make< TH1D >( "puppiHTDenom_pt20", "puppiHTDenom_pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTDenom_pt30" ] = fs_->make< TH1D >( "puppiHTDenom_pt30", "puppiHTDenom_pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTDenom_pt40" ] = fs_->make< TH1D >( "puppiHTDenom_pt40", "puppiHTDenom_pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTDenom_pt50" ] = fs_->make< TH1D >( "puppiHTDenom_pt50", "puppiHTDenom_pt50", 2000, 0., 2000. );
+
 
 	histos1D_[ "puppiHTPassingHT800pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt10", "puppiHTPassingHT800pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT850pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt10", "puppiHTPassingHT850pt10", 2000, 0., 2000. );
