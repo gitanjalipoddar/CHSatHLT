@@ -306,47 +306,109 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 
             /////////////////////////////////////////////////////////////////////////////////
             /// This is for patJets
-            double puppiHT = 0;
-            int kk = 0;
+            double puppiHTpt10 = 0;
+	    double puppiHTpt20 = 0;
+	    double puppiHTpt30 = 0;
+	    double puppiHTpt40 = 0;
+	    double puppiHTpt50 = 0;
+	    
+            //int kk = 0;
             for (const reco::Jet &patjet : *patjets) {
 
                 if( patjet.pt() < recojetPt_ ) continue;
                 if( TMath::Abs(patjet.eta()) > 2.5 ) continue;
                 if (DEBUG_) LogWarning("patjets") << patjet.pt();
-                puppiHT += patjet.pt();
+                puppiHTpt10 += patjet.pt();
 
-                if (++kk==1){
-                    histos1D_[ "puppijet1Pt" ]->Fill( patjet.pt() );
+                //if (++kk==1){
+		//histos1D_[ "puppijet1Pt" ]->Fill( patjet.pt() );
 
                     // this will help later, but good check for now.
-                    if ( baseTrigger ) {
-                        histos1D_[ "puppijet1PtDenom" ]->Fill( patjet.pt() );
-                        if ( ORTriggers ) histos1D_[ "puppijet1PtPassing" ]->Fill( patjet.pt() );
-                    }
-                }
+                    //if ( baseTrigger ) {
+		// histos1D_[ "puppijet1PtDenom" ]->Fill( patjet.pt() );
+		//      if ( ORTriggers ) histos1D_[ "puppijet1PtPassing" ]->Fill( patjet.pt() );
+		//  }
+                //}
+
+		if(patjet.pt()<20) continue;
+		puppiHTpt20+=patjet.pt();
+
+		if(patjet.pt()<30) continue;
+		puppiHTpt30+=patjet.pt();
+
+		if(patjet.pt()<40) continue;
+		puppiHTpt40+=patjet.pt();
+
+		if(patjet.pt()<50) continue;
+		puppiHTpt50+=patjet.pt();
 
             }
-            histos1D_[ "puppiHT" ]->Fill( puppiHT );
+            histos1D_[ "puppiJetHT_pt10" ]->Fill( puppiHTpt10 );
+	    histos1D_[ "puppiJetHT_pt20" ]->Fill( puppiHTpt20 );
+	    histos1D_[ "puppiJetHT_pt30" ]->Fill( puppiHTpt30 );
+	    histos1D_[ "puppiJetHT_pt40" ]->Fill( puppiHTpt40 );
+	    histos1D_[ "puppiJetHT_pt50" ]->Fill( puppiHTpt50 );
             
             if ( baseTrigger ) {
-                histos1D_[ "puppiHTDenom" ]->Fill( puppiHT );
-                if ( ORTriggers ) histos1D_[ "puppiHTPassing" ]->Fill( puppiHT );
-                if ( hltHT > 700 ) histos1D_[ "puppiHTPassingHT700" ]->Fill( puppiHT );
-                if ( hltHT > 800 ) histos1D_[ "puppiHTPassingHT800" ]->Fill( puppiHT );
-                if ( hltHT > 850 ) histos1D_[ "puppiHTPassingHT850" ]->Fill( puppiHT );
-                if ( hltHT > 900 ) histos1D_[ "puppiHTPassingHT900" ]->Fill( puppiHT );
-                if ( hltHT > 950 ) histos1D_[ "puppiHTPassingHT950" ]->Fill( puppiHT );
-                if ( hltHT > 1000 ) histos1D_[ "puppiHTPassingHT1000" ]->Fill( puppiHT );
-                if ( hltHT > 1050 ) histos1D_[ "puppiHTPassingHT1050" ]->Fill( puppiHT );
+                histos1D_[ "puppiHTDenom_pt10" ]->Fill( puppiHTpt10 );
+		histos1D_[ "puppiHTDenom_pt20" ]->Fill( puppiHTpt20 );
+		histos1D_[ "puppiHTDenom_pt30" ]->Fill( puppiHTpt30 );
+		histos1D_[ "puppiHTDenom_pt40" ]->Fill( puppiHTpt40 );
+		histos1D_[ "puppiHTDenom_pt50" ]->Fill( puppiHTpt50 );
+
+                if ( ORTriggers )// histos1D_[ "puppiHTPassing" ]->Fill( puppiHT );
+		  //if ( hltHT > 700 ) histos1D_[ "puppiHTPassingHT700" ]->Fill( puppiHT );
+		  //if ( hltHT > 800 ) histos1D_[ "puppiHTPassingHT800" ]->Fill( puppiHT );
+		  //if ( hltHT > 850 ) histos1D_[ "puppiHTPassingHT850" ]->Fill( puppiHT );
+		  //if ( hltHT > 900 ) histos1D_[ "puppiHTPassingHT900" ]->Fill( puppiHT );
+		  //if ( hltHT > 950 ) histos1D_[ "puppiHTPassingHT950" ]->Fill( puppiHT );
+		  //if ( hltHT > 1000 ) histos1D_[ "puppiHTPassingHT1000" ]->Fill( puppiHT );
+		  //if ( hltHT > 1050 ) histos1D_[ "puppiHTPassingHT1050" ]->Fill( puppiHT );
 
                 /// for puppiHT with pt >10
-                if ( hltHTpt10 > 700 ) histos1D_[ "puppiHTPassingHT700pt10" ]->Fill( puppiHT );
-                if ( hltHTpt10 > 800 ) histos1D_[ "puppiHTPassingHT800pt10" ]->Fill( puppiHT );
-                if ( hltHTpt10 > 850 ) histos1D_[ "puppiHTPassingHT850pt10" ]->Fill( puppiHT );
-                if ( hltHTpt10 > 900 ) histos1D_[ "puppiHTPassingHT900pt10" ]->Fill( puppiHT );
-                if ( hltHTpt10 > 950 ) histos1D_[ "puppiHTPassingHT950pt10" ]->Fill( puppiHT );
-                if ( hltHTpt10 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt10" ]->Fill( puppiHT );
-                if ( hltHTpt10 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 800 ) histos1D_[ "puppiHTPassingHT800pt10" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt10 > 850 ) histos1D_[ "puppiHTPassingHT850pt10" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt10 > 900 ) histos1D_[ "puppiHTPassingHT900pt10" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt10 > 950 ) histos1D_[ "puppiHTPassingHT950pt10" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt10 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt10" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt10 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt10" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt10 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt10" ]->Fill( puppiHTpt10 );
+
+		/// for puppiHT with pt >20
+                if ( hltHTpt20 > 800 ) histos1D_[ "puppiHTPassingHT800pt20" ]->Fill( puppiHTpt20 );
+                if ( hltHTpt20 > 850 ) histos1D_[ "puppiHTPassingHT850pt20" ]->Fill( puppiHTpt20 );
+                if ( hltHTpt20 > 900 ) histos1D_[ "puppiHTPassingHT900pt20" ]->Fill( puppiHTpt20 );
+                if ( hltHTpt20 > 950 ) histos1D_[ "puppiHTPassingHT950pt20" ]->Fill( puppiHTpt20 );
+                if ( hltHTpt20 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt20" ]->Fill( puppiHTpt20 );
+                if ( hltHTpt20 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt20" ]->Fill( puppiHTpt20 );
+                if ( hltHTpt20 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt20" ]->Fill( puppiHTpt20 );
+
+		/// for puppiHT with pt >30
+                if ( hltHTpt30 > 800 ) histos1D_[ "puppiHTPassingHT800pt30" ]->Fill( puppiHTpt30 );
+                if ( hltHTpt30 > 850 ) histos1D_[ "puppiHTPassingHT850pt30" ]->Fill( puppiHTpt30 );
+                if ( hltHTpt30 > 900 ) histos1D_[ "puppiHTPassingHT900pt30" ]->Fill( puppiHTpt30 );
+                if ( hltHTpt30 > 950 ) histos1D_[ "puppiHTPassingHT950pt30" ]->Fill( puppiHTpt30 );
+                if ( hltHTpt30 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt30" ]->Fill( puppiHTpt30 );
+                if ( hltHTpt30 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt30" ]->Fill( puppiHTpt30 );
+                if ( hltHTpt30 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt30" ]->Fill( puppiHTpt30 );
+
+		/// for puppiHT with pt >40
+                if ( hltHTpt40 > 800 ) histos1D_[ "puppiHTPassingHT800pt40" ]->Fill( puppiHTpt40 );
+                if ( hltHTpt40 > 850 ) histos1D_[ "puppiHTPassingHT850pt40" ]->Fill( puppiHTpt40 );
+                if ( hltHTpt40 > 900 ) histos1D_[ "puppiHTPassingHT900pt40" ]->Fill( puppiHTpt40 );
+                if ( hltHTpt40 > 950 ) histos1D_[ "puppiHTPassingHT950pt40" ]->Fill( puppiHTpt40 );
+                if ( hltHTpt40 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt40" ]->Fill( puppiHTpt40 );
+                if ( hltHTpt40 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt40" ]->Fill( puppiHTpt40 );
+                if ( hltHTpt40 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt40" ]->Fill( puppiHTpt40 );
+
+		/// for puppiHT with pt >10
+                if ( hltHTpt50 > 800 ) histos1D_[ "puppiHTPassingHT800pt50" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt50 > 850 ) histos1D_[ "puppiHTPassingHT850pt50" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt50 > 900 ) histos1D_[ "puppiHTPassingHT900pt50" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt50 > 950 ) histos1D_[ "puppiHTPassingHT950pt50" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt50 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt50" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt50 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt50" ]->Fill( puppiHTpt10 );
+                if ( hltHTpt50 > 1100 ) histos1D_[ "puppiHTPassingHT1100pt50" ]->Fill( puppiHTpt10 );
             }
         }
     }
@@ -487,29 +549,65 @@ void TriggerEfficiencies::beginJob() {
 	histos1D_[ "HTPassingHT1100pt50" ] = fs_->make< TH1D >( "HTPassingHT1100pt50", "HTPassingHT1100pt50", 2000, 0., 2000. );
 
     /////////////////////////////////////////////////////////////
-	histos1D_[ "puppijet1Pt" ] = fs_->make< TH1D >( "puppijet1Pt", "puppijet1Pt", 1000, 0., 1000. );
-	histos1D_[ "puppiHT" ] = fs_->make< TH1D >( "puppiHT", "puppiHT", 100, 0., 2000. );
+	//histos1D_[ "puppijet1Pt" ] = fs_->make< TH1D >( "puppijet1Pt", "puppijet1Pt", 1000, 0., 1000. );
+	histos1D_[ "puppiJetHT_pt10" ] = fs_->make< TH1D >( "puppiJetHT_pt10", "puppiJetHT_pt10", 100, 0., 2000. );
+	histos1D_[ "puppiJetHT_pt20" ] = fs_->make< TH1D >( "puppiJetHT_pt20", "puppiJetHT_pt20", 100, 0., 2000. );
+	histos1D_[ "puppiJetHT_pt30" ] = fs_->make< TH1D >( "puppiJetHT_pt30", "puppiJetHT_pt30", 100, 0., 2000. );
+	histos1D_[ "puppiJetHT_pt40" ] = fs_->make< TH1D >( "puppiJetHT_pt40", "puppiJetHT_pt40", 100, 0., 2000. );
+	histos1D_[ "puppiJetHT_pt50" ] = fs_->make< TH1D >( "puppiJetHT_pt50", "puppiJetHT_pt50", 100, 0., 2000. );
 
 
-	histos1D_[ "puppijet1PtDenom" ] = fs_->make< TH1D >( "puppijet1PtDenom", "puppijet1PtDenom", 1000, 0., 1000. );
-	histos1D_[ "puppijet1PtPassing" ] = fs_->make< TH1D >( "puppijet1PtPassing", "puppijet1PtPassing", 1000, 0., 1000. );
-	histos1D_[ "puppiHTDenom" ] = fs_->make< TH1D >( "puppiHTDenom", "puppiHTDenom", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassing" ] = fs_->make< TH1D >( "puppiHTPassing", "puppiHTPassing", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT700" ] = fs_->make< TH1D >( "puppiHTPassingHT700", "puppiHTPassingHT700", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT800" ] = fs_->make< TH1D >( "puppiHTPassingHT800", "puppiHTPassingHT800", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT850" ] = fs_->make< TH1D >( "puppiHTPassingHT850", "puppiHTPassingHT850", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT900" ] = fs_->make< TH1D >( "puppiHTPassingHT900", "puppiHTPassingHT900", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT950" ] = fs_->make< TH1D >( "puppiHTPassingHT950", "puppiHTPassingHT950", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT1000" ] = fs_->make< TH1D >( "puppiHTPassingHT1000", "puppiHTPassingHT1000", 2000, 0., 2000. );
-	histos1D_[ "puppiHTPassingHT1050" ] = fs_->make< TH1D >( "puppiHTPassingHT1050", "puppiHTPassingHT1050", 2000, 0., 2000. );
+	//histos1D_[ "puppijet1PtDenom" ] = fs_->make< TH1D >( "puppijet1PtDenom", "puppijet1PtDenom", 1000, 0., 1000. );
+	//histos1D_[ "puppijet1PtPassing" ] = fs_->make< TH1D >( "puppijet1PtPassing", "puppijet1PtPassing", 1000, 0., 1000. );
+	//histos1D_[ "puppiHTDenom" ] = fs_->make< TH1D >( "puppiHTDenom", "puppiHTDenom", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassing" ] = fs_->make< TH1D >( "puppiHTPassing", "puppiHTPassing", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT700" ] = fs_->make< TH1D >( "puppiHTPassingHT700", "puppiHTPassingHT700", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT800" ] = fs_->make< TH1D >( "puppiHTPassingHT800", "puppiHTPassingHT800", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT850" ] = fs_->make< TH1D >( "puppiHTPassingHT850", "puppiHTPassingHT850", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT900" ] = fs_->make< TH1D >( "puppiHTPassingHT900", "puppiHTPassingHT900", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT950" ] = fs_->make< TH1D >( "puppiHTPassingHT950", "puppiHTPassingHT950", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT1000" ] = fs_->make< TH1D >( "puppiHTPassingHT1000", "puppiHTPassingHT1000", 2000, 0., 2000. );
+	//histos1D_[ "puppiHTPassingHT1050" ] = fs_->make< TH1D >( "puppiHTPassingHT1050", "puppiHTPassingHT1050", 2000, 0., 2000. );
 
-	histos1D_[ "puppiHTPassingHT700pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT700pt10", "puppiHTPassingHT700pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT800pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt10", "puppiHTPassingHT800pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT850pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt10", "puppiHTPassingHT850pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT900pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT900pt10", "puppiHTPassingHT900pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT950pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT950pt10", "puppiHTPassingHT950pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT1000pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT1000pt10", "puppiHTPassingHT1000pt10", 2000, 0., 2000. );
 	histos1D_[ "puppiHTPassingHT1050pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT1050pt10", "puppiHTPassingHT1050pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1100pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT1100pt10", "puppiHTPassingHT1100pt10", 2000, 0., 2000. );
+
+	histos1D_[ "puppiHTPassingHT800pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt20", "puppiHTPassingHT800pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT850pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt20", "puppiHTPassingHT850pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT900pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT900pt20", "puppiHTPassingHT900pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT950pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT950pt20", "puppiHTPassingHT950pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1000pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT1000pt20", "puppiHTPassingHT1000pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1050pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT1050pt20", "puppiHTPassingHT1050pt20", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1100pt20" ] = fs_->make< TH1D >( "puppiHTPassingHT1100pt20", "puppiHTPassingHT1100pt20", 2000, 0., 2000. );
+
+	histos1D_[ "puppiHTPassingHT800pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt30", "puppiHTPassingHT800pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT850pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt30", "puppiHTPassingHT850pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT900pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT900pt30", "puppiHTPassingHT900pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT950pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT950pt30", "puppiHTPassingHT950pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1000pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT1000pt30", "puppiHTPassingHT1000pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1050pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT1050pt30", "puppiHTPassingHT1050pt30", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1100pt30" ] = fs_->make< TH1D >( "puppiHTPassingHT1100pt30", "puppiHTPassingHT1100pt30", 2000, 0., 2000. );
+
+	histos1D_[ "puppiHTPassingHT800pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt40", "puppiHTPassingHT800pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT850pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt40", "puppiHTPassingHT850pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT900pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT900pt40", "puppiHTPassingHT900pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT950pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT950pt40", "puppiHTPassingHT950pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1000pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT1000pt40", "puppiHTPassingHT1000pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1050pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT1050pt40", "puppiHTPassingHT1050pt40", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1100pt40" ] = fs_->make< TH1D >( "puppiHTPassingHT1100pt40", "puppiHTPassingHT1100pt40", 2000, 0., 2000. );
+
+	histos1D_[ "puppiHTPassingHT800pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt50", "puppiHTPassingHT800pt50", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT850pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt50", "puppiHTPassingHT850pt50", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT900pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT900pt50", "puppiHTPassingHT900pt50", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT950pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT950pt50", "puppiHTPassingHT950pt50", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1000pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT1000pt50", "puppiHTPassingHT1000pt50", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1050pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT1050pt50", "puppiHTPassingHT1050pt50", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1100pt50" ] = fs_->make< TH1D >( "puppiHTPassingHT1100pt50", "puppiHTPassingHT1100pt50", 2000, 0., 2000. );
 
 
 
