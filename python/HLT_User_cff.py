@@ -1,6 +1,6 @@
-# hltGetConfiguration --cff --offline /users/algomez/PUatHLT/V16 --setup /dev/CMSSW_10_1_0/GRun
+# hltGetConfiguration --cff --offline /users/algomez/PUatHLT/V17 --setup /dev/CMSSW_10_1_0/GRun
 
-# /users/algomez/PUatHLT/V16 (CMSSW_10_1_10)
+# /users/algomez/PUatHLT/V17 (CMSSW_10_1_10)
 
 import FWCore.ParameterSet.Config as cms
 
@@ -8,7 +8,7 @@ fragment = cms.ProcessFragment( "HLT" )
 fragment.load("setup_dev_CMSSW_10_1_0_GRun_cff")
 
 fragment.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/users/algomez/PUatHLT/V16')
+  tableName = cms.string('/users/algomez/PUatHLT/V17')
 )
 
 fragment.hltGetConditions = cms.EDAnalyzer( "EventSetupRecordDataGetter",
@@ -6940,10 +6940,67 @@ fragment.hltPrePFPuppiHTNoThreshold = cms.EDFilter( "HLTPrescaler",
     L1GtReadoutRecordTag = cms.InputTag( "hltGtStage2Digis" ),
     offset = cms.uint32( 0 )
 )
-fragment.hltPFPuppiProducer = cms.EDProducer( "SoftKillerProducer",
-    Rho_EtaMax = cms.double( 5.0 ),
-    rParam = cms.double( 0.4 ),
-    PFCandidates = cms.InputTag( "hltParticleFlow" )
+fragment.hltPFPuppiProducer = cms.EDProducer( "PuppiProducer",
+       puppiDiagnostics = cms.bool(False),
+       puppiForLeptons = cms.bool(False),
+       UseDeltaZCut   = cms.bool(True),
+       DeltaZCut      = cms.double(0.3),
+       PtMaxNeutrals  = cms.double(200.),
+       candName = cms.InputTag( "hltParticleFlow" ),
+       vertexName = cms.InputTag( 'hltVerticesPFFilter' ),
+       applyCHS       = cms.bool  (True),
+       invertPuppi    = cms.bool  (False),
+       useExp         = cms.bool  (False),
+       MinPuppiWeight = cms.double(0.01),
+       useExistingWeights = cms.bool(False),
+       useWeightsNoLep    = cms.bool(False),
+       clonePackedCands   = cms.bool(False), # should only be set to True for MiniAOD
+       vtxNdofCut     = cms.int32(4),
+       vtxZCut        = cms.double(24),
+       algos          = cms.VPSet(
+        cms.PSet(
+         etaMin = cms.vdouble(0.),
+         etaMax = cms.vdouble(2.5),
+         ptMin  = cms.vdouble(0.),
+         MinNeutralPt   = cms.vdouble(0.2),
+         MinNeutralPtSlope   = cms.vdouble(0.015),
+         RMSEtaSF = cms.vdouble(1.0),
+         MedEtaSF = cms.vdouble(1.0),
+         EtaMaxExtrap = cms.double(2.0),
+         puppiAlgos = cms.VPSet(
+                 cms.PSet(
+                  algoId           = cms.int32(5),  #0 is default Puppi
+                  useCharged       = cms.bool(True),
+                  applyLowPUCorr   = cms.bool(True),
+                  combOpt          = cms.int32(0),
+                  cone             = cms.double(0.4),
+                  rmsPtMin         = cms.double(0.1),
+                  rmsScaleFactor   = cms.double(1.0)
+                 )
+                ),
+        ),
+        cms.PSet(
+         etaMin              = cms.vdouble( 2.5,  3.0),
+         etaMax              = cms.vdouble( 3.0, 10.0),
+         ptMin               = cms.vdouble( 0.0,  0.0),
+         MinNeutralPt        = cms.vdouble( 1.7,  2.0),
+         MinNeutralPtSlope   = cms.vdouble(0.08, 0.08),
+         RMSEtaSF            = cms.vdouble(1.20, 0.95),
+         MedEtaSF            = cms.vdouble(0.90, 0.75),
+         EtaMaxExtrap        = cms.double( 2.0),
+         puppiAlgos = cms.VPSet(
+                cms.PSet(
+                 algoId         = cms.int32(5),  #0 is default Puppi
+                 useCharged     = cms.bool(False),
+                 applyLowPUCorr = cms.bool(True),
+                 combOpt        = cms.int32(0),
+                 cone           = cms.double(0.4),
+                 rmsPtMin       = cms.double(0.5),
+                 rmsScaleFactor = cms.double(1.0)
+                 )
+                ),
+        ),
+      )
 )
 fragment.hltAK4PFJetsForPuppi = cms.EDProducer( "FastjetJetProducer",
     Active_Area_Repeats = cms.int32( 5 ),
@@ -7335,7 +7392,6 @@ fragment.HLTAK4PFJetsCorrectionSequenceForCHS = cms.Sequence( fragment.hltFixedG
 fragment.HLTAK4PFJetsSequenceForCHS = cms.Sequence( fragment.HLTPreAK4PFJetsRecoSequence + fragment.HLTAK4PFJetsReconstructionSequenceForCHS + fragment.HLTAK4PFJetsCorrectionSequenceForCHS )
 fragment.HLTTrackingForBeamSpot = cms.Sequence( fragment.HLTPreAK4PFJetsRecoSequence + fragment.HLTL2muonrecoSequence + fragment.HLTL3muonrecoSequence + fragment.HLTDoLocalPixelSequence + fragment.HLTRecopixelvertexingSequence + fragment.HLTDoLocalStripSequence + fragment.HLTIterativeTrackingIter02 + fragment.hltPFMuonMerging )
 fragment.HLTAK4PFJetsReconstructionSequenceForCHSVerticesPF = cms.Sequence( fragment.HLTL2muonrecoSequence + fragment.HLTTrackReconstructionForPF + fragment.HLTParticleFlowSequence + fragment.hltVerticesPF + fragment.hltVerticesPFSelector + fragment.hltVerticesPFFilter + fragment.hltparticleFlowTmpPtrs + fragment.hltpfPileUpVerticesPF + fragment.hltpfNoPileUpVerticesPF + fragment.hltAK4PFJetsForCHSVerticesPF + fragment.hltAK4PFJetsLooseIDForCHSVerticesPF + fragment.hltAK4PFJetsTightIDForCHSVerticesPF )
-###fragment.HLTAK4PFJetsReconstructionSequenceForCHSVerticesPF = cms.Sequence( fragment.HLTL2muonrecoSequence + fragment.HLTTrackReconstructionForPF + fragment.HLTParticleFlowSequence + fragment.HLTTrackingForBeamSpot + fragment.hltVerticesPF + fragment.hltVerticesPFSelector + fragment.hltVerticesPFFilter + fragment.hltparticleFlowTmpPtrs + fragment.hltpfPileUpVerticesPF + fragment.hltpfNoPileUpVerticesPF + fragment.hltAK4PFJetsForCHSVerticesPF + fragment.hltAK4PFJetsLooseIDForCHSVerticesPF + fragment.hltAK4PFJetsTightIDForCHSVerticesPF )
 fragment.HLTAK4PFJetsSequenceForCHSVerticesPF = cms.Sequence( fragment.HLTPreAK4PFJetsRecoSequence + fragment.HLTAK4PFJetsReconstructionSequenceForCHSVerticesPF + fragment.HLTAK4PFJetsCorrectionSequenceForCHS )
 fragment.HLTAK4PFJetsReconstructionSequenceForSK = cms.Sequence( fragment.HLTL2muonrecoSequence + fragment.HLTTrackReconstructionForPF + fragment.HLTParticleFlowSequence + fragment.hltPFSoftKillerProducer + fragment.hltAK4PFJetsForSK + fragment.hltAK4PFJetsLooseIDForSK + fragment.hltAK4PFJetsTightIDForSK )
 fragment.HLTAK4PFCorrectorProducersSequence = cms.Sequence( fragment.hltAK4PFFastJetCorrector + fragment.hltAK4PFRelativeCorrector + fragment.hltAK4PFAbsoluteCorrector + fragment.hltAK4PFResidualCorrector + fragment.hltAK4PFCorrector )
