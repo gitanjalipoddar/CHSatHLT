@@ -2,7 +2,7 @@
 #####gfal-ls srm://storage01.lcg.cscs.ch:8443/srm/managerv2?SFN=/pnfs/lcg.cscs.ch/cms/trivcat/store/user/gpoddar/PUatHLT/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/crab_QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8_TriggerStudies_v01/190902_094522/0000/
 
 prefix=srm://storage01.lcg.cscs.ch:8443/srm/managerv2?SFN=/pnfs/lcg.cscs.ch/cms/trivcat/store/user/gpoddar/
-folder=PUatHLT/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/crab_QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8_TriggerStudies_v01/190902_094522/0000/
+folder=PUatHLT/QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8/crab_QCD_Pt-15to3000_TuneCP5_Flat_13TeV_pythia8_TriggerStudies_v01/191010_092250/0000/
 nameOutput='reRunHLTwithAnalyzer_MC.root'
 
 mkdir -p tmpFolder/
