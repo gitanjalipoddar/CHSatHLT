@@ -25,7 +25,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 
-#include "PUHLT/CHSatHLT/interface/CommonVariablesStructure.h"
+#include "PUHLT/PUmitigationatHLT/interface/CommonVariablesStructure.h"
 
 using namespace edm;
 using namespace std;
@@ -177,7 +177,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
         }
 
         //histos2D_[ "hltJetPtvsMass" ]->Fill( hltPt, hltMass );
-        histos1D_[ "hltJetHT" ]->Fill( hltHT );
+	histos1D_[ "hltJetHT" ]->Fill( hltHT );
         histos1D_[ "hltnumJets" ]->Fill( numHLTJets );
         histos1D_[ "hltJetHT_pt10" ]->Fill( hltHTpt10 );
         histos1D_[ "hltnumJets_pt10" ]->Fill( numHLTJetspt10 );
@@ -248,7 +248,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		histos1D_[ "HTDenom_pt50" ]->Fill( HTpt50 );
 		
 		
-                if ( ORTriggers ) //histos1D_[ "HTPassing" ]->Fill( HT );
+                //if ( ORTriggers ) histos1D_[ "HTPassing" ]->Fill( HT );
                 //if ( hltHT > 700 ) histos1D_[ "HTPassingHT700" ]->Fill( HT ); //since recojetpt_=10, there is no offline HTpt0
                 //if ( hltHT > 800 ) histos1D_[ "HTPassingHT800" ]->Fill( HT );
                 //if ( hltHT > 850 ) histos1D_[ "HTPassingHT850" ]->Fill( HT );
@@ -356,7 +356,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		histos1D_[ "puppiHTDenom_pt40" ]->Fill( puppiHTpt40 );
 		histos1D_[ "puppiHTDenom_pt50" ]->Fill( puppiHTpt50 );
 
-                if ( ORTriggers )// histos1D_[ "puppiHTPassing" ]->Fill( puppiHT );
+                //if ( ORTriggers ) histos1D_[ "puppiHTPassing" ]->Fill( puppiHT );
 		  //if ( hltHT > 700 ) histos1D_[ "puppiHTPassingHT700" ]->Fill( puppiHT );
 		  //if ( hltHT > 800 ) histos1D_[ "puppiHTPassingHT800" ]->Fill( puppiHT );
 		  //if ( hltHT > 850 ) histos1D_[ "puppiHTPassingHT850" ]->Fill( puppiHT );
