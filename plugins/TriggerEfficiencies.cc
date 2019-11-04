@@ -22,6 +22,7 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 
 #include "PUHLT/PUmitigationatHLT/interface/CommonVariablesStructure.h"
@@ -29,13 +30,14 @@
 using namespace edm;
 using namespace std;
 using namespace reco;
+using namespace pat;
 
-class TriggerValidationAndEfficiencies : public EDAnalyzer {
+class TriggerEfficiencies : public EDAnalyzer {
 
 	public:
-		explicit TriggerValidationAndEfficiencies(const ParameterSet&);
+		explicit TriggerEfficiencies(const ParameterSet&);
       		static void fillDescriptions(ConfigurationDescriptions & descriptions);
-		~TriggerValidationAndEfficiencies() {}
+		~TriggerEfficiencies() {}
 
 	private:
 		virtual void analyze(const Event&, const EventSetup&) override;
@@ -44,7 +46,8 @@ class TriggerValidationAndEfficiencies : public EDAnalyzer {
 	EDGetTokenT<TriggerResults> triggerBits_;
 	//EDGetTokenT<trigger::TriggerFilterObjectWithRefs> triggerObjects_;
 	EDGetTokenT<PFJetCollection> triggerObjects_;
-	EDGetTokenT<PFJetCollection> jetToken_;
+	EDGetTokenT<PFJetCollection> recoJetToken_;
+	EDGetTokenT<PFJetCollection> patJetToken_;
 	string baseTrigger_;
     vector<string> triggerPass_;
     vector<int> triggerOverlap_;
@@ -52,18 +55,18 @@ class TriggerValidationAndEfficiencies : public EDAnalyzer {
 	double recojetPt_;
 	bool AK8jets_;
 	bool DEBUG_;
-    std::vector<reco::PFJetRef> jetRefVec;
 
 	Service<TFileService> fs_;
 	map< string, TH1D* > histos1D_;
 	map< string, TH2D* > histos2D_;
 };
 
-TriggerValidationAndEfficiencies::TriggerValidationAndEfficiencies(const ParameterSet& iConfig):
+TriggerEfficiencies::TriggerEfficiencies(const ParameterSet& iConfig):
 	triggerBits_(consumes<TriggerResults>(iConfig.getParameter<InputTag>("bits"))),
 	//triggerObjects_(consumes<trigger::TriggerFilterObjectWithRef>(iConfig.getParameter<InputTag>("objects"))),
 	triggerObjects_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("objects"))),
-	jetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("recoJets")))
+	recoJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("recoJets"))),
+	patJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("patJets")))
 {
 	baseTrigger_ = iConfig.getParameter<string>("baseTrigger");
 	triggerPass_ = iConfig.getParameter<vector<string>>("triggerPass");
@@ -74,16 +77,18 @@ TriggerValidationAndEfficiencies::TriggerValidationAndEfficiencies(const Paramet
 	DEBUG_ = iConfig.getParameter<bool>("DEBUG");
 }
 
-void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup) {
+void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	Handle<TriggerResults> triggerBits;
 	//Handle<trigger::TriggerFilterObjectWithRefs> triggerObjects;
 	Handle<PFJetCollection> triggerObjects;
-	Handle<PFJetCollection> jets;
+	Handle<PFJetCollection> recojets;
+	Handle<PFJetCollection> patjets;
 
 	iEvent.getByToken(triggerBits_, triggerBits);
 	iEvent.getByToken(triggerObjects_, triggerObjects);
-	iEvent.getByToken(jetToken_, jets);
+	iEvent.getByToken(recoJetToken_, recojets);
+	iEvent.getByToken(patJetToken_, patjets);
 
 	const TriggerNames &names = iEvent.triggerNames(*triggerBits);
 
@@ -147,23 +152,24 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
 	    
         if ( baseTrigger || ORTriggers ) { // checking if both triggers passed
 
+            /////////////////////////////////////////////////////////////////////////////////
             /// This is for recoJets
             double HT = 0;
             int k = 0;
-            for (const reco::Jet &jet : *jets) {
+            for (const reco::Jet &recojet : *recojets) {
 
-                if( jet.pt() < recojetPt_ ) continue;
-                if( TMath::Abs(jet.eta()) > 2.5 ) continue;
-                if (DEBUG_) LogWarning("reco jets") << jet.pt();
-                HT += jet.pt();
+                if( recojet.pt() < recojetPt_ ) continue;
+                if( TMath::Abs(recojet.eta()) > 2.5 ) continue;
+                if (DEBUG_) LogWarning("recojets") << recojet.pt();
+                HT += recojet.pt();
 
                 if (++k==1){
-                    histos1D_[ "jet1Pt" ]->Fill( jet.pt() );
+                    histos1D_[ "jet1Pt" ]->Fill( recojet.pt() );
 
                     // this will help later, but good check for now.
                     if ( baseTrigger ) {
-                        histos1D_[ "jet1PtDenom" ]->Fill( jet.pt() );
-                        if ( ORTriggers ) histos1D_[ "jet1PtPassing" ]->Fill( jet.pt() );
+                        histos1D_[ "jet1PtDenom" ]->Fill( recojet.pt() );
+                        if ( ORTriggers ) histos1D_[ "jet1PtPassing" ]->Fill( recojet.pt() );
                     }
                 }
 
@@ -189,6 +195,52 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
                 if ( hltHTpt10 > 950 ) histos1D_[ "HTPassingHT950pt10" ]->Fill( HT );
                 if ( hltHTpt10 > 1000 ) histos1D_[ "HTPassingHT1000pt10" ]->Fill( HT );
                 if ( hltHTpt10 > 1050 ) histos1D_[ "HTPassingHT1050pt10" ]->Fill( HT );
+            }
+            /////////////////////////////////////////////////////////////////////////////////
+
+            /////////////////////////////////////////////////////////////////////////////////
+            /// This is for patJets
+            double puppiHT = 0;
+            int kk = 0;
+            for (const reco::Jet &patjet : *patjets) {
+
+                if( patjet.pt() < recojetPt_ ) continue;
+                if( TMath::Abs(patjet.eta()) > 2.5 ) continue;
+                if (DEBUG_) LogWarning("patjets") << patjet.pt();
+                puppiHT += patjet.pt();
+
+                if (++kk==1){
+                    histos1D_[ "puppijet1Pt" ]->Fill( patjet.pt() );
+
+                    // this will help later, but good check for now.
+                    if ( baseTrigger ) {
+                        histos1D_[ "puppijet1PtDenom" ]->Fill( patjet.pt() );
+                        if ( ORTriggers ) histos1D_[ "puppijet1PtPassing" ]->Fill( patjet.pt() );
+                    }
+                }
+
+            }
+            histos1D_[ "puppiHT" ]->Fill( puppiHT );
+            
+            if ( baseTrigger ) {
+                histos1D_[ "puppiHTDenom" ]->Fill( puppiHT );
+                if ( ORTriggers ) histos1D_[ "puppiHTPassing" ]->Fill( puppiHT );
+                if ( hltHT > 700 ) histos1D_[ "puppiHTPassingHT700" ]->Fill( puppiHT );
+                if ( hltHT > 800 ) histos1D_[ "puppiHTPassingHT800" ]->Fill( puppiHT );
+                if ( hltHT > 850 ) histos1D_[ "puppiHTPassingHT850" ]->Fill( puppiHT );
+                if ( hltHT > 900 ) histos1D_[ "puppiHTPassingHT900" ]->Fill( puppiHT );
+                if ( hltHT > 950 ) histos1D_[ "puppiHTPassingHT950" ]->Fill( puppiHT );
+                if ( hltHT > 1000 ) histos1D_[ "puppiHTPassingHT1000" ]->Fill( puppiHT );
+                if ( hltHT > 1050 ) histos1D_[ "puppiHTPassingHT1050" ]->Fill( puppiHT );
+
+                /// for puppiHT with pt >10
+                if ( hltHTpt10 > 700 ) histos1D_[ "puppiHTPassingHT700pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 800 ) histos1D_[ "puppiHTPassingHT800pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 850 ) histos1D_[ "puppiHTPassingHT850pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 900 ) histos1D_[ "puppiHTPassingHT900pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 950 ) histos1D_[ "puppiHTPassingHT950pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 1000 ) histos1D_[ "puppiHTPassingHT1000pt10" ]->Fill( puppiHT );
+                if ( hltHTpt10 > 1050 ) histos1D_[ "puppiHTPassingHT1050pt10" ]->Fill( puppiHT );
             }
         }
     }
@@ -231,7 +283,7 @@ void TriggerValidationAndEfficiencies::analyze(const Event& iEvent, const EventS
     }*/
 }
 
-void TriggerValidationAndEfficiencies::beginJob() {
+void TriggerEfficiencies::beginJob() {
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
 	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
@@ -270,13 +322,39 @@ void TriggerValidationAndEfficiencies::beginJob() {
 	histos1D_[ "HTPassingHT1000pt10" ] = fs_->make< TH1D >( "HTPassingHT1000pt10", "HTPassingHT1000pt10", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT1050pt10" ] = fs_->make< TH1D >( "HTPassingHT1050pt10", "HTPassingHT1050pt10", 2000, 0., 2000. );
 
+    /////////////////////////////////////////////////////////////
+	histos1D_[ "puppijet1Pt" ] = fs_->make< TH1D >( "puppijet1Pt", "puppijet1Pt", 1000, 0., 1000. );
+	histos1D_[ "puppiHT" ] = fs_->make< TH1D >( "puppiHT", "puppiHT", 100, 0., 2000. );
+
+
+	histos1D_[ "puppijet1PtDenom" ] = fs_->make< TH1D >( "puppijet1PtDenom", "puppijet1PtDenom", 1000, 0., 1000. );
+	histos1D_[ "puppijet1PtPassing" ] = fs_->make< TH1D >( "puppijet1PtPassing", "puppijet1PtPassing", 1000, 0., 1000. );
+	histos1D_[ "puppiHTDenom" ] = fs_->make< TH1D >( "puppiHTDenom", "puppiHTDenom", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassing" ] = fs_->make< TH1D >( "puppiHTPassing", "puppiHTPassing", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT700" ] = fs_->make< TH1D >( "puppiHTPassingHT700", "puppiHTPassingHT700", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT800" ] = fs_->make< TH1D >( "puppiHTPassingHT800", "puppiHTPassingHT800", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT850" ] = fs_->make< TH1D >( "puppiHTPassingHT850", "puppiHTPassingHT850", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT900" ] = fs_->make< TH1D >( "puppiHTPassingHT900", "puppiHTPassingHT900", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT950" ] = fs_->make< TH1D >( "puppiHTPassingHT950", "puppiHTPassingHT950", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1000" ] = fs_->make< TH1D >( "puppiHTPassingHT1000", "puppiHTPassingHT1000", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1050" ] = fs_->make< TH1D >( "puppiHTPassingHT1050", "puppiHTPassingHT1050", 2000, 0., 2000. );
+
+	histos1D_[ "puppiHTPassingHT700pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT700pt10", "puppiHTPassingHT700pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT800pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT800pt10", "puppiHTPassingHT800pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT850pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT850pt10", "puppiHTPassingHT850pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT900pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT900pt10", "puppiHTPassingHT900pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT950pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT950pt10", "puppiHTPassingHT950pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1000pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT1000pt10", "puppiHTPassingHT1000pt10", 2000, 0., 2000. );
+	histos1D_[ "puppiHTPassingHT1050pt10" ] = fs_->make< TH1D >( "puppiHTPassingHT1050pt10", "puppiHTPassingHT1050pt10", 2000, 0., 2000. );
+
+
 
 	///// Sumw2 all the histos
 	for( auto const& histo : histos1D_ ) histos1D_[ histo.first ]->Sumw2();
 	for( auto const& histo : histos2D_ ) histos2D_[ histo.first ]->Sumw2();
 }
 
-void TriggerValidationAndEfficiencies::fillDescriptions(ConfigurationDescriptions & descriptions) {
+void TriggerEfficiencies::fillDescriptions(ConfigurationDescriptions & descriptions) {
 
 	ParameterSetDescription desc;
 	desc.add<InputTag>("bits", 	InputTag("TriggerResults", "", "HLT2"));
@@ -286,6 +364,7 @@ void TriggerValidationAndEfficiencies::fillDescriptions(ConfigurationDescription
 	desc.add<bool>("AK8jets", 	true);
 	desc.add<bool>("DEBUG", 	false);
 	desc.add<InputTag>("recoJets", 	InputTag("slimmedJetsAK8"));
+	desc.add<InputTag>("patJets", 	InputTag("slimmedJetsAK8"));
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
@@ -299,4 +378,4 @@ void TriggerValidationAndEfficiencies::fillDescriptions(ConfigurationDescription
 }
       
 //define this as a plug-in
-DEFINE_FWK_MODULE(TriggerValidationAndEfficiencies);
+DEFINE_FWK_MODULE(TriggerEfficiencies);
