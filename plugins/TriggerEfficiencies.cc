@@ -24,6 +24,7 @@
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 
 #include "PUHLT/PUmitigationatHLT/interface/CommonVariablesStructure.h"
 
@@ -48,10 +49,11 @@ class TriggerEfficiencies : public EDAnalyzer {
 	EDGetTokenT<PFJetCollection> triggerObjects_;
 	EDGetTokenT<PFJetCollection> recoJetToken_;
 	EDGetTokenT<PFJetCollection> patJetToken_;
+        EDGetTokenT<reco::GenJet> gJetToken_;
 	string baseTrigger_;
-    vector<string> triggerPass_;
-    vector<int> triggerOverlap_;
-    vector<int> triggerOverlapBase_;
+        vector<string> triggerPass_;
+        vector<int> triggerOverlap_;
+        vector<int> triggerOverlapBase_;
 	double recojetPt_;
 	bool AK8jets_;
 	bool DEBUG_;
@@ -66,7 +68,9 @@ TriggerEfficiencies::TriggerEfficiencies(const ParameterSet& iConfig):
 	//triggerObjects_(consumes<trigger::TriggerFilterObjectWithRef>(iConfig.getParameter<InputTag>("objects"))),
 	triggerObjects_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("objects"))),
 	recoJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("recoJets"))),
-	patJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("patJets")))
+	patJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("patJets"))),
+	gJetToken_(consumes<reco::GenJet>(iConfig.getParameter<InputTag>("objects")))
+
 {
 	baseTrigger_ = iConfig.getParameter<string>("baseTrigger");
 	triggerPass_ = iConfig.getParameter<vector<string>>("triggerPass");
@@ -84,11 +88,13 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	Handle<PFJetCollection> triggerObjects;
 	Handle<PFJetCollection> recojets;
 	Handle<PFJetCollection> patjets;
+	edm::Handle<edm::View <reco::GenJet> > gJets ;
 
 	iEvent.getByToken(triggerBits_, triggerBits);
 	iEvent.getByToken(triggerObjects_, triggerObjects);
 	iEvent.getByToken(recoJetToken_, recojets);
 	iEvent.getByToken(patJetToken_, patjets);
+	iEvent.getByToken(gJetToken_, gJets) ;
 
 	const TriggerNames &names = iEvent.triggerNames(*triggerBits);
 
@@ -125,8 +131,37 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		int numHLTJetspt40 = 0;
 		double hltHTpt50 = 0;
 		int numHLTJetspt50 = 0;
+
+		for ( auto const& triggerJet : *triggerObjects )
+		  {
+
+		    //const reco::GenJet gjet;
+		    //gjet=triggerJet->genJet();
+		    //cout<<gjet.pt();
+	    
+	    
+		    float mindr=1000;
+		    float genjetpt=-9999999;
+		    for (size_t i=0; i< gJets->size(); i++) 
+		      {
+			const reco::GenJet &gJet = (*gJets)[i];
+			float dr=deltaR(triggerJet, gJet);
+			if ( dr < mindr)
+			  {
+			    mindr=dr;
+			    genjetpt=gJet.pt();
+			    
+			  }
+		      }
+		    if (mindr<0.3) 
+		      {
+			cout<<mindr;
+			cout<<genjetpt;
+		      }
+		  }
+		
         
-        for ( auto const& triggerJet : *triggerObjects ) {
+		for ( auto const& triggerJet : *triggerObjects) {
 
             // first cleaning since we can not go lower in pt anyway
 			if( triggerJet.pt() < 5 ) continue;
@@ -139,6 +174,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             histos1D_[ "hltJetPt" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta" ]->Fill( triggerJet.eta() );
 
+	   
             /* dont remove it since it can help for later	
                 if (DEBUG_) LogWarning("trigger mass") << "\tTrigger object Mass:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass(); 
                 hltMass = obj.mass();
@@ -149,6 +185,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             numHLTJetspt10+=1;
             histos1D_[ "hltJetPt_pt10" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt10" ]->Fill( triggerJet.eta() );
+
+	    
 
 	       if( triggerJet.pt() < 20 ) continue;
             hltHTpt20 += triggerJet.pt();
@@ -317,6 +355,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 
                 if( patjet.pt() < recojetPt_ ) continue;
                 if( TMath::Abs(patjet.eta()) > 2.5 ) continue;
+		
+	       
                 if (DEBUG_) LogWarning("patjets") << patjet.pt();
                 puppiHTpt10 += patjet.pt();
 
@@ -330,6 +370,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		//  }
                 //}
 
+	    
 		if(patjet.pt()<20) continue;
 		puppiHTpt20+=patjet.pt();
 
@@ -341,6 +382,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 
 		if(patjet.pt()<50) continue;
 		puppiHTpt50+=patjet.pt();
+
+		
 
             }
             histos1D_[ "puppiJetHT_pt10" ]->Fill( puppiHTpt10 );
@@ -452,6 +495,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 }
 
 void TriggerEfficiencies::beginJob() {
+
+        	histos1D_[ "test1" ] = fs_->make< TH1D >( "test1", "test1", 2000, -1000., 1000. );
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
 	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
