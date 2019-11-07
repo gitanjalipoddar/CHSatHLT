@@ -49,7 +49,7 @@ class TriggerEfficiencies : public EDAnalyzer {
 	EDGetTokenT<PFJetCollection> triggerObjects_;
 	EDGetTokenT<PFJetCollection> recoJetToken_;
 	EDGetTokenT<PFJetCollection> patJetToken_;
-        EDGetTokenT<reco::GenJet> gJetToken_;
+        EDGetTokenT<vector<reco::GenJet>> genJetToken_;
 	string baseTrigger_;
         vector<string> triggerPass_;
         vector<int> triggerOverlap_;
@@ -69,7 +69,7 @@ TriggerEfficiencies::TriggerEfficiencies(const ParameterSet& iConfig):
 	triggerObjects_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("objects"))),
 	recoJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("recoJets"))),
 	patJetToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("patJets"))),
-	gJetToken_(consumes<reco::GenJet>(iConfig.getParameter<InputTag>("objects")))
+	genJetToken_(consumes<vector<reco::GenJet>>(iConfig.getParameter<InputTag>("genJets")))
 
 {
 	baseTrigger_ = iConfig.getParameter<string>("baseTrigger");
@@ -88,13 +88,13 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	Handle<PFJetCollection> triggerObjects;
 	Handle<PFJetCollection> recojets;
 	Handle<PFJetCollection> patjets;
-	edm::Handle<edm::View <reco::GenJet> > gJets ;
+	Handle<vector<reco::GenJet>> genjets;
 
 	iEvent.getByToken(triggerBits_, triggerBits);
 	iEvent.getByToken(triggerObjects_, triggerObjects);
 	iEvent.getByToken(recoJetToken_, recojets);
 	iEvent.getByToken(patJetToken_, patjets);
-	iEvent.getByToken(gJetToken_, gJets) ;
+	iEvent.getByToken(genJetToken_, genjets);
 
 	const TriggerNames &names = iEvent.triggerNames(*triggerBits);
 
@@ -131,35 +131,6 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		int numHLTJetspt40 = 0;
 		double hltHTpt50 = 0;
 		int numHLTJetspt50 = 0;
-
-		for ( auto const& triggerJet : *triggerObjects )
-		  {
-
-		    //const reco::GenJet gjet;
-		    //gjet=triggerJet->genJet();
-		    //cout<<gjet.pt();
-	    
-	    
-		    float mindr=1000;
-		    float genjetpt=-9999999;
-		    for (size_t i=0; i< gJets->size(); i++) 
-		      {
-			const reco::GenJet &gJet = (*gJets)[i];
-			float dr=deltaR(triggerJet, gJet);
-			if ( dr < mindr)
-			  {
-			    mindr=dr;
-			    genjetpt=gJet.pt();
-			    
-			  }
-		      }
-		    if (mindr<0.3) 
-		      {
-			cout<<mindr;
-			cout<<genjetpt;
-		      }
-		  }
-		
         
 		for ( auto const& triggerJet : *triggerObjects) {
 
@@ -246,6 +217,22 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		
 		//basic case where recojetPt_=10
                 HTpt10 += recojet.pt();
+
+		float mindr=10000;
+                int dummyInd = -1;
+                for (size_t i=0; i< genjets->size(); i++) {
+                    float dr = deltaR(recojet, (*genjets)[i]);
+                    if (dr < mindr){
+                        mindr=dr;
+                        if (mindr<0.2){ /// 0.3 is ok, but just to make sure
+                            dummyInd=i;
+                        }
+                    }
+                }
+                if (dummyInd>0){
+                    const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
+                    LogWarning("genJet") << dummyInd << " " << mindr << " " << recojet.pt() << " " << matchGenJet.pt();
+                }
 
 		if(recojet.pt()<20) continue;
 		HTpt20+=recojet.pt();

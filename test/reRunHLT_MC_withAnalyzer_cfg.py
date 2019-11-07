@@ -23,7 +23,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100)
 )
 
 # Input source
@@ -98,6 +98,7 @@ process.HLTPFHT = cms.EDAnalyzer('TriggerEfficiencies',
         triggerPass = cms.vstring([ "HLT_PFHTNoThreshold" ] ),
         recoJets = cms.InputTag("ak4PFJetsCHS"),
         patJets = cms.InputTag("ak4PFJetsPuppi"),
+        genJets = cms.InputTag("ak4GenJetsNoNu::HLT"),                      
         #patJets = cms.InputTag("patJetsAK4PFCHSPATJetswithUserData::HLT2"),
         recojetPt = cms.double( 10 ),
         AK8jets = cms.bool( False ),
