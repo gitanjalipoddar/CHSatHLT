@@ -26,6 +26,11 @@
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
+#include <algorithm>
+#include <iostream>
+#include <list>
+#include <fstream>
+
 #include "PUHLT/PUmitigationatHLT/interface/CommonVariablesStructure.h"
 
 using namespace edm;
@@ -57,7 +62,8 @@ class TriggerEfficiencies : public EDAnalyzer {
 	double recojetPt_;
 	bool AK8jets_;
 	bool DEBUG_;
-
+        
+        
 	Service<TFileService> fs_;
 	map< string, TH1D* > histos1D_;
 	map< string, TH2D* > histos2D_;
@@ -157,6 +163,26 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             histos1D_[ "hltJetPt_pt10" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt10" ]->Fill( triggerJet.eta() );
 
+	   //response pt
+		float mindr=10000;
+                int dummyInd = -1;
+                for (size_t i=0; i< genjets->size(); i++) {
+                    float dr = deltaR(triggerJet, (*genjets)[i]);
+                    if (dr < mindr){
+                        mindr=dr;
+                        if (mindr<0.2){ /// 0.3 is ok, but just to make sure
+                            dummyInd=i;
+                        }
+                    }
+                }
+                if (dummyInd>-1){
+                    const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
+                 
+		    
+		    histos2D_[ "response" ]->Fill( matchGenJet.pt(),triggerJet.pt()/matchGenJet.pt() );
+		    
+                }
+
 	    
 
 	       if( triggerJet.pt() < 20 ) continue;
@@ -218,6 +244,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		//basic case where recojetPt_=10
                 HTpt10 += recojet.pt();
 
+                //response pt
 		float mindr=10000;
                 int dummyInd = -1;
                 for (size_t i=0; i< genjets->size(); i++) {
@@ -229,9 +256,12 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                         }
                     }
                 }
-                if (dummyInd>0){
+                if (dummyInd>-1){
                     const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
-                    LogWarning("genJet") << dummyInd << " " << mindr << " " << recojet.pt() << " " << matchGenJet.pt();
+                   
+		    
+		    histos2D_[ "response_reco" ]->Fill( matchGenJet.pt(),recojet.pt()/matchGenJet.pt() );
+		    
                 }
 
 		if(recojet.pt()<20) continue;
@@ -258,12 +288,13 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 //}
 
             }
+	    
+	    
 	    histos1D_[ "JetHT_pt10" ]->Fill( HTpt10 );
 	    histos1D_[ "JetHT_pt20" ]->Fill( HTpt20 );
 	    histos1D_[ "JetHT_pt30" ]->Fill( HTpt30 );
 	    histos1D_[ "JetHT_pt40" ]->Fill( HTpt40 );
 	    histos1D_[ "JetHT_pt50" ]->Fill( HTpt50 );
-	    
             
             if ( baseTrigger ) {
                 histos1D_[ "HTDenom_pt10" ]->Fill( HTpt10 );
@@ -346,6 +377,28 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	       
                 if (DEBUG_) LogWarning("patjets") << patjet.pt();
                 puppiHTpt10 += patjet.pt();
+
+
+		//response pt
+		float mindr=10000;
+                int dummyInd = -1;
+                for (size_t i=0; i< genjets->size(); i++) {
+                    float dr = deltaR(patjet, (*genjets)[i]);
+                    if (dr < mindr){
+                        mindr=dr;
+                        if (mindr<0.2){ /// 0.3 is ok, but just to make sure
+                            dummyInd=i;
+                        }
+                    }
+                }
+                if (dummyInd>-1){
+                    const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
+                    LogWarning("genJet") << dummyInd << " " << mindr << " " << patjet.pt() << " " << matchGenJet.pt() << " " << patjet.pt()/matchGenJet.pt();
+		    
+		    histos2D_[ "response_pat" ]->Fill( matchGenJet.pt(),patjet.pt()/matchGenJet.pt() );
+		    
+                }
+
 
                 //if (++kk==1){
 		//histos1D_[ "puppijet1Pt" ]->Fill( patjet.pt() );
@@ -483,7 +536,11 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 
 void TriggerEfficiencies::beginJob() {
 
-        	histos1D_[ "test1" ] = fs_->make< TH1D >( "test1", "test1", 2000, -1000., 1000. );
+        //histos2D_[ "hltJetPtvsMass" ] = fs_->make< TH2D >( "hltJetPtvsMass", "hltJetPtvsMass", 2000, 0., 2000., 2000, 0., 2000. );
+        
+  histos2D_[ "response_reco" ] = fs_->make< TH2D >( "response_reco", "response_reco", 100, 0., 1000., 100, 0, 5 );
+	histos2D_[ "response_pat" ] = fs_->make< TH2D >( "response_pat", "response_pat", 100, 0., 1000., 100, 0, 5 );
+	histos2D_[ "response" ] = fs_->make< TH2D >( "response", "response", 100, 0., 1000., 100, 0, 5 );
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
 	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
@@ -661,6 +718,7 @@ void TriggerEfficiencies::beginJob() {
 	for( auto const& histo : histos2D_ ) histos2D_[ histo.first ]->Sumw2();
 }
 
+
 void TriggerEfficiencies::fillDescriptions(ConfigurationDescriptions & descriptions) {
 
 	ParameterSetDescription desc;
@@ -672,6 +730,7 @@ void TriggerEfficiencies::fillDescriptions(ConfigurationDescriptions & descripti
 	desc.add<bool>("DEBUG", 	false);
 	desc.add<InputTag>("recoJets", 	InputTag("slimmedJetsAK8"));
 	desc.add<InputTag>("patJets", 	InputTag("slimmedJetsAK8"));
+	desc.add<InputTag>("genJets", 	InputTag("ak4GenJetsNoNu"));
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
