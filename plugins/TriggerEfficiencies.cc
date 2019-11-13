@@ -178,7 +178,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 if (dummyInd>-1){
                     const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
                  
-		    
+		    histos1D_["response_1D"]->Fill(triggerJet.pt()/matchGenJet.pt());
+		    histos2D_["response_offline"]->Fill(triggerJet.pt(),triggerJet.pt()/matchGenJet.pt());
 		    histos2D_[ "response" ]->Fill( matchGenJet.pt(),triggerJet.pt()/matchGenJet.pt() );
 		    
                 }
@@ -258,11 +259,29 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 }
                 if (dummyInd>-1){
                     const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
-                   
-		    
+		    histos1D_["response_1D_reco"]->Fill(recojet.pt()/matchGenJet.pt());
 		    histos2D_[ "response_reco" ]->Fill( matchGenJet.pt(),recojet.pt()/matchGenJet.pt() );
 		    
                 }
+		if (dummyInd==-1){ //recojet=pileupjet
+                    
+		  float mindr=10000;
+		  int pu_dummyInd=-1;
+		  for (size_t i=0; i< triggerObjects->size(); i++) {
+                    float dr = deltaR(recojet, (*triggerObjects)[i]);
+                    if (dr < mindr){
+                        mindr=dr;
+                        if (mindr<0.2){ /// 0.3 is ok, but just to make sure
+                            pu_dummyInd=i;
+                        }
+                    }
+		  }
+		  const reco::Jet &matchTriggerJet = (*triggerObjects)[pu_dummyInd];
+		  histos2D_[ "response_pileup" ]->Fill( recojet.pt(),recojet.pt()/matchTriggerJet.pt() );
+		    
+                }
+
+		
 
 		if(recojet.pt()<20) continue;
 		HTpt20+=recojet.pt();
@@ -393,8 +412,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 }
                 if (dummyInd>-1){
                     const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
-                    LogWarning("genJet") << dummyInd << " " << mindr << " " << patjet.pt() << " " << matchGenJet.pt() << " " << patjet.pt()/matchGenJet.pt();
-		    
+                    
+		    histos1D_["response_1D_pat"]->Fill(patjet.pt()/matchGenJet.pt());
 		    histos2D_[ "response_pat" ]->Fill( matchGenJet.pt(),patjet.pt()/matchGenJet.pt() );
 		    
                 }
@@ -541,6 +560,12 @@ void TriggerEfficiencies::beginJob() {
   histos2D_[ "response_reco" ] = fs_->make< TH2D >( "response_reco", "response_reco", 100, 0., 1000., 100, 0, 5 );
 	histos2D_[ "response_pat" ] = fs_->make< TH2D >( "response_pat", "response_pat", 100, 0., 1000., 100, 0, 5 );
 	histos2D_[ "response" ] = fs_->make< TH2D >( "response", "response", 100, 0., 1000., 100, 0, 5 );
+	histos2D_[ "response_offline" ] = fs_->make< TH2D >( "response_offline", "response_offline", 100, 0., 1000., 100, 0, 5 );
+	histos2D_[ "response_pileup" ] = fs_->make< TH2D >( "response_pileup", "response_pileup", 100, 0., 1000., 100, 0, 5 );
+	
+	histos1D_[ "response_1D" ] = fs_->make< TH1D >( "response_1D", "response_1D", 100, 0., 5. );
+	histos1D_[ "response_1D_reco" ] = fs_->make< TH1D >( "response_1D_reco", "response_1D_reco", 100, 0., 5. );
+       	histos1D_[ "response_1D_pat" ] = fs_->make< TH1D >( "response_1D_pat", "response_1D_pat", 100, 0., 5. );
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
 	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
