@@ -277,7 +277,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                     }
 		  }
 		  const reco::Jet &matchTriggerJet = (*triggerObjects)[pu_dummyInd];
-		  histos2D_[ "response_pileup" ]->Fill( recojet.pt(),recojet.pt()/matchTriggerJet.pt() );
+		  histos2D_[ "response_pileup" ]->Fill( recojet.pt(),matchTriggerJet.pt()/recojet.pt() );
 		    
                 }
 
@@ -415,6 +415,24 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                     
 		    histos1D_["response_1D_pat"]->Fill(patjet.pt()/matchGenJet.pt());
 		    histos2D_[ "response_pat" ]->Fill( matchGenJet.pt(),patjet.pt()/matchGenJet.pt() );
+		    
+                }
+
+		if (dummyInd==-1){ //patjet=pileupjet
+                    
+		  float mindr=10000;
+		  int pu_dummyInd=-1;
+		  for (size_t i=0; i< triggerObjects->size(); i++) {
+                    float dr = deltaR(patjet, (*triggerObjects)[i]);
+                    if (dr < mindr){
+                        mindr=dr;
+                        if (mindr<0.2){ /// 0.3 is ok, but just to make sure
+                            pu_dummyInd=i;
+                        }
+                    }
+		  }
+		  const reco::Jet &matchTriggerJet = (*triggerObjects)[pu_dummyInd];
+		  histos2D_[ "response_pileup_pat" ]->Fill( patjet.pt(),matchTriggerJet.pt()/patjet.pt() );
 		    
                 }
 
@@ -562,6 +580,7 @@ void TriggerEfficiencies::beginJob() {
 	histos2D_[ "response" ] = fs_->make< TH2D >( "response", "response", 100, 0., 1000., 100, 0, 5 );
 	histos2D_[ "response_offline" ] = fs_->make< TH2D >( "response_offline", "response_offline", 100, 0., 1000., 100, 0, 5 );
 	histos2D_[ "response_pileup" ] = fs_->make< TH2D >( "response_pileup", "response_pileup", 100, 0., 1000., 100, 0, 5 );
+	histos2D_[ "response_pileup_pat" ] = fs_->make< TH2D >( "response_pileup_pat", "response_pileup_pat", 100, 0., 1000., 100, 0, 5 );
 	
 	histos1D_[ "response_1D" ] = fs_->make< TH1D >( "response_1D", "response_1D", 100, 0., 5. );
 	histos1D_[ "response_1D_reco" ] = fs_->make< TH1D >( "response_1D_reco", "response_1D_reco", 100, 0., 5. );
