@@ -217,7 +217,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             histos1D_[ "hltJetEta_pt50" ]->Fill( triggerJet.eta() );
 
         }
-	histos1D_["hltresponseHT"]-Fill(hltHT_trigger/hltHT_gen);
+	histos1D_["hltresponseHT"]->Fill(hltHT_trigger/hltHT_gen);
         histos2D_[ "hltresponseHT_gen" ]->Fill( hltHT_gen, hltHT_trigger/hltHT_gen );
 	histos2D_[ "hltresponseHT_trigger" ]->Fill( hltHT_trigger, hltHT_trigger/hltHT_gen );
         //histos2D_[ "hltJetPtvsMass" ]->Fill( hltPt, hltMass );
@@ -321,7 +321,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 //}
 
             }
-	    histos1D_["responseHT"]-Fill(HT_reco/HT_gen);
+	    histos1D_["responseHT"]->Fill(HT_reco/HT_gen);
 	    histos2D_[ "responseHT_gen" ]->Fill( HT_gen, HT_reco/HT_gen );
 	    histos2D_[ "responseHT_reco" ]->Fill( HT_reco, HT_reco/HT_gen );
 	    
@@ -402,6 +402,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	    double puppiHTpt30 = 0;
 	    double puppiHTpt40 = 0;
 	    double puppiHTpt50 = 0;
+
+	    double HT_gen_pat=0;
+	    double HT_pat=0;
 	    
             //int kk = 0;
             for (const reco::Jet &patjet : *patjets) {
@@ -431,6 +434,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                     
 		    histos1D_["response_1D_pat"]->Fill(patjet.pt()/matchGenJet.pt());
 		    histos2D_[ "response_pat" ]->Fill( matchGenJet.pt(),patjet.pt()/matchGenJet.pt() );
+
+		    HT_gen_pat+=matchGenJet.pt();
+		    HT_pat+=patjet.pt();
 		    
                 }
 
@@ -479,6 +485,10 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		
 
             }
+	    histos1D_["responseHT_pat"]->Fill(HT_pat/HT_gen_pat);
+	    histos2D_[ "responseHT_gen_pat" ]->Fill( HT_gen_pat, HT_pat/HT_gen_pat );
+	    histos2D_[ "responseHT_pat" ]->Fill( HT_pat, HT_pat/HT_gen_pat );
+
             histos1D_[ "puppiJetHT_pt10" ]->Fill( puppiHTpt10 );
 	    histos1D_[ "puppiJetHT_pt20" ]->Fill( puppiHTpt20 );
 	    histos1D_[ "puppiJetHT_pt30" ]->Fill( puppiHTpt30 );
@@ -601,6 +611,17 @@ void TriggerEfficiencies::beginJob() {
 	histos1D_[ "response_1D" ] = fs_->make< TH1D >( "response_1D", "response_1D", 100, 0., 5. );
 	histos1D_[ "response_1D_reco" ] = fs_->make< TH1D >( "response_1D_reco", "response_1D_reco", 100, 0., 5. );
        	histos1D_[ "response_1D_pat" ] = fs_->make< TH1D >( "response_1D_pat", "response_1D_pat", 100, 0., 5. );
+
+	histos1D_[ "hltresponseHT" ] = fs_->make< TH1D >( "hltresponseHT", "hltresponseHT", 100, 0., 5. );
+	histos1D_[ "responseHT" ] = fs_->make< TH1D >( "responseHT", "responseHT", 100, 0., 5. );
+	histos1D_[ "responseHT_pat" ] = fs_->make< TH1D >( "responseHT_pat", "responseHT_pat", 100, 0., 5. );
+
+	histos2D_[ "hltresponseHT_gen" ] = fs_->make< TH2D >( "hltresponseHT_gen", "hltresponseHT_gen", 150, 500, 2000., 100, 0, 5 );
+	histos2D_[ "hltresponseHT_trigger" ] = fs_->make< TH2D >( "hltresponseHT_trigger", "hltresponseHT_trigger", 150, 500, 2000., 100, 0, 5 );
+	histos2D_[ "responseHT_gen" ] = fs_->make< TH2D >( "responseHT_gen", "responseHT_gen", 150, 500, 2000., 100, 0, 5 );
+	histos2D_[ "responseHT_reco" ] = fs_->make< TH2D >( "responseHT_reco", "responseHT_reco", 150, 500, 2000., 100, 0, 5 );
+	histos2D_[ "responseHT_gen_pat" ] = fs_->make< TH2D >( "responseHT_gen_pat", "responseHT_gen_pat", 150, 500, 2000., 100, 0, 5 );
+	histos2D_[ "responseHT_pat" ] = fs_->make< TH2D >( "responseHT_pat", "responseHT_pat", 150, 500, 2000., 100, 0, 5 );
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
 	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
