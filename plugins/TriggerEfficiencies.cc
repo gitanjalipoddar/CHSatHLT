@@ -485,7 +485,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		
 
             }
-	    histos1D_["responseHT_pat"]->Fill(HT_pat/HT_gen_pat);
+	    histos1D_["responseHT_pat_1D"]->Fill(HT_pat/HT_gen_pat);
 	    histos2D_[ "responseHT_gen_pat" ]->Fill( HT_gen_pat, HT_pat/HT_gen_pat );
 	    histos2D_[ "responseHT_pat" ]->Fill( HT_pat, HT_pat/HT_gen_pat );
 
@@ -614,7 +614,7 @@ void TriggerEfficiencies::beginJob() {
 
 	histos1D_[ "hltresponseHT" ] = fs_->make< TH1D >( "hltresponseHT", "hltresponseHT", 100, 0., 5. );
 	histos1D_[ "responseHT" ] = fs_->make< TH1D >( "responseHT", "responseHT", 100, 0., 5. );
-	histos1D_[ "responseHT_pat" ] = fs_->make< TH1D >( "responseHT_pat", "responseHT_pat", 100, 0., 5. );
+	histos1D_[ "responseHT_pat_1D" ] = fs_->make< TH1D >( "responseHT_pat_1D", "responseHT_pat_1D", 100, 0., 5. );
 
 	histos2D_[ "hltresponseHT_gen" ] = fs_->make< TH2D >( "hltresponseHT_gen", "hltresponseHT_gen", 150, 500, 2000., 100, 0, 5 );
 	histos2D_[ "hltresponseHT_trigger" ] = fs_->make< TH2D >( "hltresponseHT_trigger", "hltresponseHT_trigger", 150, 500, 2000., 100, 0, 5 );
