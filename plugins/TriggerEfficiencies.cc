@@ -218,8 +218,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 
         }
 	histos1D_["hltresponseHT"]-Fill(hltHT_trigger/hltHT_gen);
-        histos2D_[ "hltresponseHT_online" ]->Fill( hltHT_gen, hltHT_trigger/hltHT_gen );
-	histos2D_[ "hltresponseHT_online" ]->Fill( hltHT_trigger, hltHT_trigger/hltHT_gen );
+        histos2D_[ "hltresponseHT_gen" ]->Fill( hltHT_gen, hltHT_trigger/hltHT_gen );
+	histos2D_[ "hltresponseHT_trigger" ]->Fill( hltHT_trigger, hltHT_trigger/hltHT_gen );
         //histos2D_[ "hltJetPtvsMass" ]->Fill( hltPt, hltMass );
 	histos1D_[ "hltJetHT" ]->Fill( hltHT );
         histos1D_[ "hltnumJets" ]->Fill( numHLTJets );
@@ -243,6 +243,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	    double HTpt30=0;
 	    double HTpt40=0;
 	    double HTpt50=0;
+
+	    double HT_gen=0;
+	    double HT_reco=0;
             //int k = 0;
             for (const reco::Jet &recojet : *recojets) {
 
@@ -269,6 +272,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                     const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
 		    histos1D_["response_1D_reco"]->Fill(recojet.pt()/matchGenJet.pt());
 		    histos2D_[ "response_reco" ]->Fill( matchGenJet.pt(),recojet.pt()/matchGenJet.pt() );
+
+		    HT_gen+=matchGenJet.pt();
+		    HT_reco+=recojet.pt();
 		    
                 }
 		if (dummyInd==-1){ //recojet=pileupjet
@@ -315,7 +321,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 //}
 
             }
-	    
+	    histos1D_["responseHT"]-Fill(HT_reco/HT_gen);
+	    histos2D_[ "responseHT_gen" ]->Fill( HT_gen, HT_reco/HT_gen );
+	    histos2D_[ "responseHT_reco" ]->Fill( HT_reco, HT_reco/HT_gen );
 	    
 	    histos1D_[ "JetHT_pt10" ]->Fill( HTpt10 );
 	    histos1D_[ "JetHT_pt20" ]->Fill( HTpt20 );
