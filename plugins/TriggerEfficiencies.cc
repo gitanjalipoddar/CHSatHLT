@@ -137,6 +137,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		int numHLTJetspt40 = 0;
 		double hltHTpt50 = 0;
 		int numHLTJetspt50 = 0;
+
+		double hltHT_gen=0;
+		double hltHT_trigger=0;
         
 		for ( auto const& triggerJet : *triggerObjects) {
 
@@ -181,6 +184,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		    histos1D_["response_1D"]->Fill(triggerJet.pt()/matchGenJet.pt());
 		    histos2D_["response_offline"]->Fill(triggerJet.pt(),triggerJet.pt()/matchGenJet.pt());
 		    histos2D_[ "response" ]->Fill( matchGenJet.pt(),triggerJet.pt()/matchGenJet.pt() );
+
+		    hltHT_gen+=matchGenJet.pt();
+		    hltHT_trigger+=triggerJet.pt();
 		    
                 }
 
@@ -211,7 +217,9 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             histos1D_[ "hltJetEta_pt50" ]->Fill( triggerJet.eta() );
 
         }
-
+	histos1D_["hltresponseHT"]-Fill(hltHT_trigger/hltHT_gen);
+        histos2D_[ "hltresponseHT_online" ]->Fill( hltHT_gen, hltHT_trigger/hltHT_gen );
+	histos2D_[ "hltresponseHT_online" ]->Fill( hltHT_trigger, hltHT_trigger/hltHT_gen );
         //histos2D_[ "hltJetPtvsMass" ]->Fill( hltPt, hltMass );
 	histos1D_[ "hltJetHT" ]->Fill( hltHT );
         histos1D_[ "hltnumJets" ]->Fill( numHLTJets );
