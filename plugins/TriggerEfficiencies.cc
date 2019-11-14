@@ -532,6 +532,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                     }
 		  }
 		  const reco::Jet &matchTriggerJet = (*triggerObjects)[pu_dummyInd];
+		  if( matchTriggerJet.pt() < 10 ) continue;
+		  if( TMath::Abs(matchTriggerJet.eta()) > 2.5 ) continue;
 		  histos1D_[ "pileup_response_1D" ]->Fill(matchTriggerJet.pt()/patjet.pt());  
 		  histos2D_[ "pileup_response_reco" ]->Fill(patjet.pt(),matchTriggerJet.pt()/patjet.pt()); 
 		  histos2D_[ "pileup_response_hlt" ]->Fill(matchTriggerJet.pt(),matchTriggerJet.pt()/patjet.pt());
