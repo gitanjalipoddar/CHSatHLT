@@ -339,6 +339,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		//response 
 		mindr=10000;
                 dummyInd = -1;
+		LogWarning("variable")<<mindr<<" "<<dummyInd;
                 for (size_t i=0; i< genjets->size(); i++) {
                     float dr = deltaR(recojet, (*genjets)[i]);
                     if (dr < mindr){
@@ -531,12 +532,15 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                         }
                     }
 		  }
+		  
+		  if(pu_dummyInd>-1){
 		  const reco::Jet &matchTriggerJet = (*triggerObjects)[pu_dummyInd];
 		  if( matchTriggerJet.pt() < 10 ) continue;
 		  if( TMath::Abs(matchTriggerJet.eta()) > 2.5 ) continue;
 		  histos1D_[ "pileup_response_1D" ]->Fill(matchTriggerJet.pt()/patjet.pt());  
 		  histos2D_[ "pileup_response_reco" ]->Fill(patjet.pt(),matchTriggerJet.pt()/patjet.pt()); 
 		  histos2D_[ "pileup_response_hlt" ]->Fill(matchTriggerJet.pt(),matchTriggerJet.pt()/patjet.pt());
+		  }
                 }
 
                 //if (++kk==1){
