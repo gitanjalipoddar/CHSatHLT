@@ -15,7 +15,7 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2023D41Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D41Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load('Configuration.StandardSequences.L1Reco_cff')
@@ -612,3 +612,5 @@ process.DQMFileSaverOutput = cms.EndPath( process.fastTimerServiceClient + proce
 #from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 #process = customiseEarlyDelete(process)
 # End adding early deletion
+from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000
+process = customise_aging_1000(process)
