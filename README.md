@@ -10,7 +10,7 @@ cd CMSSW_11_0_0_pre7/src
 cmsenv
 git cms-addpkg HLTrigger/Configuration          ### From HLT recommendations, not used yet
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_102X_v2
-git clone git@github.com:alefisico/PUmitigationatHLT.git -b 102X PUHLT/PUmitigationatHLT
+git clone git@github.com:alefisico/PUmitigationatHLT.git -b 110X PUHLT/PUmitigationatHLT
 scram b -j 8 
 ```
 
