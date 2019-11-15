@@ -144,7 +144,10 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 		double hltHTpt30_reco=0;
 		double hltHTpt50_gen=0;
 		double hltHTpt50_reco=0;
-        
+
+		double hltLeadingJetpt_gen=0;
+		double hltLeadingJetpt_reco=0;
+		
 		for ( auto const& triggerJet : *triggerObjects) {
 
             // first cleaning since we can not go lower in pt anyway
@@ -169,6 +172,27 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             numHLTJetspt10+=1;
             histos1D_[ "hltJetPt_pt10" ]->Fill( triggerJet.pt() );
             histos1D_[ "hltJetEta_pt10" ]->Fill( triggerJet.eta() );
+	    
+	    //leading jet
+	    if (triggerJet.pt()>hltLeadingJetpt_reco){
+	    //response for leading jet
+	     float mindr=10000;
+             int dummyInd = -1;
+             for (size_t i=0; i< genjets->size(); i++) {
+                 float dr = deltaR(triggerJet, (*genjets)[i]);
+                  if (dr < mindr){
+                       mindr=dr;
+                       if (mindr<0.2){ /// 0.3 is ok, but just to make sure
+                           dummyInd=i;
+                        }
+                    }
+                }
+	     if (dummyInd>-1){
+	       hltLeadingJetpt_reco=triggerJet.pt();
+	       const reco::GenJet &matchGenJet = (*genjets)[dummyInd];
+	       hltLeadingJetpt_gen=matchGenJet.pt();
+	     }
+	    }
 
 	    //response
 		float mindr=10000;
@@ -257,6 +281,10 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
                 }
 
         }
+	histos1D_["hlt_response_lead_1D"]->Fill(hltLeadingJetpt_reco/hltLeadingJetpt_gen);
+	histos2D_["hlt_response_lead_gen"]->Fill(hltLeadingJetpt_gen,hltLeadingJetpt_reco/hltLeadingJetpt_gen);
+	histos2D_["hlt_response_lead_reco"]->Fill(hltLeadingJetpt_reco,hltLeadingJetpt_reco/hltLeadingJetpt_gen);
+        
 	histos1D_["hlt_response_HTpt10_1D"]->Fill(hltHTpt10_reco/hltHTpt10_gen);
 	histos1D_["hlt_response_HTpt30_1D"]->Fill(hltHTpt30_reco/hltHTpt30_gen);
 	histos1D_["hlt_response_HTpt50_1D"]->Fill(hltHTpt50_reco/hltHTpt50_gen);
