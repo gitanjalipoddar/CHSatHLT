@@ -5,8 +5,8 @@
 This is different in every branch. Please check that the name of the branch corresponds to the CMSSW release.
 
 ```
-cmsrel CMSSW_10_6_1_patch3
-cd CMSSW_10_6_1_patch3/src
+cmsrel CMSSW_11_0_0_pre7
+cd CMSSW_11_0_0_pre7/src
 cmsenv
 git cms-addpkg HLTrigger/Configuration          ### From HLT recommendations, not used yet
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_102X_v2
