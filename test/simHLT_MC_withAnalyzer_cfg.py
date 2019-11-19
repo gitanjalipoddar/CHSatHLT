@@ -585,94 +585,87 @@ process.TFileService=cms.Service("TFileService",fileName=cms.string( 'simHLTwith
 #process.hltVerticesComparison_step = cms.EndPath( process.hltVerticesComparison )
 
 ##### Analyzing jets
-process.HLTPFCHS = cms.EDAnalyzer('TriggerEfficiencies',
+##### OFFLINE PUPPI
+process.RECOPUPPIHLTPFCHS = cms.EDAnalyzer('TriggerEfficiencies',
         hltJets = cms.InputTag("ak4PFJetsCHSCorrected::RECO2"),
         recoJets = cms.InputTag("slimmedJetsPuppi::PAT"),
         recojetPt = cms.double( 10 ),
         AK8jets = cms.bool( False ),
         DEBUG = cms.bool(False)
 )
-process.HLTPFCHS_step = cms.EndPath( process.HLTPFCHS )
+process.RECOPUPPIHLTPFCHS_step = cms.EndPath( process.RECOPUPPIHLTPFCHS )
 
-process.HLTPFCHSPt20 = process.HLTPFCHS.clone(
+process.RECOPUPPIHLTPFCHSPt20 = process.RECOPUPPIHLTPFCHS.clone(
         recojetPt = cms.double( 20 ),
 )
-process.HLTPFCHSPt20_step = cms.EndPath( process.HLTPFCHSPt20 )
+process.RECOPUPPIHLTPFCHSPt20_step = cms.EndPath( process.RECOPUPPIHLTPFCHSPt20 )
 
-process.HLTPFCHSPt30 = process.HLTPFCHS.clone(
+process.RECOPUPPIHLTPFCHSPt30 = process.RECOPUPPIHLTPFCHS.clone(
         recojetPt = cms.double( 30 ),
 )
-process.HLTPFCHSPt30_step = cms.EndPath( process.HLTPFCHSPt30 )
+process.RECOPUPPIHLTPFCHSPt30_step = cms.EndPath( process.RECOPUPPIHLTPFCHSPt30 )
 
-process.HLTPFCHSPt40 = process.HLTPFCHS.clone(
+process.RECOPUPPIHLTPFCHSPt40 = process.RECOPUPPIHLTPFCHS.clone(
         recojetPt = cms.double( 40 ),
 )
-process.HLTPFCHSPt40_step = cms.EndPath( process.HLTPFCHSPt40 )
+process.RECOPUPPIHLTPFCHSPt40_step = cms.EndPath( process.RECOPUPPIHLTPFCHSPt40 )
 
-process.HLTPFCHSPt50 = process.HLTPFCHS.clone(
+process.RECOPUPPIHLTPFCHSPt50 = process.RECOPUPPIHLTPFCHS.clone(
         recojetPt = cms.double( 50 ),
 )
-process.HLTPFCHSPt50_step = cms.EndPath( process.HLTPFCHSPt50 )
+process.RECOPUPPIHLTPFCHSPt50_step = cms.EndPath( process.RECOPUPPIHLTPFCHSPt50 )
 
-process.HLTPFPUPPI = cms.EDAnalyzer('TriggerEfficiencies',
+process.RECOPUPPIHLTPFPUPPI = process.RECOPUPPIHLTPFCHS.clone(
         hltJets = cms.InputTag("hltak4PFJetsPUPPICorrected::RECO2"),
-        recoJets = cms.InputTag("slimmedJetsPuppi::PAT"),
-        recojetPt = cms.double( 10 ),
-        AK8jets = cms.bool( False ),
-        DEBUG = cms.bool(False)
 )
-process.HLTPFPUPPI_step = cms.EndPath( process.HLTPFPUPPI )
+process.RECOPUPPIHLTPFPUPPI_step = cms.EndPath( process.RECOPUPPIHLTPFPUPPI )
 
-process.HLTPFPUPPIPt20 = process.HLTPFPUPPI.clone(
+process.RECOPUPPIHLTPFPUPPIPt20 = process.RECOPUPPIHLTPFPUPPI.clone(
         recojetPt = cms.double( 20 ),
 )
-process.HLTPFPUPPIPt20_step = cms.EndPath( process.HLTPFPUPPIPt20 )
+process.RECOPUPPIHLTPFPUPPIPt20_step = cms.EndPath( process.RECOPUPPIHLTPFPUPPIPt20 )
 
-process.HLTPFPUPPIPt30 = process.HLTPFPUPPI.clone(
+process.RECOPUPPIHLTPFPUPPIPt30 = process.RECOPUPPIHLTPFPUPPI.clone(
         recojetPt = cms.double( 30 ),
 )
-process.HLTPFPUPPIPt30_step = cms.EndPath( process.HLTPFPUPPIPt30 )
+process.RECOPUPPIHLTPFPUPPIPt30_step = cms.EndPath( process.RECOPUPPIHLTPFPUPPIPt30 )
 
-process.HLTPFPUPPIPt40 = process.HLTPFPUPPI.clone(
+process.RECOPUPPIHLTPFPUPPIPt40 = process.RECOPUPPIHLTPFPUPPI.clone(
         recojetPt = cms.double( 40 ),
 )
-process.HLTPFPUPPIPt40_step = cms.EndPath( process.HLTPFPUPPIPt40 )
+process.RECOPUPPIHLTPFPUPPIPt40_step = cms.EndPath( process.RECOPUPPIHLTPFPUPPIPt40 )
 
-process.HLTPFPUPPIPt50 = process.HLTPFPUPPI.clone(
+process.RECOPUPPIHLTPFPUPPIPt50 = process.RECOPUPPIHLTPFPUPPI.clone(
         recojetPt = cms.double( 50 ),
 )
-process.HLTPFPUPPIPt50_step = cms.EndPath( process.HLTPFPUPPIPt50 )
+process.RECOPUPPIHLTPFPUPPIPt50_step = cms.EndPath( process.RECOPUPPIHLTPFPUPPIPt50 )
 
 
-process.HLTPFSK = cms.EDAnalyzer('TriggerEfficiencies',
+process.RECOPUPPIHLTPFSK = process.RECOPUPPIHLTPFCHS.clone(
         hltJets = cms.InputTag("hltak4PFJetsSK::RECO2"),
-        recoJets = cms.InputTag("slimmedJetsPuppi::PAT"),
-        recojetPt = cms.double( 10 ),
-        AK8jets = cms.bool( False ),
-        DEBUG = cms.bool(False)
 )
-process.HLTPFSK_step = cms.EndPath( process.HLTPFSK )
+process.RECOPUPPIHLTPFSK_step = cms.EndPath( process.RECOPUPPIHLTPFSK )
 
 
-process.HLTPFSKPt20 = process.HLTPFSK.clone(
+process.RECOPUPPIHLTPFSKPt20 = process.RECOPUPPIHLTPFSK.clone(
         recojetPt = cms.double( 20 ),
 )
-process.HLTPFSKPt20_step = cms.EndPath( process.HLTPFSKPt20 )
+process.RECOPUPPIHLTPFSKPt20_step = cms.EndPath( process.RECOPUPPIHLTPFSKPt20 )
 
-process.HLTPFSKPt30 = process.HLTPFSK.clone(
+process.RECOPUPPIHLTPFSKPt30 = process.RECOPUPPIHLTPFSK.clone(
         recojetPt = cms.double( 30 ),
 )
-process.HLTPFSKPt30_step = cms.EndPath( process.HLTPFSKPt30 )
+process.RECOPUPPIHLTPFSKPt30_step = cms.EndPath( process.RECOPUPPIHLTPFSKPt30 )
 
-process.HLTPFSKPt40 = process.HLTPFSK.clone(
+process.RECOPUPPIHLTPFSKPt40 = process.RECOPUPPIHLTPFSK.clone(
         recojetPt = cms.double( 40 ),
 )
-process.HLTPFSKPt40_step = cms.EndPath( process.HLTPFSKPt40 )
+process.RECOPUPPIHLTPFSKPt40_step = cms.EndPath( process.RECOPUPPIHLTPFSKPt40 )
 
-process.HLTPFSKPt50 = process.HLTPFSK.clone(
+process.RECOPUPPIHLTPFSKPt50 = process.RECOPUPPIHLTPFSK.clone(
         recojetPt = cms.double( 50 ),
 )
-process.HLTPFSKPt50_step = cms.EndPath( process.HLTPFSKPt50 )
+process.RECOPUPPIHLTPFSKPt50_step = cms.EndPath( process.RECOPUPPIHLTPFSKPt50 )
 
 ################################################################
 ################################################################

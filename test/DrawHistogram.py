@@ -8,9 +8,10 @@ Description: My Draw histograms. Check for options at the end.
 
 from ROOT import *
 import time, os, math, sys
+from array import array
 import argparse
-import B2GTriggerStudies.TriggerEfficiencies.CMS_lumi as CMS_lumi 
-import B2GTriggerStudies.TriggerEfficiencies.tdrstyle as tdrstyle
+import PUHLT.PUmitigationatHLT.CMS_lumi as CMS_lumi
+import PUHLT.PUmitigationatHLT.tdrstyle as tdrstyle
 
 #gROOT.Reset()
 gROOT.SetBatch()
@@ -26,10 +27,10 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, name, cut, xmin, 
 	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+args.trigger+'_'+sample+'_'+'_TriggerEfficiency'+args.version+'.'+args.extension
 	print 'Processing.......', outputFileName
 
-	DenomOnly = inFileSample.Get( args.trigger+'TriggerEfficiency/'+name+'Denom'+cut ) 
+	DenomOnly = inFileSample.Get( args.trigger+'TriggerEfficiency/'+name+'Denom'+cut )
 	DenomOnly.Rebin(rebin)
 	Denom = DenomOnly.Clone()
-	PassingOnly = inFileSample.Get( args.trigger+'TriggerEfficiency/'+name+'Passing'+cut ) 
+	PassingOnly = inFileSample.Get( args.trigger+'TriggerEfficiency/'+name+'Passing'+cut )
 	PassingOnly.Rebin(rebin)
 	Passing = PassingOnly.Clone()
 	print Denom, Passing
@@ -133,7 +134,7 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, name, cut, xmin, 
 #	#eff.Draw("same")
 	can1.Modified()
 	'''
-	
+
 	'''
 	rightmax = 1.2*PassingOnly.GetMaximum()
 	rightmin = PassingOnly.GetMinimum()
@@ -174,7 +175,7 @@ def plotDiffEff( listOfEff, name ):
 	legend.SetTextSize(0.04)
 
 	dummy = 1
-	for sample in listOfEff: 
+	for sample in listOfEff:
 		legend.AddEntry( listOfEff[ sample ], sample, 'l' )
 
 		listOfEff[ sample ].SetMarkerStyle(8)
@@ -192,7 +193,7 @@ def plotDiffEff( listOfEff, name ):
 		if dummy == 1:
 			labelAxis( name, listOfEff[ sample ], 'Pruned')
 			listOfEff[ sample ].Draw()
-		else: 
+		else:
 			listOfEff[ sample ].Draw('same')
 		dummy+=1
 
@@ -218,13 +219,13 @@ def Rebin2D( h1, rebinx, rebiny ):
 	ymax  = h1.GetYaxis().GetXmax()
 	nx = nbinsx/rebinx
 	ny = nbinsy/rebiny
-	h1.SetBins( nx, xmin, xmax, ny, ymin, ymax )
+	#.SetLineColor( i )
 
 	for biny in range( 1, nbinsy):
 		for binx in range(1, nbinsx):
 			ibin1 = h1.GetBin(binx,biny)
 			h1.SetBinContent( ibin1, 0 )
-		
+
 	for biny in range( 1, nbinsy):
 		by = tmph1.GetYaxis().GetBinCenter( biny )
 		iy = h1.GetYaxis().FindBin(by)
@@ -251,19 +252,19 @@ def plot2DTriggerEfficiency( inFileSample, dataset, triggerDenom, name, xlabel, 
 	rawPassing = inFileSample.Get( args.trigger+'TriggerEfficiency/'+name+'Passing'+args.cut )
 	Passing = Rebin2D( rawPassing, rebinx, rebiny )
 
-	
+
 	'''
 	if ( TEfficiency.CheckConsistency( Passing, Denom ) ): Efficiency = TEfficiency( Passing, Denom )
-	else: 
+	else:
 		print '--- Passing and Denom are inconsistent.'
 		#sys.exit(0)
 	'''
 
-	Efficiency = Denom.Clone() 
+	Efficiency = Denom.Clone()
 	Efficiency.Reset()
 	Efficiency.Divide( Passing, Denom, 1, 1, 'B' )
 
-	
+
 	tdrStyle.SetPadRightMargin(0.12)
 	can = TCanvas('c1', 'c1',  10, 10, 1000, 750 )
 	gStyle.SetPaintTextFormat("4.2f")
@@ -382,7 +383,7 @@ def plot2D( inFile, sample, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Y
 	print 'Processing.......', outputFileName
 	h1 = inFile.Get( args.trigger+'TriggerEfficiency/'+name+args.cut )
 	tmph1 = h1.Clone()
-	
+
 	### Rebinning
 	nbinsx = h1.GetXaxis().GetNbins()
 	nbinsy = h1.GetYaxis().GetNbins()
@@ -398,7 +399,7 @@ def plot2D( inFile, sample, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Y
 		for binx in range(1, nbinsx):
 			ibin1 = h1.GetBin(binx,biny)
 			h1.SetBinContent( ibin1, 0 )
-		
+
 	for biny in range( 1, nbinsy):
 		by = tmph1.GetYaxis().GetBinCenter( biny )
 		iy = h1.GetYaxis().FindBin(by)
@@ -432,111 +433,200 @@ def plot2D( inFile, sample, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Y
 	can.SaveAs( 'Plots/'+outputFileName )
 	del can
 
+###################################################################
+def simpleResponse( name, listComparison, labelX, xmin, xmax, rebin, log, PU ):
+
+    for ifile in Samples:
+
+        dictHistos = {}
+        legend=TLegend(0.70,0.65,0.90,0.90)
+        legend.SetFillStyle(0)
+        legend.SetTextSize(0.04)
+
+        for i,k in enumerate(listComparison):
+            dictHistos[ k+ifile ] = Samples[ifile][0].Get(k+'/'+name)
+            dictHistos[ k+ifile ].SetLineColor( i+i+2 )
+            dictHistos[ k+ifile ].SetLineWidth( 2 )
+            dictHistos[ k+ifile ].Scale( 1/dictHistos[ k+ifile ].Integral() )
+            legend.AddEntry( dictHistos[ k+ifile ], k.replace('RECOPUPPIHLTPF', ''), 'l' )
+
+        outputFileName = name+'_'+ifile+'_'.join(listComparison)+'_simpleResponse_'+args.version+'.'+args.extension
+        print 'Processing.......', outputFileName
+
+        can1 = TCanvas('can1'+name, 'can1'+name,  10, 10, 750, 500 )
+        dictHistos[dictHistos.iterkeys().next()].GetYaxis().SetLabelSize(0.05)
+        dictHistos[dictHistos.iterkeys().next()].GetXaxis().SetLabelSize(0.05)
+        dictHistos[dictHistos.iterkeys().next()].GetYaxis().SetTitleSize(0.06)
+        dictHistos[dictHistos.iterkeys().next()].GetYaxis().SetTitleOffset(0.8)
+        dictHistos[dictHistos.iterkeys().next()].GetXaxis().SetTitleOffset(0.8)
+        dictHistos[next(iter(dictHistos))].GetYaxis().SetTitle( 'Normalized / '+str(dictHistos[next(iter(dictHistos))].GetBinWidth(1))+' GeV' )
+        dictHistos[next(iter(dictHistos))].GetXaxis().SetTitle( labelX )
+        dictHistos[next(iter(dictHistos))].GetXaxis().SetRangeUser( xmin, xmax )
+        dictHistos[next(iter(dictHistos))].Draw('e')
+        for ih in dictHistos:
+            dictHistos[ih].Draw('histe same')
+        CMS_lumi.lumi_13TeV = ifile.split('_')[1]+' '
+        CMS_lumi.relPosX = 0.11
+        CMS_lumi.cmsTextSize = 0.7
+        CMS_lumi.extraOverCmsTextSize = 0.6
+        CMS_lumi.CMS_lumi(can1, 4, 0)
+        legend.Draw()
+
+        can1.SaveAs( 'Plots/'+outputFileName )
+        del can1
+
+###################################################################
+def meanResponse( name, listComparison, labelY, labelX, xmin, xmax, rebin, log ):
+
+    for ifile in Samples:
+        dictHistos = {}
+        outputFileName = name+'_'+ifile+'_'.join(listComparison)+'_meanResponse_'+args.version+'.'+args.extension
+        print 'Processing.......', outputFileName
+
+        legend=TLegend(0.70,0.65,0.90,0.90)
+        legend.SetFillStyle(0)
+        legend.SetTextSize(0.04)
+
+        for i,k in enumerate(listComparison):
+            tmp = Samples[ifile][0].Get(k+'/'+name)
+            dictHistos[ k+ifile ] = tmp.ProfileX()
+            dictHistos[ k+ifile ].SetName(k+ifile)
+            dictHistos[ k+ifile ].SetLineColor( i+1 )
+            if not isinstance( rebin, list ): dictHistos[ k+ifile ].Rebin( rebin )
+            else: dictHistos[ k+ifile ].Rebin(len(rebin)-1, dictHistos[ k+ifile ].GetName(), array('d', rebin) )
+	    dictHistos[ k+ifile ].SetMarkerStyle(8)
+	    dictHistos[ k+ifile ].SetMarkerColor( i+1 )
+            legend.AddEntry( dictHistos[ k+ifile ], k.replace('RECOPUPPIHLTPF', ''), 'pl' )
 
 
+        can1 = TCanvas('can1'+name, 'can1'+name,  10, 10, 750, 500 )
+        dictHistos[dictHistos.iterkeys().next()].SetMinimum(0)
+        dictHistos[dictHistos.iterkeys().next()].SetMaximum(2)
+        dictHistos[dictHistos.iterkeys().next()].GetYaxis().SetLabelSize(0.05)
+        dictHistos[dictHistos.iterkeys().next()].GetXaxis().SetLabelSize(0.05)
+        dictHistos[dictHistos.iterkeys().next()].GetYaxis().SetTitleSize(0.06)
+        dictHistos[dictHistos.iterkeys().next()].GetYaxis().SetTitleOffset(0.8)
+        dictHistos[dictHistos.iterkeys().next()].GetXaxis().SetTitleOffset(0.8)
+        dictHistos[next(iter(dictHistos))].GetYaxis().SetTitle( 'Response '+labelY )
+        dictHistos[next(iter(dictHistos))].GetXaxis().SetTitle( labelX )
+        dictHistos[next(iter(dictHistos))].GetXaxis().SetRangeUser( xmin, xmax )
+        dictHistos[next(iter(dictHistos))].Draw('e')
+        for ih in dictHistos:
+            dictHistos[ih].Draw('e same')
+        #labelAxis( name, diffEff[diffEff.iterkeys().next()], 'SoftDrop')
+        CMS_lumi.lumi_13TeV = ifile.split('_')[1]+' '
+        CMS_lumi.relPosX = 0.11
+        CMS_lumi.cmsTextSize = 0.7
+        CMS_lumi.extraOverCmsTextSize = 0.6
+        CMS_lumi.CMS_lumi(can1, 4, 0)
+        legend.Draw()
+
+        can1.SaveAs( 'Plots/'+outputFileName )
+        del can1
+
+
+###################################################################
+
+###################################################################
 if __name__ == '__main__':
 
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-p', '--proc', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
-	parser.add_argument('-d', '--dataset', action='store', default='JetHT', help='Dataset: JetHT, SingleMuon, etc.' )
-	parser.add_argument('-v', '--version', action='store', default='v01', help='Version of the files' )
-	parser.add_argument('-C', '--cut', action='store', default='_cutDEta', help='cut, example: cutDEta' )
-	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
-	parser.add_argument('-l', '--lumi', action='store', default='15.5', help='Luminosity, example: 1.' )
-	parser.add_argument('-t', '--trigger', action='store', default='AK8PFHT700TrimMass50', help="Trigger used, name of directory" )
-	parser.add_argument('-e', '--extension', action='store', default='png', help='Extension of plots.' )
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--proc', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
+    parser.add_argument('-d', '--dataset', action='store', default='JetHT', help='Dataset: JetHT, SingleMuon, etc.' )
+    parser.add_argument('-v', '--version', action='store', default='v01', help='Version of the files' )
+    parser.add_argument('-C', '--cut', action='store', default='_cutDEta', help='cut, example: cutDEta' )
+    parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
+    parser.add_argument('-l', '--lumi', action='store', default='15.5', help='Luminosity, example: 1.' )
+    parser.add_argument('-t', '--trigger', action='store', default='AK8PFHT700TrimMass50', help="Trigger used, name of directory" )
+    parser.add_argument('-e', '--extension', action='store', default='png', help='Extension of plots.' )
 
-	try:
-		args = parser.parse_args()
-	except:
-		parser.print_help()
-		sys.exit(0)
+    try: args = parser.parse_args()
+    except:
+        parser.print_help()
+        sys.exit(0)
 
-	triggerlabX = 0.15
-	triggerlabY = 1.0
-	jetMassHTlabX = 0.87
-	jetMassHTlabY = 0.20
+    triggerlabX = 0.15
+    triggerlabY = 1.0
+    jetMassHTlabX = 0.87
+    jetMassHTlabY = 0.20
 
-	HTMinX = 300
-	HTMaxX = 1500
+    HTMinX = 300
+    HTMaxX = 1500
 
-	plotList = [ 
+    plotList = [
 
-		[ '1D', 'HT', 500, 2000, 'HT [GeV]', 20, triggerlabX, triggerlabY, True],
-		#[ '1D', 'HT', 800, 1200, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'jet1Pt', 300, 1000, 'Leading Jet Pt [GeV]',  10, triggerlabX, triggerlabY, True],
-#		[ '1D', 'jet2Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
-		[ '1D', 'jet1SoftDropMass', 0, 500, 'Leading Jet Softdrop Mass [GeV]', 10, triggerlabX, triggerlabY, True],
-		[ '1D', 'massAve', 0, 500, 10, triggerlabX, triggerlabY, True],
-		[ 'tmp', 'jet1SoftDropMass', 0, 500, 1, triggerlabX, triggerlabY, True],
+        [ '1D', 'HT', 500, 2000, 'HT [GeV]', 20, triggerlabX, triggerlabY, True],
+        [ 'tmp', 'jet1SoftDropMass', 0, 500, 1, triggerlabX, triggerlabY, True],
+        [ '2D', 'jet1SDMassvsPt', 'Leading SD Jet Mass [GeV]', 'Leading Jet Pt [GeV]', 20, 200, 20, 400, 800, 50, 0.85, 0.2],
 
-		#[ '2D', 'jetMassHTDenom_noTrigger', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
-		#[ '2D', 'jetTrimmedMassHTDenom_noTrigger', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
-		#[ '2D', 'jetMassHTDenom_triggerOne', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
-		#[ '2D', 'jetMassHTDenom_triggerTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
-		#[ '2D', 'jetMassHTDenom_triggerOneAndTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.25],
-		[ '2d', 'jet1SDMassvsHT', 'Leading SD Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 20, 900, 1500, 50, 0.85, 0.2],
-		[ '2d', 'jet1SDMassvsPt', 'Leading SD Jet Mass [GeV]', 'Leading Jet Pt [GeV]', 0, 200, 20, 400, 800, 50, 0.85, 0.2],
+        [ 'simple', 'genhltjet1HTreso', 'HT Response <HLT/Gen>', 0, 5, 1, True],
+        [ 'simple', 'genhltjet1Ptreso', 'Leading jet pt Response <HLT/Gen>', 0, 5, 1, True],
+        [ 'meanRes', 'genrecojet1PtresovsgenPt', '<reco/gen>', 'Gen jet pt [GeV]', 0, 1000, 20, True],
+        [ 'meanRes', 'genrecojet1PtresovsrecoPt', '<reco/gen>', 'Reco jet pt [GeV]', 0, 1000, 20, True],
+        [ 'meanRes', 'genhltjet1PtresovsgenPt', '<hlt/gen>', 'Gen jet pt [GeV]', 0, 1000, 20, True],
+        [ 'meanRes', 'genhltjet1PtresovsrecoPt', '<hlt/gen>', 'Reco jet pt [GeV]', 0, 1000, 20, True],
+        [ 'meanRes', 'genrecojet1HTresovsgenHT', '<reco/gen>', 'Gen HT [GeV]', 500, 2000, 20, True],
+        [ 'meanRes', 'genrecojet1HTresovsrecoHT', '<reco/gen>', 'Reco HT [GeV]', 500, 2000, 20, True],
+        [ 'meanRes', 'genhltjet1HTresovsgenHT', '<hlt/gen>', 'Gen HT [GeV]', 500, 2000, 20, True],
+        [ 'meanRes', 'genhltjet1HTresovsrecoHT', '<hlt/gen>', 'Reco HT [GeV]', 500, 2000, 20, True],
 
+            ]
 
-		[ '2D', 'prunedMassAveHT', 'Leading Jet Pruned Mass [GeV]', 'HT [GeV]', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		#[ '2D', 'jetMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'jet4PtHT', '4th jet Pt [GeV]', 'HT [GeV]',  60, 300, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'jet1SDMassvsHT', 'Leading SD Jet Mass [GeV]', 'H_{T} [GeV]', 20, 200, 20, 900, 1500, 50, 0.85, 0.2],
-		[ '2D', 'jet1SDMassvsPt', 'Leading SD Jet Mass [GeV]', 'Leading Jet Pt [GeV]', 20, 200, 20, 400, 800, 50, 0.85, 0.2],
-		]
-
-	if 'all' in args.single: Plots = [ x[1:] for x in plotList if x[0] in args.proc ]
-	else: Plots = [ y[1:] for y in plotList if ( ( y[0] in args.proc ) and ( y[1] in args.single ) )  ]
+    if 'all' in args.single: Plots = [ x[1:] for x in plotList if x[0] in args.proc ]
+    else: Plots = [ y[1:] for y in plotList if ( ( y[0] in args.proc ) and ( y[1] in args.single ) )  ]
 
 
-	effList = {}
-	bkgFiles = {}
-	signalFiles = {}
-	CMS_lumi.extraText = "Preliminary"
+    effList = {}
+    bkgFiles = {}
+    signalFiles = {}
+    CMS_lumi.extraText = "Preliminary Simulation"
+    CMS_lumi.lumi_13TeV = ''
 
-	Samples = {}
-
-	Samples[ 'JetHT2017' ] = [ 'TriggerValAndEff_JetHT-Run2017A.root', 0 ] 
-	Samples[ 'RPV80' ] = [ 'RPVStopStopToJets_UDD312_M-80_TriggerEfficiencies_v04.root', 0 ] 
-	Samples[ 'TTJets' ] = [ 'TT_TriggerEfficiencies_v03.root', 0 ] 
-	Samples[ 'QCD' ] = [ 'QCD_Pt-15to3000_TriggerEfficiencies_v03.root', 0 ] 
-	#Samples[ 'SingleMuon2017A' ] = [ 'TriggerValAndEff_SingleMuon-Run2017A.root', 0 ] 
-	#Samples[ 'SingleMuon2017B' ] = [ 'TriggerEfficiencies_SingleMuon_Run2017B_v01.root', 4511 ] 
-	#Samples[ 'SingleMuon2017C' ] = [ 'TriggerEfficiencies_SingleMuon_Run2017C-PromptReco-v1_v01.root', 1284 ] 
-	Samples[ 'SingleMuon2017C' ] = [ 'TriggerEfficiencies_SingleMuon_Run2017C-PromptReco_v02.root', 2413 ] 
-	#Samples[ 'SingleMuon2017All' ] = [ 'TriggerEfficiencies_SingleMuon_Run2017All_v01.root', 5795 ] 
+    Samples = {}
+    Samples[ 'TTbar_NOPU' ] = [ TFile.Open('Rootfiles/simHLTwithAnalyzer_TTbar_NOPU_'+args.version+'.root'), 0 ]
+    Samples[ 'TTbar_PU200' ] = [ TFile.Open('Rootfiles/simHLTwithAnalyzer_TTbar_PU200_'+args.version+'.root'), 0 ]
 
 
-	processingSamples = {}
-	if 'all' in args.dataset: 
-		for sam in Samples: processingSamples[ sam ] = Samples[ sam ]
-	else:
-		for sam in Samples: 
-			if sam.startswith( args.dataset ): processingSamples[ sam ] = Samples[ sam ]
+#    processingSamples = {}
+#    if 'all' in args.dataset:
+#        for sam in Samples: processingSamples[ sam ] = Samples[ sam ]
+#    else:
+#        for sam in Samples:
+#            if sam.startswith( args.dataset ): processingSamples[ sam ] = Samples[ sam ]
+#
+#    if len(processingSamples)==0: print 'No sample found. \n Have a nice day :)'
 
-	if len(processingSamples)==0: print 'No sample found. \n Have a nice day :)'
+    for i in Plots:
+        if args.proc.startswith('simple'):
+            for q in [ '', 'Pt20', 'Pt30', 'Pt40', 'Pt50' ]:
+                simpleResponse( i[0], ['RECOPUPPIHLTPFPUPPI'+q, 'RECOPUPPIHLTPFCHS'+q, 'RECOPUPPIHLTPFSK'+q ], i[1], i[2], i[3], i[4], i[5], i[5] )
+        elif args.proc.startswith('meanRes'):
+            for q in [ '', 'Pt20', 'Pt30', 'Pt40', 'Pt50' ]:
+                meanResponse( i[0], ['RECOPUPPIHLTPFPUPPI'+q, 'RECOPUPPIHLTPFCHS'+q, 'RECOPUPPIHLTPFSK'+q], i[1], i[2], i[3], i[4], i[5], i[6] )
 
-	for sam in processingSamples:
 
-		CMS_lumi.lumi_13TeV = '' #str( round( (processingSamples[sam][1]/1000.), 1 ) )+" fb^{-1}"
-		if 'SingleMu' in sam: BASEDTrigger = 'IsoMu27'
-		elif 'JetHT' in sam: BASEDTrigger = 'PFJet40'
-		else: BASEDTrigger = ''
+    '''
+    for sam in processingSamples:
 
-		for i in Plots:
-			if '1D' in args.proc:
-				effList[ sam ] = plotTriggerEfficiency( TFile.Open('Rootfiles/'+processingSamples[sam][0]), 
-									sam, 
-									BASEDTrigger, 
-									i[0], args.cut, i[1], i[2], i[3], i[4], i[5], i[6], i[7] )
-			elif '2D' in args.proc:
-				plot2DTriggerEfficiency( TFile.Open('Rootfiles/'+processingSamples[sam][0]), 
-							sam, 
-							BASEDTrigger, 
-							i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10] )
+            CMS_lumi.lumi_13TeV = '' #str( round( (processingSamples[sam][1]/1000.), 1 ) )+" fb^{-1}"
+            #if 'SingleMu' in sam: BASEDTrigger = 'IsoMu27'
+            #elif 'JetHT' in sam: BASEDTrigger = 'PFJet40'
+            #else: BASEDTrigger = ''
 
-			elif '2d' in args.proc: 
-				plot2D( TFile.Open('Rootfiles/'+processingSamples[sam][0]),
-						sam,
-						i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10] )
+            for i in Plots:
+                    if '1D' in args.proc:
+                            effList[ sam ] = plotTriggerEfficiency( TFile.Open('Rootfiles/'+processingSamples[sam][0]),
+                                                                    sam,
+                                                                    BASEDTrigger,
+                                                                    i[0], args.cut, i[1], i[2], i[3], i[4], i[5], i[6], i[7] )
+                    elif '2D' in args.proc:
+                            plot2DTriggerEfficiency( TFile.Open('Rootfiles/'+processingSamples[sam][0]),
+                                                    sam,
+                                                    BASEDTrigger,
+                                                    i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10] )
+
+                    elif '2d' in args.proc:
+                            plot2D( TFile.Open('Rootfiles/'+processingSamples[sam][0]),
+                                            sam,
+                                            i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10] )
+    '''
