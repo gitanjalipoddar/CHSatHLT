@@ -96,8 +96,8 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
     histos1D_[ "hltJetHT" ]->Fill( hltHT );
     histos1D_[ "hltnumJets" ]->Fill( numHLTJets );
 
-    //for recojets
-    double HT=0;
+    //for matched recojets
+    double HT_matched=0;
     vector<matchedJet> matchJets;
     
     for ( auto const& hltJet : *hltJets ) {
@@ -121,11 +121,24 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             tmpJet.recoJet = (*recojets)[minInd];
             matchJets.push_back(tmpJet);
 	    
-	    histos1D_[ "recoJetPt" ]->Fill( (*recojets)[minInd].pt() );
-	    histos1D_[ "recoJetEta" ]->Fill( (*recojets)[minInd].eta() );
-	    HT+=(*recojets)[minInd].pt();
+	    histos1D_[ "recoJetPt_matched" ]->Fill( (*recojets)[minInd].pt() );
+	    histos1D_[ "recoJetEta_matched" ]->Fill( (*recojets)[minInd].eta() );
+	    HT_matched+=(*recojets)[minInd].pt();
         }
     }
+    histos1D_[ "HT_matched" ]->Fill( HT_matched );
+
+    double HT=0;
+    //for all recojets
+    for (const auto &recojet : *recojets) {
+      if( recojet.pt() < recojetPt_ ) continue;
+      if( TMath::Abs( recojet.eta()) > 2.5 ) continue;
+
+      histos1D_[ "recoJetPt" ]->Fill( recojet.pt() );
+      histos1D_[ "recoJetEta" ]->Fill( recojet.eta() );
+      HT+=recojet.pt();
+    }
+
     histos1D_[ "HTDenom" ]->Fill( HT );
     if ( hltHT > 800 ) histos1D_[ "HTPassingHT800" ]->Fill( HT );
     if ( hltHT > 850 ) histos1D_[ "HTPassingHT850" ]->Fill( HT );
@@ -206,7 +219,10 @@ void TriggerEfficiencies::beginJob() {
 
 	histos1D_[ "recoJetPt" ] = fs_->make< TH1D >( "recoJetPt", "recoJetPt", 2000, 0., 2000. );
 	histos1D_[ "recoJetEta" ] = fs_->make< TH1D >( "recoJetEta", "recoJetEta", 100, -5, 5 );
+	histos1D_[ "recoJetPt_matched" ] = fs_->make< TH1D >( "recoJetPt_matched", "recoJetPt_matched", 2000, 0., 2000. );
+	histos1D_[ "recoJetEta_matched" ] = fs_->make< TH1D >( "recoJetEta_matched", "recoJetEta_matched", 100, -5, 5 );
 
+	histos1D_[ "HT_matched" ] = fs_->make< TH1D >( "HT_matched", "HT_matched", 2000, 0., 2000. );
 	histos1D_[ "HTDenom" ] = fs_->make< TH1D >( "HTDenom", "HTDenom", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT800" ] = fs_->make< TH1D >( "HTPassingHT800", "HTPassingHT800", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT850" ] = fs_->make< TH1D >( "HTPassingHT850", "HTPassingHT850", 2000, 0., 2000. );
