@@ -667,6 +667,90 @@ process.RECOPUPPIHLTPFSKPt50 = process.RECOPUPPIHLTPFSK.clone(
 )
 process.RECOPUPPIHLTPFSKPt50_step = cms.EndPath( process.RECOPUPPIHLTPFSKPt50 )
 
+#####################################################################
+#OFFLINE CHS JETS
+
+process.RECOCHSHLTPFCHS = cms.EDAnalyzer('TriggerEfficiencies',
+        hltJets = cms.InputTag("ak4PFJetsCHSCorrected::RECO2"),
+        recoJets = cms.InputTag("slimmedJets::PAT"),
+        recojetPt = cms.double( 10 ),
+        AK8jets = cms.bool( False ),
+        DEBUG = cms.bool(False)
+)
+process.RECOCHSHLTPFCHS_step = cms.EndPath( process.RECOCHSHLTPFCHS )
+
+process.RECOCHSHLTPFCHSPt20 = process.RECOCHSHLTPFCHS.clone(
+        recojetPt = cms.double( 20 ),
+)
+process.RECOCHSHLTPFCHSPt20_step = cms.EndPath( process.RECOCHSHLTPFCHSPt20 )
+
+process.RECOCHSHLTPFCHSPt30 = process.RECOCHSHLTPFCHS.clone(
+        recojetPt = cms.double( 30 ),
+)
+process.RECOCHSHLTPFCHSPt30_step = cms.EndPath( process.RECOCHSHLTPFCHSPt30 )
+
+process.RECOCHSHLTPFCHSPt40 = process.RECOCHSHLTPFCHS.clone(
+        recojetPt = cms.double( 40 ),
+)
+process.RECOCHSHLTPFCHSPt40_step = cms.EndPath( process.RECOCHSHLTPFCHSPt40 )
+
+process.RECOCHSHLTPFCHSPt50 = process.RECOCHSHLTPFCHS.clone(
+        recojetPt = cms.double( 50 ),
+)
+process.RECOCHSHLTPFCHSPt50_step = cms.EndPath( process.RECOCHSHLTPFCHSPt50 )
+
+process.RECOCHSHLTPFPUPPI = process.RECOCHSHLTPFCHS.clone(
+        hltJets = cms.InputTag("hltak4PFJetsPUPPICorrected::RECO2"),
+)
+process.RECOCHSHLTPFPUPPI_step = cms.EndPath( process.RECOCHSHLTPFPUPPI )
+
+process.RECOCHSHLTPFPUPPIPt20 = process.RECOCHSHLTPFPUPPI.clone(
+        recojetPt = cms.double( 20 ),
+)
+process.RECOCHSHLTPFPUPPIPt20_step = cms.EndPath( process.RECOCHSHLTPFPUPPIPt20 )
+
+process.RECOCHSHLTPFPUPPIPt30 = process.RECOCHSHLTPFPUPPI.clone(
+        recojetPt = cms.double( 30 ),
+)
+process.RECOCHSHLTPFPUPPIPt30_step = cms.EndPath( process.RECOCHSHLTPFPUPPIPt30 )
+
+process.RECOCHSHLTPFPUPPIPt40 = process.RECOCHSHLTPFPUPPI.clone(
+        recojetPt = cms.double( 40 ),
+)
+process.RECOCHSHLTPFPUPPIPt40_step = cms.EndPath( process.RECOCHSHLTPFPUPPIPt40 )
+
+process.RECOCHSHLTPFPUPPIPt50 = process.RECOCHSHLTPFPUPPI.clone(
+        recojetPt = cms.double( 50 ),
+)
+process.RECOCHSHLTPFPUPPIPt50_step = cms.EndPath( process.RECOCHSHLTPFPUPPIPt50 )
+
+
+process.RECOCHSHLTPFSK = process.RECOCHSHLTPFCHS.clone(
+        hltJets = cms.InputTag("hltak4PFJetsSK::RECO2"),
+)
+process.RECOCHSHLTPFSK_step = cms.EndPath( process.RECOCHSHLTPFSK )
+
+
+process.RECOCHSHLTPFSKPt20 = process.RECOCHSHLTPFSK.clone(
+        recojetPt = cms.double( 20 ),
+)
+process.RECOCHSHLTPFSKPt20_step = cms.EndPath( process.RECOCHSHLTPFSKPt20 )
+
+process.RECOCHSHLTPFSKPt30 = process.RECOCHSHLTPFSK.clone(
+        recojetPt = cms.double( 30 ),
+)
+process.RECOCHSHLTPFSKPt30_step = cms.EndPath( process.RECOCHSHLTPFSKPt30 )
+
+process.RECOCHSHLTPFSKPt40 = process.RECOCHSHLTPFSK.clone(
+        recojetPt = cms.double( 40 ),
+)
+process.RECOCHSHLTPFSKPt40_step = cms.EndPath( process.RECOCHSHLTPFSKPt40 )
+
+process.RECOCHSHLTPFSKPt50 = process.RECOCHSHLTPFSK.clone(
+        recojetPt = cms.double( 50 ),
+)
+process.RECOCHSHLTPFSKPt50_step = cms.EndPath( process.RECOCHSHLTPFSKPt50 )
+
 ################################################################
 ################################################################
 
