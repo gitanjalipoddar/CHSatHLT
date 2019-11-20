@@ -104,7 +104,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             hltMass = obj.mass();
             histos1D_[ "hltJetMass" ]->Fill( hltMass );
         }*/
-        if( hltJet.pt() < 10 ) continue;
+        if( hltJet.pt() < recojetPt_ ) continue;
         hltHTpt10 += hltJet.pt();
         numHLTJetspt10+=1;
         histos1D_[ "hltJetPt_pt10" ]->Fill( hltJet.pt() );
