@@ -80,147 +80,121 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 	iEvent.getByToken(recoJetToken_, recojets);
 
 
-	///// HLT OBJECTS
+    //for hlt jets
     double hltHT = 0;
     int numHLTJets = 0;
-    double hltHTpt10 = 0;
-    int numHLTJetspt10 = 0;
     
     for ( auto const& hltJet : *hltJets ) {
-
-        // first cleaning since we can not go lower in pt anyway
-        if( hltJet.pt() < 5 ) continue;
+        if( hltJet.pt() < recoJetpt_) continue;
         if( TMath::Abs(hltJet.eta()) > 2.5 ) continue;
-        if (DEBUG_) LogWarning("trigger jet") << "\tTrigger object Pt:  pt " << hltJet.pt()  << ", eta " << hltJet.eta() << ", phi " << hltJet.phi() << ", mass " << hltJet.mass();
-
-        // plotting for the basic case
+        
         hltHT += hltJet.pt();
         numHLTJets+=1;
         histos1D_[ "hltJetPt" ]->Fill( hltJet.pt() );
         histos1D_[ "hltJetEta" ]->Fill( hltJet.eta() );
-
-        /* dont remove it since it can help for later	
-            if (DEBUG_) LogWarning("trigger mass") << "\tTrigger object Mass:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass(); 
-            hltMass = obj.mass();
-            histos1D_[ "hltJetMass" ]->Fill( hltMass );
-        }*/
-        if( hltJet.pt() < recojetPt_ ) continue;
-        hltHTpt10 += hltJet.pt();
-        numHLTJetspt10+=1;
-        histos1D_[ "hltJetPt_pt10" ]->Fill( hltJet.pt() );
-        histos1D_[ "hltJetEta_pt10" ]->Fill( hltJet.eta() );
-
     }
-
-    //histos2D_[ "hltJetPtvsMass" ]->Fill( hltPt, hltMass );
     histos1D_[ "hltJetHT" ]->Fill( hltHT );
     histos1D_[ "hltnumJets" ]->Fill( numHLTJets );
-    histos1D_[ "hltJetHT_pt10" ]->Fill( hltHTpt10 );
-    histos1D_[ "hltnumJets_pt10" ]->Fill( numHLTJetspt10 );
-	    
-    /////////////////////////////////////////////////////////////////////////////////
-    /// This is for recoJets
-    double HT = 0;
-    int k = 0;
-    vector<matchedJet> matchJets;
-    for (const auto &recojet : *recojets) {
 
-        if( recojet.pt() < recojetPt_ ) continue;
-        if( TMath::Abs( recojet.eta()) > 2.5 ) continue;
-        if (DEBUG_) LogWarning("recojets") << recojet.pt();
-        //bool ifGenJet = recojet.genJet();
-        //const reco::GenJet* genjet = recojet.genJet();
-        //if(ifGenJet) LogWarning("genjets") << genjet->pt();
-        double dummyMin= 9999;
-        int minInd = -1;
-        for (size_t i=0; i< hltJets->size(); i++) {
-            double deltaRrecohlt = deltaR( (*hltJets)[i], recojet );
+    //for recojets
+    double HT=0;
+    vector<matchedJet> matchJets;
+    
+    for ( auto const& hltJet : *hltJets ) {
+      if (hltJet.pt()<recojetPt_) continue;
+      if( TMath::Abs( hltJet.eta()) > 2.5 ) continue;
+
+      double dummyMin= 9999;
+      int minInd = -1;
+      for (size_t i=0; i< recojets->size(); i++) {
+            double deltaRrecohlt = deltaR( (*recojets)[i], hltJet );
             if ( deltaRrecohlt < dummyMin ) { 
                 dummyMin = deltaRrecohlt;
                 minInd = i;
             }
-        }
-        if (dummyMin<.3){
+      }
+      if (dummyMin<.2){
+	//if( (*recojets)[minInd].pt()<recoJetPt_ ) continue;
+	//if( TMath::Abs(*recojets)[minInd].eta()) > 2.5 ) continue;
             matchedJet tmpJet;
-            tmpJet.recoJet = recojet;
-            tmpJet.hltJet = (*hltJets)[minInd];
+            tmpJet.hltJet = hltJet;
+            tmpJet.recoJet = (*recojets)[minInd];
             matchJets.push_back(tmpJet);
+	    
+	    histos1D_[ "recoJetPt" ]->Fill( (*recojets)[minInd].pt() );
+	    histos1D_[ "recoJetEta" ]->Fill( (*recojets)[minInd].eta() );
+	    HT+=(*recojets)[minInd].pt();
         }
-
-        HT += recojet.pt();
-
-        if (++k==1){
-            histos1D_[ "jet1Pt" ]->Fill( recojet.pt() );
-        }
-
     }
-    histos1D_[ "HT" ]->Fill( HT );
-    
     histos1D_[ "HTDenom" ]->Fill( HT );
-    histos1D_[ "HTPassing" ]->Fill( HT );
-    if ( hltHT > 700 ) histos1D_[ "HTPassingHT700" ]->Fill( HT );
     if ( hltHT > 800 ) histos1D_[ "HTPassingHT800" ]->Fill( HT );
     if ( hltHT > 850 ) histos1D_[ "HTPassingHT850" ]->Fill( HT );
     if ( hltHT > 900 ) histos1D_[ "HTPassingHT900" ]->Fill( HT );
     if ( hltHT > 950 ) histos1D_[ "HTPassingHT950" ]->Fill( HT );
     if ( hltHT > 1000 ) histos1D_[ "HTPassingHT1000" ]->Fill( HT );
     if ( hltHT > 1050 ) histos1D_[ "HTPassingHT1050" ]->Fill( HT );
-
-    /// for HT with pt >10
-    if ( hltHTpt10 > 700 ) histos1D_[ "HTPassingHT700pt10" ]->Fill( HT );
-    if ( hltHTpt10 > 800 ) histos1D_[ "HTPassingHT800pt10" ]->Fill( HT );
-    if ( hltHTpt10 > 850 ) histos1D_[ "HTPassingHT850pt10" ]->Fill( HT );
-    if ( hltHTpt10 > 900 ) histos1D_[ "HTPassingHT900pt10" ]->Fill( HT );
-    if ( hltHTpt10 > 950 ) histos1D_[ "HTPassingHT950pt10" ]->Fill( HT );
-    if ( hltHTpt10 > 1000 ) histos1D_[ "HTPassingHT1000pt10" ]->Fill( HT );
-    if ( hltHTpt10 > 1050 ) histos1D_[ "HTPassingHT1050pt10" ]->Fill( HT );
+    if ( hltHT > 1100 ) histos1D_[ "HTPassingHT1100" ]->Fill( HT );
     /////////////////////////////////////////////////////////////////////////////////
 
     
-    // Fro efficiency
+    // For response
     int m = 0;
     double mhltHT = 0;
     double mrecoHT = 0;
     double mgenHT = 0;
     for (const auto &mjet: matchJets) {
 
-        bool ifGenJet = mjet.recoJet.genJet();
+      bool ifGenJet = mjet.recoJet.genJet(); //checking recojet has matching genjet
         //bool ifhltJet = mjet.hltJet;
         if ( ifGenJet ) {
             mgenHT += mjet.recoJet.genJet()->pt();
             mhltHT += mjet.hltJet.pt();
             mrecoHT += mjet.recoJet.pt();
             //LogWarning("test") << mjet.recoJet.pt() << " " << mjet.recoJet.genJet()->pt() << " " << mjet.hltJet.pt();
-            if ((m++)==1){
-                histos1D_[ "genjet1Pt" ]->Fill( mjet.recoJet.genJet()->pt() );
-                histos1D_[ "recojet1Pt" ]->Fill( mjet.recoJet.pt() );
-                histos1D_[ "hltjet1Pt" ]->Fill( mjet.hltJet.pt() );
+          
+	    if ((m++)==1){ //first jet is leading jet
+	      histos1D_[ "lead_genPt_1D" ]->Fill( mjet.recoJet.genJet()->pt() );
+	      histos1D_[ "lead_recoPt_1D" ]->Fill( mjet.recoJet.pt() );
+	      histos1D_[ "lead_hltPt_1D" ]->Fill( mjet.hltJet.pt() );
                 
-                double resGenhlt = mjet.hltJet.pt() / mjet.recoJet.genJet()->pt();
-                double resGenreco = mjet.recoJet.pt() / mjet.recoJet.genJet()->pt();
-                histos1D_[ "genrecojet1Ptreso" ]->Fill( resGenreco );
-                histos2D_[ "genrecojet1PtresovsgenPt" ]->Fill( mjet.recoJet.genJet()->pt(), resGenreco );
-                histos2D_[ "genrecojet1PtresovsrecoPt" ]->Fill( mjet.recoJet.pt(), resGenreco );
-                histos1D_[ "genhltjet1Ptreso" ]->Fill( resGenhlt );
-                histos2D_[ "genhltjet1PtresovsgenPt" ]->Fill( mjet.recoJet.genJet()->pt(), resGenhlt );
-                histos2D_[ "genhltjet1PtresovsrecoPt" ]->Fill( mjet.hltJet.pt(), resGenhlt );
+	      double hltGenPt = mjet.hltJet.pt() / mjet.recoJet.genJet()->pt();
+	      double recoGenPt = mjet.recoJet.pt() / mjet.recoJet.genJet()->pt();
+	      double hltRecoPt = mjet.hltJet.pt() / mjet.recoJet.pt();
+                
+	      histos1D_[ "lead_recoGenPt_1D" ]->Fill( recoGenPt );
+	      histos2D_[ "lead_recoGenPt_gen" ]->Fill( mjet.recoJet.genJet()->pt(), recoGenPt);
+	      histos2D_[ "lead_recoGenPt_reco" ]->Fill( mjet.recoJet.pt(), recoGenPt );
+           
+	      histos1D_[ "lead_hltGenPt_1D" ]->Fill( hltGenPt );
+	      histos2D_[ "lead_hltGenPt_gen" ]->Fill( mjet.recoJet.genJet()->pt(), hltGenPt );
+	      histos2D_[ "lead_hltGenPt_reco" ]->Fill( mjet.recoJet.pt(), hltGenPt );
+
+	      histos1D_[ "lead_hltRecoPt_1D" ]->Fill( hltRecoPt );
+	      histos2D_[ "lead_hltRecoPt_gen" ]->Fill( mjet.recoJet.genJet()->pt(), hltRecoPt );
+	      histos2D_[ "lead_hltRecoPt_reco" ]->Fill( mjet.recoJet.pt(), hltRecoPt );
             }
-
-            histos1D_[ "genjetHT" ]->Fill( mgenHT );
-            histos1D_[ "recojetHT" ]->Fill( mrecoHT );
-            histos1D_[ "hltjetHT" ]->Fill( mhltHT );
-
-            double resGenhltHT = mhltHT/mgenHT;
-            double resGenrecoHT = mrecoHT/mgenHT;
-            histos1D_[ "genrecojet1HTreso" ]->Fill( resGenrecoHT );
-            histos2D_[ "genrecojet1HTresovsgenHT" ]->Fill( mgenHT, resGenrecoHT );
-            histos2D_[ "genrecojet1HTresovsrecoHT" ]->Fill( mrecoHT, resGenrecoHT );
-            histos1D_[ "genhltjet1HTreso" ]->Fill( resGenhltHT );
-            histos2D_[ "genhltjet1HTresovsgenHT" ]->Fill( mgenHT, resGenhltHT );
-            histos2D_[ "genhltjet1HTresovsrecoHT" ]->Fill( mrecoHT, resGenhltHT );
-        }
-
+	}
     }
+
+    histos1D_[ "genHT_1D" ]->Fill( mgenHT );
+    histos1D_[ "recoHT_1D" ]->Fill( mrecoHT );
+    histos1D_[ "hltHT_1D" ]->Fill( mhltHT );
+
+    double hltGenHT = mhltHT/mgenHT;
+    double recoGenHT = mrecoHT/mgenHT;
+    double hltRecoHT = mhltHT/mrecoHT;
+
+     histos1D_[ "recoGenHT_1D" ]->Fill( recoGenHT );
+     histos2D_[ "recoGenHT_gen" ]->Fill( mgenHT, recoGenHT);
+     histos2D_[ "recoGenHT_reco" ]->Fill( mrecoHT, recoGenHT );
+           
+     histos1D_[ "hltGenHT_1D" ]->Fill( hltGenHT );
+     histos2D_[ "hltGenHT_gen" ]->Fill( mgenHT, hltGenHT );
+     histos2D_[ "hltGenHT_reco" ]->Fill( mrecoHT, hltGenHT );
+
+     histos1D_[ "hltRecoHT_1D" ]->Fill( hltRecoHT );
+     histos2D_[ "hltRecoHT_gen" ]->Fill( mgenHT, hltRecoHT );
+     histos2D_[ "hltRecoHT_reco" ]->Fill( mrecoHT, hltRecoHT);   
 }
 
 void TriggerEfficiencies::beginJob() {
