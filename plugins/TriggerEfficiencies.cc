@@ -200,58 +200,51 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
 void TriggerEfficiencies::beginJob() {
 
 	histos1D_[ "hltJetPt" ] = fs_->make< TH1D >( "hltJetPt", "hltJetPt", 2000, 0., 2000. );
-	//histos1D_[ "hltJetMass" ] = fs_->make< TH1D >( "hltJetMass", "hltJetMass", 2000, 0., 2000. );
 	histos1D_[ "hltJetEta" ] = fs_->make< TH1D >( "hltJetEta", "hltJetEta", 100, -5, 5 );
 	histos1D_[ "hltJetHT" ] = fs_->make< TH1D >( "hltJetHT", "hltJetHT", 5000, 0., 5000. );
 	histos1D_[ "hltnumJets" ] = fs_->make< TH1D >( "hltnumJets", "hltnumJets", 20, 0., 20. );
 
-	histos1D_[ "hltJetPt_pt10" ] = fs_->make< TH1D >( "hltJetPt_pt10", "hltJetPt_pt10", 2000, 0., 2000. );
-	histos1D_[ "hltJetEta_pt10" ] = fs_->make< TH1D >( "hltJetEta_pt10", "hltJetEta_pt10", 100, -5, 5 );
-	histos1D_[ "hltJetHT_pt10" ] = fs_->make< TH1D >( "hltJetHT_pt10", "hltJetHT_pt10", 5000, 0., 5000. );
-	histos1D_[ "hltnumJets_pt10" ] = fs_->make< TH1D >( "hltnumJets_pt10", "hltnumJets_pt10", 20, 0., 20. );
-
-	//histos2D_[ "hltJetPtvsMass" ] = fs_->make< TH2D >( "hltJetPtvsMass", "hltJetPtvsMass", 2000, 0., 2000., 2000, 0., 2000. );
-
-	histos1D_[ "jet1Pt" ] = fs_->make< TH1D >( "jet1Pt", "jet1Pt", 1000, 0., 1000. );
-	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 100, 0., 2000. );
-
+	histos1D_[ "recoJetPt" ] = fs_->make< TH1D >( "recoJetPt", "recoJetPt", 2000, 0., 2000. );
+	histos1D_[ "recoJetEta" ] = fs_->make< TH1D >( "recoJetEta", "recoJetEta", 100, -5, 5 );
 
 	histos1D_[ "HTDenom" ] = fs_->make< TH1D >( "HTDenom", "HTDenom", 2000, 0., 2000. );
-	histos1D_[ "HTPassing" ] = fs_->make< TH1D >( "HTPassing", "HTPassing", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT700" ] = fs_->make< TH1D >( "HTPassingHT700", "HTPassingHT700", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT800" ] = fs_->make< TH1D >( "HTPassingHT800", "HTPassingHT800", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT850" ] = fs_->make< TH1D >( "HTPassingHT850", "HTPassingHT850", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT900" ] = fs_->make< TH1D >( "HTPassingHT900", "HTPassingHT900", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT950" ] = fs_->make< TH1D >( "HTPassingHT950", "HTPassingHT950", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT1000" ] = fs_->make< TH1D >( "HTPassingHT1000", "HTPassingHT1000", 2000, 0., 2000. );
 	histos1D_[ "HTPassingHT1050" ] = fs_->make< TH1D >( "HTPassingHT1050", "HTPassingHT1050", 2000, 0., 2000. );
+	histos1D_[ "HTPassingHT1100" ] = fs_->make< TH1D >( "HTPassingHT1100", "HTPassingHT1100", 2000, 0., 2000. );;
 
-	histos1D_[ "HTPassingHT700pt10" ] = fs_->make< TH1D >( "HTPassingHT700pt10", "HTPassingHT700pt10", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT800pt10" ] = fs_->make< TH1D >( "HTPassingHT800pt10", "HTPassingHT800pt10", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT850pt10" ] = fs_->make< TH1D >( "HTPassingHT850pt10", "HTPassingHT850pt10", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT900pt10" ] = fs_->make< TH1D >( "HTPassingHT900pt10", "HTPassingHT900pt10", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT950pt10" ] = fs_->make< TH1D >( "HTPassingHT950pt10", "HTPassingHT950pt10", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT1000pt10" ] = fs_->make< TH1D >( "HTPassingHT1000pt10", "HTPassingHT1000pt10", 2000, 0., 2000. );
-	histos1D_[ "HTPassingHT1050pt10" ] = fs_->make< TH1D >( "HTPassingHT1050pt10", "HTPassingHT1050pt10", 2000, 0., 2000. );
+	histos1D_[ "lead_genPt_1D" ] = fs_->make< TH1D >( "lead_genPt_1D", "lead_genPt_1D", 2000, 0., 2000. );
+	histos1D_[ "lead_recoPt_1D" ] = fs_->make< TH1D >( "lead_recoPt_1D", "lead_recoPt_1D", 2000, 0., 2000. );
+	histos1D_[ "lead_hltPt_1D" ] = fs_->make< TH1D >( "lead_hltPt_1D", "lead_hltPt_1D", 2000, 0., 2000. );
+	histos1D_[ "genHT_1D" ] = fs_->make< TH1D >( "genHT_1D", "genHT_1D", 2000, 0., 2000. );
+	histos1D_[ "recoHT_1D" ] = fs_->make< TH1D >( "recoHT_1D", "recoHT_1D", 2000, 0., 2000. );
+	histos1D_[ "hltHT_1D" ] = fs_->make< TH1D >( "hltHT_1D", "hltHT_1D", 2000, 0., 2000. );
 
-	histos1D_[ "genjet1Pt" ] = fs_->make< TH1D >( "genjet1Pt", "genjet1Pt", 2000, 0., 2000. );
-	histos1D_[ "recojet1Pt" ] = fs_->make< TH1D >( "recojet1Pt", "recojet1Pt", 2000, 0., 2000. );
-	histos1D_[ "hltjet1Pt" ] = fs_->make< TH1D >( "hltjet1Pt", "hltjet1Pt", 2000, 0., 2000. );
-	histos1D_[ "genjetHT" ] = fs_->make< TH1D >( "genjetHT", "genjetHT", 2000, 0., 2000. );
-	histos1D_[ "recojetHT" ] = fs_->make< TH1D >( "recojetHT", "recojetHT", 2000, 0., 2000. );
-	histos1D_[ "hltjetHT" ] = fs_->make< TH1D >( "hltjetHT", "hltjetHT", 2000, 0., 2000. );
-	histos1D_[ "genrecojet1Ptreso" ] = fs_->make< TH1D >( "genrecojet1Ptreso", "genrecojet1Ptreso", 40, 0., 10. );
-	histos2D_[ "genrecojet1PtresovsrecoPt" ] = fs_->make< TH2D >( "genrecojet1PtresovsrecoPt", "genrecojet1PtresovsrecoPt", 2000, 0., 2000., 40, 0., 10. );
-	histos2D_[ "genrecojet1PtresovsgenPt" ] = fs_->make< TH2D >( "genrecojet1PtresovsgenPt", "genrecojet1PtresovsgenPt", 2000, 0., 2000., 40, 0., 10. );
-	histos1D_[ "genhltjet1Ptreso" ] = fs_->make< TH1D >( "genhltjet1Ptreso", "genhltjet1Ptreso", 40, 0., 10. );
-	histos2D_[ "genhltjet1PtresovsrecoPt" ] = fs_->make< TH2D >( "genhltjet1PtresovsrecoPt", "genhltjet1PtresovsrecoPt", 2000, 0., 2000., 40, 0., 10. );
-	histos2D_[ "genhltjet1PtresovsgenPt" ] = fs_->make< TH2D >( "genhltjet1PtresovsgenPt", "genhltjet1PtresovsgenPt", 2000, 0., 2000., 40, 0., 10. );
-	histos1D_[ "genrecojet1HTreso" ] = fs_->make< TH1D >( "genrecojet1HTreso", "genrecojet1HTreso", 40, 0., 10. );
-	histos2D_[ "genrecojet1HTresovsrecoHT" ] = fs_->make< TH2D >( "genrecojet1HTresovsrecoHT", "genrecojet1HTresovsrecoHT", 2000, 0., 2000., 40, 0., 10. );
-	histos2D_[ "genrecojet1HTresovsgenHT" ] = fs_->make< TH2D >( "genrecojet1HTresovsgenHT", "genrecojet1HTresovsgenHT", 2000, 0., 2000., 40, 0., 10. );
-	histos1D_[ "genhltjet1HTreso" ] = fs_->make< TH1D >( "genhltjet1HTreso", "genhltjet1HTreso", 40, 0., 10. );
-	histos2D_[ "genhltjet1HTresovsrecoHT" ] = fs_->make< TH2D >( "genhltjet1HTresovsrecoHT", "genhltjet1HTresovsrecoHT", 2000, 0., 2000., 40, 0., 10. );
-	histos2D_[ "genhltjet1HTresovsgenHT" ] = fs_->make< TH2D >( "genhltjet1HTresovsgenHT", "genhltjet1HTresovsgenHT", 2000, 0., 2000., 40, 0., 10. );
+	histos1D_[ "lead_recoGenPt_1D" ] = fs_->make< TH1D >( "lead_recoGenPt_1D", "lead_recoGenPt_1D", 40, 0., 10. );
+	histos1D_[ "lead_hltGenPt_1D" ] = fs_->make< TH1D >( "lead_hltGenPt_1D", "lead_hltGenPt_1D", 40, 0., 10. );
+	histos1D_[ "lead_hltRecoPt_1D" ] = fs_->make< TH1D >( "lead_hltRecoPt_1D", "lead_hltRecoPt_1D", 40, 0., 10. );
+	histos1D_[ "recoGenHT_1D" ] = fs_->make< TH1D >( "recoGenHT_1D", "recoGenHT_1D", 40, 0., 10. );
+	histos1D_[ "hltGenHT_1D" ] = fs_->make< TH1D >( "hltGenHT_1D", "hltGenHT_1D", 40, 0., 10. );
+	histos1D_[ "hltRecoHT_1D" ] = fs_->make< TH1D >( "hltRecoHT_1D", "hltRecoHT_1D", 40, 0., 10. );
+	
+	histos2D_[ "lead_recoGenPt_gen" ] = fs_->make< TH2D >( "lead_recoGenPt_gen", "lead_recoGenPt_gen", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "lead_recoGenPt_reco" ] = fs_->make< TH2D >( "lead_recoGenPt_reco", "lead_recoGenPt_reco", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "lead_hltGenPt_gen" ] = fs_->make< TH2D >( "lead_hltGenPt_gen", "lead_hltGenPt_gen", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "lead_hltGenPt_reco" ] = fs_->make< TH2D >( "lead_hltGenPt_reco", "lead_hltGenPt_reco", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "lead_hltRecoPt_gen" ] = fs_->make< TH2D >( "lead_hltRecoPt_gen", "lead_hltRecoPt_gen", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "lead_hltRecoPt_reco" ] = fs_->make< TH2D >( "lead_hltRecoPt_reco", "lead_hltRecoPt_reco", 2000, 0., 2000., 40, 0., 10. );
+
+	histos2D_[ "recoGenHT_gen" ] = fs_->make< TH2D >( "recoGenHT_gen", "recoGenHT_gen", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "recoGenHT_reco" ] = fs_->make< TH2D >( "recoGenHT_reco", "recoGenHT_reco", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "hltGenHT_gen" ] = fs_->make< TH2D >( "hltGenHT_gen", "hltGenHT_gen", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "hltGenHT_reco" ] = fs_->make< TH2D >( "hltGenHT_reco", "hltGenHT_reco", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "hltRecoHT_gen" ] = fs_->make< TH2D >( "hltRecoHT_gen", "hltRecoHT_gen", 2000, 0., 2000., 40, 0., 10. );
+	histos2D_[ "hltRecoHT_reco" ] = fs_->make< TH2D >( "hltRecoHT_reco", "hltRecoHT_reco", 2000, 0., 2000., 40, 0., 10. );
+
+
 
 	///// Sumw2 all the histos
 	for( auto const& histo : histos1D_ ) histos1D_[ histo.first ]->Sumw2();
