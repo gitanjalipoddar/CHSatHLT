@@ -85,7 +85,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
     int numHLTJets = 0;
     
     for ( auto const& hltJet : *hltJets ) {
-        if( hltJet.pt() < recojetpt_) continue;
+        if( hltJet.pt() < recojetPt_) continue;
         if( TMath::Abs(hltJet.eta()) > 2.5 ) continue;
         
         hltHT += hltJet.pt();
