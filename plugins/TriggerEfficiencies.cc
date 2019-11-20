@@ -85,7 +85,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
     int numHLTJets = 0;
     
     for ( auto const& hltJet : *hltJets ) {
-        if( hltJet.pt() < recoJetpt_) continue;
+        if( hltJet.pt() < recojetpt_) continue;
         if( TMath::Abs(hltJet.eta()) > 2.5 ) continue;
         
         hltHT += hltJet.pt();
@@ -114,7 +114,7 @@ void TriggerEfficiencies::analyze(const Event& iEvent, const EventSetup& iSetup)
             }
       }
       if (dummyMin<.2){
-	//if( (*recojets)[minInd].pt()<recoJetPt_ ) continue;
+	//if( (*recojets)[minInd].pt()<recojetPt_ ) continue;
 	//if( TMath::Abs(*recojets)[minInd].eta()) > 2.5 ) continue;
             matchedJet tmpJet;
             tmpJet.hltJet = hltJet;
